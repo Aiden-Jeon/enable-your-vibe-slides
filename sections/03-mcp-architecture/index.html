@@ -29,13 +29,13 @@
             <h1>MCP Architecture</h1>
             <p>MCP 아키텍처</p>
             <p style="margin-top: 2em; font-size: 0.7em; color: var(--ev-text-muted);">
-                Section 03 &middot; Lecture + Hands-on &middot; 25분
+                Section 03 &middot; Lecture + Hands-on &middot; 30분
             </p>
             <aside class="notes">
                 세 번째 섹션에서는 MCP(Model Context Protocol) 아키텍처를 다룹니다.
-                AI 모델이 외부 도구와 소통하는 표준 프로토콜인 MCP의 개념, 구조, 그리고
-                실제로 FastMCP를 사용해 MCP 서버를 만드는 실습까지 진행합니다.
-                총 25분, 강의 15분 + 실습 10분 구성입니다.
+                AI 모델이 외부 도구와 소통하는 표준 프로토콜인 MCP의 개념, 2계층 구조,
+                프리미티브와 Discovery 패턴, 그리고 FastMCP를 사용한 실습까지 진행합니다.
+                총 30분, 강의 20분 + 실습 10분 구성입니다.
             </aside>
         </section>
 
@@ -44,14 +44,16 @@
             <h2>학습 목표</h2>
             <ol>
                 <li class="fragment">MCP(Model Context Protocol)의 <strong>개념과 필요성</strong> 이해</li>
-                <li class="fragment">MCP의 <strong>아키텍처</strong>와 세 가지 프리미티브 이해</li>
+                <li class="fragment">MCP의 <strong>2계층 아키텍처</strong>(Data Layer / Transport Layer) 이해</li>
+                <li class="fragment">Server/Client <strong>프리미티브</strong>와 Discovery 패턴 이해</li>
                 <li class="fragment">FastMCP로 간단한 <strong>MCP 서버를 직접 만들기</strong></li>
             </ol>
             <aside class="notes">
-                이번 섹션의 학습 목표는 세 가지입니다.
+                이번 섹션의 학습 목표는 네 가지입니다.
                 첫째, MCP가 무엇이고 왜 필요한지를 이해합니다.
-                둘째, MCP의 내부 구조와 핵심 개념인 세 가지 프리미티브를 알아봅니다.
-                셋째, 실제로 Python FastMCP 라이브러리를 사용해 MCP 서버를 만들어봅니다.
+                둘째, MCP의 2계층 아키텍처인 Data Layer와 Transport Layer를 알아봅니다.
+                셋째, Server와 Client의 프리미티브, 그리고 동적 Discovery 패턴을 이해합니다.
+                넷째, 실제로 Python FastMCP 라이브러리를 사용해 MCP 서버를 만들어봅니다.
             </aside>
         </section>
 
@@ -82,27 +84,65 @@
             <div class="columns">
                 <div>
                     <h3>Before MCP: N x M 문제</h3>
-                    <div class="diagram">
-Claude ──── Slack<br>
-Claude ──── GitHub<br>
-Claude ──── DB<br>
-GPT ────── Slack<br>
-GPT ────── GitHub<br>
-GPT ────── DB<br>
-<br>
-<span style="color: var(--ev-accent);">3 모델 x 3 도구 = 9개 통합</span>
+                    <div style="display: flex; flex-direction: column; gap: 0.5em; padding: 1em; background: rgba(0,0,0,0.3); border-radius: 8px;">
+                        <div style="display: flex; align-items: center; gap: 0.5em;">
+                            <span style="width: 80px;">Claude</span>
+                            <span style="color: var(--ev-text-muted);">────</span>
+                            <span>Slack</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 0.5em;">
+                            <span style="width: 80px;">Claude</span>
+                            <span style="color: var(--ev-text-muted);">────</span>
+                            <span>GitHub</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 0.5em;">
+                            <span style="width: 80px;">Claude</span>
+                            <span style="color: var(--ev-text-muted);">────</span>
+                            <span>DB</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 0.5em;">
+                            <span style="width: 80px;">GPT</span>
+                            <span style="color: var(--ev-text-muted);">────</span>
+                            <span>Slack</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 0.5em;">
+                            <span style="width: 80px;">GPT</span>
+                            <span style="color: var(--ev-text-muted);">────</span>
+                            <span>GitHub</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 0.5em;">
+                            <span style="width: 80px;">GPT</span>
+                            <span style="color: var(--ev-text-muted);">────</span>
+                            <span>DB</span>
+                        </div>
+                        <div style="margin-top: 0.5em; text-align: center;">
+                            <span style="color: var(--ev-accent); font-weight: bold;">3 모델 x 3 도구 = 9개 통합</span>
+                        </div>
                     </div>
                 </div>
                 <div>
                     <h3>After MCP: N + M 해결</h3>
-                    <div class="diagram">
-Claude ─┐<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── MCP ──┬── Slack<br>
-GPT ───┤&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── GitHub<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└── DB<br>
-Gemini ─┘<br>
-<br>
-<span style="color: #4ade80;">3 모델 + 3 도구 = 6개 통합</span>
+                    <div style="display: flex; flex-direction: column; align-items: center; gap: 1em; padding: 1em; background: rgba(0,0,0,0.3); border-radius: 8px;">
+                        <div style="display: flex; align-items: center; gap: 1em;">
+                            <div style="display: flex; flex-direction: column; gap: 0.5em; text-align: right;">
+                                <span>Claude</span>
+                                <span>GPT</span>
+                                <span>Gemini</span>
+                            </div>
+                            <div style="font-size: 1.5em; color: var(--ev-text-muted);">→</div>
+                            <div style="border: 2px solid var(--ev-accent); padding: 0.5em 1em; border-radius: 8px; background: rgba(233, 69, 96, 0.1);">
+                                <strong>MCP</strong>
+                            </div>
+                            <div style="font-size: 1.5em; color: var(--ev-text-muted);">→</div>
+                            <div style="display: flex; flex-direction: column; gap: 0.5em;">
+                                <span>Slack</span>
+                                <span>GitHub</span>
+                                <span>DB</span>
+                            </div>
+                        </div>
+                        <div style="text-align: center;">
+                            <span style="color: #4ade80; font-weight: bold;">3 모델 + 3 도구 = 6개 통합</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -117,82 +157,295 @@ Gemini ─┘<br>
             </aside>
         </section>
 
-        <!-- Slide 5: MCP 아키텍처 다이어그램 -->
+        <!-- Slide 5: MCP의 핵심 (신규) -->
         <section>
-            <h2>MCP 아키텍처</h2>
-            <div class="diagram" style="font-size: 0.8em;">
-┌─────────────────────────────────────────────────────────┐<br>
-│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Host (Claude Code)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│<br>
-│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│<br>
-│&nbsp;&nbsp;┌──────────┐&nbsp;&nbsp;&nbsp;┌──────────┐&nbsp;&nbsp;&nbsp;┌──────────┐&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│<br>
-│&nbsp;&nbsp;│ MCP&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;│ MCP&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;│ MCP&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│<br>
-│&nbsp;&nbsp;│ Client A │&nbsp;&nbsp;&nbsp;│ Client B │&nbsp;&nbsp;&nbsp;│ Client C │&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│<br>
-│&nbsp;&nbsp;└────┬─────┘&nbsp;&nbsp;&nbsp;└────┬─────┘&nbsp;&nbsp;&nbsp;└────┬─────┘&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│<br>
-└───────┼──────────────┼──────────────┼────────────────┘<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;▼&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;▼&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;▼<br>
-┌──────────┐&nbsp;&nbsp;&nbsp;┌──────────┐&nbsp;&nbsp;&nbsp;┌──────────┐<br>
-│ MCP&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;│ MCP&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;│ MCP&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│<br>
-│ Server A │&nbsp;&nbsp;&nbsp;│ Server B │&nbsp;&nbsp;&nbsp;│ Server C │<br>
-└──┬───┬───┘&nbsp;&nbsp;&nbsp;└──┬───┬───┘&nbsp;&nbsp;&nbsp;└──┬───┬───┘<br>
-&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;│<br>
-&nbsp;&nbsp;&nbsp;▼&nbsp;&nbsp;&nbsp;▼&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;▼&nbsp;&nbsp;&nbsp;▼&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;▼&nbsp;&nbsp;&nbsp;▼<br>
-<span style="color: var(--ev-accent);">Tools Resources&nbsp;&nbsp;Tools Resources&nbsp;&nbsp;Tools Resources</span>
+            <h2>MCP의 핵심</h2>
+            <div class="emphasis-box">
+                <p>Client와 Server 사이의 <strong>Schema</strong>와 <strong>Semantics</strong>를 정의하는 프로토콜</p>
+            </div>
+            <ul style="margin-top: 1em;">
+                <li class="fragment"><strong>무엇을 할 수 있는지</strong> — 도구, 리소스, 프롬프트를 표준 형식으로 선언</li>
+                <li class="fragment"><strong>어떻게 요청하는지</strong> — JSON-RPC 2.0 기반의 요청/응답 규약</li>
+                <li class="fragment"><strong>어떻게 연결하는지</strong> — STDIO 또는 HTTP 기반 전송 계층</li>
+            </ul>
+            <aside class="notes">
+                MCP의 핵심은 Client와 Server 사이의 Schema와 Semantics를 정의하는 것입니다.
+                첫째, 서버가 무엇을 할 수 있는지를 표준 형식으로 선언합니다.
+                둘째, 클라이언트가 어떻게 요청하는지를 JSON-RPC 2.0 규약으로 정의합니다.
+                셋째, 물리적으로 어떻게 연결하는지를 STDIO나 HTTP 같은 전송 계층으로 정의합니다.
+                이 세 가지가 결합되어 AI와 도구 간의 완전한 소통 표준이 됩니다.
+            </aside>
+        </section>
+
+        <!-- Slide 6: 2계층 구조 (신규) -->
+        <section>
+            <h2>2계층 구조</h2>
+            <div style="display: flex; flex-direction: column; align-items: center; gap: 0;">
+                <!-- Outer: Transport Layer -->
+                <div style="border: 2px solid var(--ev-accent); border-radius: 12px; padding: 1em 1.5em; width: 85%; background: rgba(233, 69, 96, 0.05);">
+                    <div style="text-align: center; font-weight: bold; color: var(--ev-accent); margin-bottom: 0.5em;">Transport Layer (외부)</div>
+                    <div style="display: flex; gap: 1em; justify-content: center; font-size: 0.8em; margin-bottom: 0.8em;">
+                        <span class="fragment">연결 수립</span>
+                        <span class="fragment" style="color: var(--ev-text-muted);">&middot;</span>
+                        <span class="fragment">메시지 프레이밍</span>
+                        <span class="fragment" style="color: var(--ev-text-muted);">&middot;</span>
+                        <span class="fragment">인증</span>
+                    </div>
+                    <!-- Inner: Data Layer -->
+                    <div style="border: 2px solid #4ade80; border-radius: 8px; padding: 1em 1.5em; background: rgba(74, 222, 128, 0.05);">
+                        <div style="text-align: center; font-weight: bold; color: #4ade80; margin-bottom: 0.5em;">Data Layer (내부)</div>
+                        <div style="display: flex; gap: 1em; justify-content: center; font-size: 0.8em;">
+                            <span class="fragment">Lifecycle 관리</span>
+                            <span class="fragment" style="color: var(--ev-text-muted);">&middot;</span>
+                            <span class="fragment">Primitives</span>
+                            <span class="fragment" style="color: var(--ev-text-muted);">&middot;</span>
+                            <span class="fragment">Notifications</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <p class="fragment" style="text-align: center; margin-top: 1em; font-size: 0.85em; color: var(--ev-text-muted);">
+                모든 메시지는 <strong style="color: var(--ev-text);">JSON-RPC 2.0</strong> 형식으로 교환됩니다
+            </p>
+            <aside class="notes">
+                MCP는 크게 두 개의 계층으로 구성됩니다.
+                바깥쪽 Transport Layer는 연결 수립, 메시지 프레이밍, 인증을 담당합니다.
+                안쪽 Data Layer는 실제 프로토콜 로직인 Lifecycle 관리, Primitives, Notifications를 담당합니다.
+                Transport Layer가 "어떻게 연결할 것인가"라면, Data Layer는 "무엇을 주고받을 것인가"입니다.
+                모든 메시지는 JSON-RPC 2.0 형식으로 교환됩니다.
+            </aside>
+        </section>
+
+        <!-- Slide 7: MCP Server 유형 (신규) -->
+        <section>
+            <h2>MCP Server 유형</h2>
+            <div class="columns">
+                <div>
+                    <h3>Local Server (STDIO)</h3>
+                    <ul style="font-size: 0.8em;">
+                        <li class="fragment">표준 입출력으로 통신</li>
+                        <li class="fragment">Host가 프로세스를 직접 관리</li>
+                        <li class="fragment">로컬 개발에 적합</li>
+                    </ul>
+                    <pre class="fragment"><code class="language-json" data-trim>{
+  "command": "uv",
+  "args": [
+    "run", "--with", "fastmcp",
+    "fastmcp", "run", "server.py"
+  ]
+}</code></pre>
+                </div>
+                <div>
+                    <h3>Remote Server (Streamable HTTP)</h3>
+                    <ul style="font-size: 0.8em;">
+                        <li class="fragment">HTTP 기반 통신</li>
+                        <li class="fragment">별도 서버로 독립 운영</li>
+                        <li class="fragment">팀 공유 / 프로덕션 배포</li>
+                    </ul>
+                    <pre class="fragment"><code class="language-json" data-trim>{
+  "url": "https://mcp.example.com/sse",
+  "headers": {
+    "Authorization": "Bearer token"
+  }
+}</code></pre>
+                </div>
             </div>
             <aside class="notes">
-                MCP 아키텍처는 세 가지 레이어로 구성됩니다.
+                MCP Server는 크게 두 가지 유형이 있습니다.
+                Local Server는 STDIO 기반으로, Host가 프로세스를 직접 실행하고 표준 입출력으로 통신합니다.
+                개발 중이거나 로컬에서 사용할 때 적합합니다.
+                Remote Server는 Streamable HTTP 기반으로, 별도의 서버로 독립 운영됩니다.
+                팀원과 공유하거나 프로덕션에 배포할 때 사용합니다.
+                오늘 실습에서는 Local STDIO 방식을 사용합니다.
+            </aside>
+        </section>
+
+        <!-- Slide 8: MCP 아키텍처 다이어그램 (수정) -->
+        <section>
+            <h2>MCP 아키텍처</h2>
+            <div style="display: flex; flex-direction: column; align-items: center; gap: 1.5em; padding: 1em;">
+                <!-- Host Layer -->
+                <div style="border: 2px solid var(--ev-accent); padding: 1.5em 2em; border-radius: 12px; background: rgba(233, 69, 96, 0.05); width: 80%;">
+                    <div style="text-align: center; margin-bottom: 1em; font-weight: bold; color: var(--ev-accent);">Host (Claude Code)</div>
+                    <div style="display: flex; justify-content: space-around; gap: 1em;">
+                        <div style="border: 2px solid var(--ev-text-muted); padding: 0.8em 1.2em; border-radius: 8px; background: rgba(255,255,255,0.05); text-align: center;">
+                            <div>MCP</div>
+                            <div style="font-size: 0.9em;">Client A</div>
+                        </div>
+                        <div style="border: 2px solid var(--ev-text-muted); padding: 0.8em 1.2em; border-radius: 8px; background: rgba(255,255,255,0.05); text-align: center;">
+                            <div>MCP</div>
+                            <div style="font-size: 0.9em;">Client B</div>
+                        </div>
+                        <div style="border: 2px solid var(--ev-text-muted); padding: 0.8em 1.2em; border-radius: 8px; background: rgba(255,255,255,0.05); text-align: center;">
+                            <div>MCP</div>
+                            <div style="font-size: 0.9em;">Client C</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Arrows with transport labels -->
+                <div style="display: flex; justify-content: space-around; width: 80%; color: var(--ev-text-muted); font-size: 0.85em;">
+                    <div style="text-align: center;"><div style="font-size: 1.5em;">↓</div><span style="font-size: 0.8em;">STDIO</span></div>
+                    <div style="text-align: center;"><div style="font-size: 1.5em;">↓</div><span style="font-size: 0.8em;">STDIO</span></div>
+                    <div style="text-align: center;"><div style="font-size: 1.5em;">↓</div><span style="font-size: 0.8em;">HTTP</span></div>
+                </div>
+
+                <!-- Server Layer -->
+                <div style="display: flex; justify-content: space-around; gap: 2em; width: 80%;">
+                    <div style="display: flex; flex-direction: column; align-items: center; gap: 0.5em;">
+                        <div style="border: 2px solid #4ade80; padding: 0.8em 1.2em; border-radius: 8px; background: rgba(74, 222, 128, 0.1); text-align: center;">
+                            <div>MCP</div>
+                            <div style="font-size: 0.9em;">Server A</div>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; flex-direction: column; align-items: center; gap: 0.5em;">
+                        <div style="border: 2px solid #4ade80; padding: 0.8em 1.2em; border-radius: 8px; background: rgba(74, 222, 128, 0.1); text-align: center;">
+                            <div>MCP</div>
+                            <div style="font-size: 0.9em;">Server B</div>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; flex-direction: column; align-items: center; gap: 0.5em;">
+                        <div style="border: 2px solid #4ade80; padding: 0.8em 1.2em; border-radius: 8px; background: rgba(74, 222, 128, 0.1); text-align: center;">
+                            <div>MCP</div>
+                            <div style="font-size: 0.9em;">Server C</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <p style="text-align: center; font-size: 0.8em; color: var(--ev-text-muted);">
+                Client-Server 간 <strong style="color: var(--ev-text);">1:1 연결</strong> &middot; 모든 통신은 <strong style="color: var(--ev-text);">JSON-RPC 2.0</strong>
+            </p>
+            <aside class="notes">
+                MCP 아키텍처는 Host, Client, Server 세 가지 역할로 구성됩니다.
                 Host는 Claude Code 같은 AI 애플리케이션입니다.
                 Host 안에는 여러 MCP Client가 있고, 각 Client는 하나의 MCP Server와 1:1로 연결됩니다.
-                MCP Server는 실제 도구(Tools)와 리소스(Resources)를 제공합니다.
-                Client와 Server 사이의 통신은 JSON-RPC 2.0 프로토콜을 사용합니다.
+                연결 방식은 STDIO 또는 HTTP를 사용할 수 있습니다.
+                Client와 Server 사이의 모든 통신은 JSON-RPC 2.0 프로토콜을 사용합니다.
                 이 구조 덕분에 Host는 여러 서버를 동시에 사용할 수 있습니다.
             </aside>
         </section>
 
-        <!-- Slide 6: 세 가지 프리미티브 -->
+        <!-- Slide 9: Lifecycle 관리 (신규) -->
         <section>
-            <h2>세 가지 프리미티브</h2>
+            <h2>Lifecycle 관리</h2>
+            <div class="emphasis-box">
+                <p>MCP는 <strong>Stateful Protocol</strong> — 연결 상태를 유지하며 동작합니다</p>
+            </div>
+            <!-- Horizontal flow -->
+            <div style="display: flex; align-items: center; justify-content: center; gap: 0.8em; margin-top: 1.5em;">
+                <div class="fragment" style="border: 2px solid var(--ev-accent); padding: 0.8em 1.2em; border-radius: 8px; background: rgba(233, 69, 96, 0.1); text-align: center;">
+                    <div style="font-weight: bold;">Initialize</div>
+                    <div style="font-size: 0.7em; color: var(--ev-text-muted);">버전 협상<br>기능 교환</div>
+                </div>
+                <div class="fragment" style="font-size: 1.5em; color: var(--ev-text-muted);">→</div>
+                <div class="fragment" style="border: 2px solid #4ade80; padding: 0.8em 1.2em; border-radius: 8px; background: rgba(74, 222, 128, 0.1); text-align: center;">
+                    <div style="font-weight: bold;">Operation</div>
+                    <div style="font-size: 0.7em; color: var(--ev-text-muted);">요청/응답<br>알림 교환</div>
+                </div>
+                <div class="fragment" style="font-size: 1.5em; color: var(--ev-text-muted);">→</div>
+                <div class="fragment" style="border: 2px solid var(--ev-text-muted); padding: 0.8em 1.2em; border-radius: 8px; background: rgba(255,255,255,0.05); text-align: center;">
+                    <div style="font-weight: bold;">Shutdown</div>
+                    <div style="font-size: 0.7em; color: var(--ev-text-muted);">정리 작업<br>연결 종료</div>
+                </div>
+            </div>
+            <p class="fragment" style="text-align: center; margin-top: 1em; font-size: 0.8em; color: var(--ev-text-muted);">
+                Initialize 단계에서 Client와 Server가 지원하는 <strong style="color: var(--ev-text);">기능(Capabilities)</strong>을 교환합니다
+            </p>
+            <aside class="notes">
+                MCP는 Stateful Protocol입니다. 즉, 연결 상태를 유지하며 동작합니다.
+                Lifecycle은 세 단계로 구성됩니다.
+                Initialize 단계에서는 프로토콜 버전을 협상하고 서로 지원하는 기능을 교환합니다.
+                Operation 단계에서는 실제 요청과 응답, 알림을 주고받습니다.
+                Shutdown 단계에서는 정리 작업 후 연결을 종료합니다.
+                특히 Initialize 단계에서의 Capabilities 교환이 중요한데,
+                이를 통해 서버가 어떤 프리미티브를 지원하는지 클라이언트가 알 수 있습니다.
+            </aside>
+        </section>
+
+        <!-- Slide 10: Server Primitives (수정) -->
+        <section>
+            <h2>Server Primitives</h2>
             <table>
                 <thead>
                     <tr>
                         <th>프리미티브</th>
                         <th>설명</th>
-                        <th>비유</th>
+                        <th>Discovery</th>
+                        <th>실행</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr class="fragment">
                         <td><strong>Tools</strong></td>
                         <td>모델이 호출할 수 있는 <strong>함수</strong></td>
-                        <td>API 엔드포인트</td>
+                        <td><code>tools/list</code></td>
+                        <td><code>tools/call</code></td>
                     </tr>
                     <tr class="fragment">
                         <td><strong>Resources</strong></td>
                         <td>모델이 읽을 수 있는 <strong>데이터</strong></td>
-                        <td>GET 엔드포인트</td>
+                        <td><code>resources/list</code></td>
+                        <td><code>resources/read</code></td>
                     </tr>
                     <tr class="fragment">
                         <td><strong>Prompts</strong></td>
                         <td>미리 정의된 <strong>프롬프트 템플릿</strong></td>
-                        <td>API 문서 / 가이드</td>
+                        <td><code>prompts/list</code></td>
+                        <td><code>prompts/get</code></td>
                     </tr>
                 </tbody>
             </table>
-            <div class="fragment emphasis-box" style="margin-top: 1em;">
-                <p>오늘 실습에서는 <strong>Tools</strong>에 집중합니다!</p>
+            <div class="fragment emphasis-box" style="margin-top: 0.8em;">
+                <p><strong>동적 Discovery</strong>: Client가 먼저 <code>*/list</code>로 사용 가능한 항목을 조회한 뒤, AI 모델이 적절한 항목을 선택하여 실행합니다</p>
             </div>
             <aside class="notes">
-                MCP는 세 가지 핵심 프리미티브를 제공합니다.
-                첫째, Tools는 모델이 호출할 수 있는 함수입니다.
-                계산기, 파일 읽기, API 호출 등의 액션을 수행합니다.
-                둘째, Resources는 모델이 읽을 수 있는 데이터입니다.
-                파일 내용, 데이터베이스 쿼리 결과 등을 제공합니다.
-                셋째, Prompts는 미리 정의된 프롬프트 템플릿입니다.
-                오늘 실습에서는 가장 많이 사용되는 Tools에 집중하겠습니다.
+                MCP Server는 세 가지 프리미티브를 제공합니다.
+                Tools는 모델이 호출할 수 있는 함수로, tools/list로 조회하고 tools/call로 실행합니다.
+                Resources는 모델이 읽을 수 있는 데이터로, resources/list로 조회하고 resources/read로 읽습니다.
+                Prompts는 미리 정의된 프롬프트 템플릿으로, prompts/list로 조회하고 prompts/get으로 가져옵니다.
+                핵심은 동적 Discovery 패턴입니다. Client가 먼저 list로 사용 가능한 항목을 조회하고,
+                AI 모델이 상황에 맞는 적절한 항목을 선택하여 실행합니다.
             </aside>
         </section>
 
-        <!-- Slide 7: Tools 상세 -->
+        <!-- Slide 11: DB 예시 (신규) -->
+        <section>
+            <h2>예시: 데이터베이스 MCP 서버</h2>
+            <p style="font-size: 0.85em;">하나의 MCP 서버에서 세 가지 프리미티브를 모두 활용:</p>
+            <div class="columns" style="margin-top: 0.8em;">
+                <div class="fragment" style="background: rgba(0,0,0,0.3); border-radius: 8px; padding: 1em; text-align: center;">
+                    <h3>Tool</h3>
+                    <code style="font-size: 0.9em;">query_db</code>
+                    <p style="font-size: 0.75em; color: var(--ev-text-muted);">SQL 쿼리 실행</p>
+                </div>
+                <div class="fragment" style="background: rgba(0,0,0,0.3); border-radius: 8px; padding: 1em; text-align: center;">
+                    <h3>Resource</h3>
+                    <code style="font-size: 0.9em;">db://schema</code>
+                    <p style="font-size: 0.75em; color: var(--ev-text-muted);">테이블 스키마 정보</p>
+                </div>
+                <div class="fragment" style="background: rgba(0,0,0,0.3); border-radius: 8px; padding: 1em; text-align: center;">
+                    <h3>Prompt</h3>
+                    <code style="font-size: 0.9em;">sql_examples</code>
+                    <p style="font-size: 0.75em; color: var(--ev-text-muted);">SQL 작성 가이드</p>
+                </div>
+            </div>
+            <div class="fragment emphasis-box" style="margin-top: 0.8em;">
+                <p>AI가 <strong>스키마를 이해</strong>하고 + <strong>예제를 참고</strong>하여 + <strong>쿼리를 실행</strong></p>
+            </div>
+            <aside class="notes">
+                구체적인 예시로 데이터베이스 MCP 서버를 생각해봅시다.
+                Tool로 query_db를 제공하면 AI가 SQL 쿼리를 실행할 수 있습니다.
+                Resource로 db://schema를 제공하면 테이블 구조를 AI가 읽을 수 있습니다.
+                Prompt로 sql_examples를 제공하면 SQL 작성 가이드를 참고할 수 있습니다.
+                이 세 가지가 결합되면 AI가 스키마를 이해하고, 예제를 참고해서,
+                정확한 쿼리를 실행할 수 있게 됩니다.
+                오늘 실습에서는 Tools에 집중하지만, 이런 조합이 가능하다는 것을 기억해주세요.
+            </aside>
+        </section>
+
+        <!-- Slide 12: Tools 상세 -->
         <section>
             <h2>Tools 상세</h2>
             <p>MCP Tool은 세 가지 요소로 구성됩니다:</p>
@@ -233,7 +486,51 @@ Gemini ─┘<br>
             </aside>
         </section>
 
-        <!-- Slide 8: FastMCP 소개 -->
+        <!-- Slide 13: Client Primitives (신규) -->
+        <section>
+            <h2>Client Primitives</h2>
+            <p style="font-size: 0.85em;">Server뿐 아니라 <strong>Client</strong>도 프리미티브를 제공합니다:</p>
+            <table style="margin-top: 0.8em;">
+                <thead>
+                    <tr>
+                        <th>프리미티브</th>
+                        <th>방향</th>
+                        <th>설명</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="fragment">
+                        <td><strong>Sampling</strong></td>
+                        <td>Server → Client → LLM</td>
+                        <td>서버가 <strong>LLM에게 질문</strong>을 요청</td>
+                    </tr>
+                    <tr class="fragment">
+                        <td><strong>Elicitation</strong></td>
+                        <td>Server → Client → User</td>
+                        <td>서버가 <strong>사용자에게 입력</strong>을 요청</td>
+                    </tr>
+                    <tr class="fragment">
+                        <td><strong>Logging</strong></td>
+                        <td>Server → Client</td>
+                        <td>서버가 <strong>로그 메시지</strong>를 전송</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p class="fragment" style="margin-top: 0.8em; font-size: 0.8em; color: var(--ev-text-muted);">
+                Client Primitives를 통해 Server가 <strong style="color: var(--ev-text);">양방향 소통</strong>이 가능합니다
+            </p>
+            <aside class="notes">
+                MCP에서는 Server만 프리미티브를 제공하는 것이 아닙니다.
+                Client도 세 가지 프리미티브를 제공합니다.
+                Sampling은 서버가 클라이언트를 통해 LLM에게 질문을 요청하는 것입니다.
+                예를 들어, 서버가 복잡한 판단이 필요할 때 LLM의 도움을 받을 수 있습니다.
+                Elicitation은 서버가 사용자에게 직접 입력을 요청하는 것입니다.
+                Logging은 서버가 클라이언트에 로그 메시지를 보내는 것입니다.
+                이런 Client Primitives 덕분에 MCP는 단방향이 아닌 양방향 소통이 가능합니다.
+            </aside>
+        </section>
+
+        <!-- Slide 14: FastMCP 소개 -->
         <section>
             <h2>FastMCP 소개</h2>
             <div class="emphasis-box">
@@ -267,7 +564,7 @@ pip install fastmcp</code></pre>
             </aside>
         </section>
 
-        <!-- Slide 9: 코드 예제 - 기본 MCP 서버 -->
+        <!-- Slide 15: 코드 예제 - 기본 MCP 서버 -->
         <section>
             <h2>코드 예제: Hello MCP 서버</h2>
             <pre><code class="language-python" data-trim data-line-numbers="1-2|4|6-9|11-14|16-17">"""Exercise 01: Hello MCP - 첫 번째 MCP 서버"""
@@ -303,7 +600,7 @@ if __name__ == "__main__":
             </aside>
         </section>
 
-        <!-- Slide 10: 코드 예제 - 계산기 MCP 서버 -->
+        <!-- Slide 16: 코드 예제 - 계산기 MCP 서버 -->
         <section>
             <h2>코드 예제: 계산기 MCP 서버</h2>
             <pre><code class="language-python" data-trim data-line-numbers="1-2|4-7|9-12|14-19">"""Exercise 02: Calculator MCP - 계산기 MCP 서버"""
@@ -341,7 +638,7 @@ def divide(a: float, b: float) -> float:
             </aside>
         </section>
 
-        <!-- Slide 11: Claude Code에서 MCP 서버 연결 -->
+        <!-- Slide 17: Claude Code에서 MCP 서버 연결 -->
         <section>
             <h2>Claude Code에서 MCP 서버 연결</h2>
             <p><code>.claude/settings.local.json</code> 파일에 설정을 추가합니다:</p>
@@ -381,7 +678,7 @@ def divide(a: float, b: float) -> float:
             </aside>
         </section>
 
-        <!-- Slide 12: 실습 안내 -->
+        <!-- Slide 18: 실습 안내 -->
         <section>
             <h2>실습: 직접 MCP 서버를 만들어봅시다!</h2>
             <div class="emphasis-box">
@@ -413,7 +710,7 @@ uv run --with fastmcp fastmcp run exercise_01_hello_mcp.py
             </aside>
         </section>
 
-        <!-- Slide 13: 정리 & Q&A -->
+        <!-- Slide 19: 정리 & Q&A (수정) -->
         <section>
             <h2>정리 & Q&A</h2>
             <div class="columns">
@@ -421,9 +718,11 @@ uv run --with fastmcp fastmcp run exercise_01_hello_mcp.py
                     <h3>오늘 배운 것</h3>
                     <ul>
                         <li><strong>MCP</strong>: AI와 도구의 표준 프로토콜</li>
-                        <li><strong>N x M -> N + M</strong>: 통합 복잡도 해결</li>
-                        <li><strong>아키텍처</strong>: Host - Client - Server</li>
-                        <li><strong>프리미티브</strong>: Tools, Resources, Prompts</li>
+                        <li><strong>N x M → N + M</strong>: 통합 복잡도 해결</li>
+                        <li><strong>2계층</strong>: Data Layer + Transport Layer</li>
+                        <li><strong>Server 유형</strong>: Local(STDIO) / Remote(HTTP)</li>
+                        <li><strong>Server Primitives</strong>: Tools, Resources, Prompts</li>
+                        <li><strong>Client Primitives</strong>: Sampling, Elicitation, Logging</li>
                         <li><strong>FastMCP</strong>: 데코레이터로 쉽게 서버 구현</li>
                     </ul>
                 </div>
@@ -445,8 +744,10 @@ uv run --with fastmcp fastmcp run exercise_01_hello_mcp.py
                 이번 섹션의 핵심 내용을 정리해봅시다.
                 MCP는 AI 모델과 도구 사이의 표준 프로토콜이며,
                 N x M 문제를 N + M으로 해결합니다.
-                아키텍처는 Host, Client, Server 세 레이어로 구성되고,
-                세 가지 프리미티브인 Tools, Resources, Prompts를 제공합니다.
+                MCP는 Data Layer와 Transport Layer의 2계층 구조를 가지며,
+                Server는 Local(STDIO)과 Remote(HTTP) 두 가지 유형이 있습니다.
+                Server Primitives로 Tools, Resources, Prompts를 제공하고,
+                Client Primitives로 Sampling, Elicitation, Logging을 지원합니다.
                 FastMCP를 사용하면 데코레이터 하나로 쉽게 도구를 만들 수 있습니다.
                 다음 섹션에서는 Claude Code의 Skills 생태계를 알아봅니다.
                 질문이 있으시면 지금 받겠습니다.
