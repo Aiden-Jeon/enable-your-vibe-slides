@@ -61,7 +61,7 @@ python exercise_02_calculator_mcp.py
         "run",
         "--with", "fastmcp",
         "fastmcp", "run",
-        "sections/03-mcp-architecture/code/exercise_01_hello_mcp.py"
+        "sections/03-mcp-architecture/exercise_01_hello_mcp.py"
       ]
     },
     "calculator": {
@@ -70,7 +70,7 @@ python exercise_02_calculator_mcp.py
         "run",
         "--with", "fastmcp",
         "fastmcp", "run",
-        "sections/03-mcp-architecture/code/exercise_02_calculator_mcp.py"
+        "sections/03-mcp-architecture/exercise_02_calculator_mcp.py"
       ]
     }
   }

@@ -29,9 +29,9 @@ def main():
         sections_dir = os.path.join(DIRECTORY, "sections")
         if os.path.exists(sections_dir):
             for section in sorted(os.listdir(sections_dir)):
-                slide_path = os.path.join(sections_dir, section, "slides", "index.html")
+                slide_path = os.path.join(sections_dir, section, "index.html")
                 if os.path.exists(slide_path):
-                    print(f"  → http://localhost:{PORT}/sections/{section}/slides/index.html")
+                    print(f"  → http://localhost:{PORT}/sections/{section}/index.html")
         print()
         print("Ctrl+C로 종료")
         try:

@@ -6,10 +6,10 @@ objectives:
   - "FastAPI로 웹 서버를 만드는 기본 구조 이해"
   - "Genie API를 연동한 채팅 UI 구현"
   - "프론트엔드와 백엔드의 통합 패턴 학습"
-slides: "slides/index.html"
+slides: "index.html"
 code_files:
-  - "code/exercise_01_fastapi_basic.py"
-  - "code/exercise_02_genie_chatbot/app.py"
+  - "exercise_01_fastapi_basic.py"
+  - "exercise_02_genie_chatbot/app.py"
 prerequisites:
   - "05-genie-mcp"
   - "07-ai-dev-kit"

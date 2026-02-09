@@ -9,12 +9,13 @@ Vibe Coding 핸즈온 세션(반나절, 3-4시간) 교육 자료. 대상: 데이
 enable-your-vibe/
 ├── sections/                    # 9개 교육 섹션
 │   └── XX-section-name/
-│       ├── slides/index.html    # reveal.js 슬라이드
-│       ├── code/                # 실습 코드
+│       ├── index.html           # reveal.js 슬라이드
+│       ├── exercise_XX_xxx.py   # 실습 코드 (해당 시)
+│       ├── README.md            # 코드 가이드 (해당 시)
 │       └── section.yaml         # 섹션 메타데이터
 ├── shared/
 │   ├── assets/theme.css         # 커스텀 reveal.js 테마
-│   └── scripts/                 # 유틸리티 스크립트
+│   └── scripts/                 # 유틸리티 스크립트 (sidebar.js 포함)
 └── .claude/
     ├── skills/                  # 3개 스킬 (slide-deck, hands-on-code, section-builder)
     └── agents/                  # 2개 에이전트 (researcher, validator)
@@ -62,9 +63,9 @@ type: "lecture" | "lecture+demo" | "hands-on"
 objectives:
   - "학습 목표 1"
   - "학습 목표 2"
-slides: "slides/index.html"
+slides: "index.html"
 code_files:
-  - "code/exercise_01_xxx.py"
+  - "exercise_01_xxx.py"
 ```
 
 ## 기술 스택

@@ -24,12 +24,10 @@ slide-deck + hands-on-code를 연결하여 완전한 섹션을 빌드합니다.
 ## 출력 구조
 ```
 sections/XX-name/
-├── slides/
-│   └── index.html          # reveal.js 슬라이드
-├── code/
-│   ├── exercise_XX_xxx.py  # 실습 코드
-│   ├── .env.example        # 환경변수 (필요 시)
-│   └── README.md           # 코드 실행 가이드
+├── index.html              # reveal.js 슬라이드
+├── exercise_XX_xxx.py      # 실습 코드
+├── .env.example            # 환경변수 (필요 시)
+├── README.md               # 코드 실행 가이드
 └── section.yaml            # 섹션 메타데이터
 ```
 
@@ -43,17 +41,17 @@ objectives:
   - "학습 목표 1"
   - "학습 목표 2"
   - "학습 목표 3"
-slides: "slides/index.html"
+slides: "index.html"
 code_files:
-  - "code/exercise_XX_xxx.py"
+  - "exercise_XX_xxx.py"
 prerequisites:
   - "이전 섹션 또는 사전 지식"
 ```
 
 ## 교차 검증 체크리스트
-- [ ] slides/index.html 존재 여부
-- [ ] code/ 디렉토리 내 실습 파일 존재 여부
+- [ ] index.html 존재 여부
+- [ ] 섹션 루트 내 실습 파일 존재 여부
 - [ ] section.yaml의 code_files가 실제 파일과 일치
 - [ ] 슬라이드 내 코드 예제가 실습 파일과 일관성 유지
 - [ ] .env.example 필요 시 존재 여부
-- [ ] code/README.md 존재 여부
+- [ ] README.md 존재 여부

@@ -41,7 +41,7 @@ cd enable-your-vibe
 uv sync
 
 # 3. 환경변수 설정 (실습 섹션용)
-cp sections/05-genie-mcp/code/.env.example sections/05-genie-mcp/code/.env
+cp sections/05-genie-mcp/.env.example sections/05-genie-mcp/.env
 # .env 파일에 DATABRICKS_HOST, DATABRICKS_TOKEN, GENIE_SPACE_ID 입력
 ```
 
@@ -91,7 +91,7 @@ open index.html
 # → 전체 섹션 네비게이션
 
 # 방법 3: 개별 섹션 슬라이드 직접 열기
-open sections/01-ai-foundation/slides/index.html
+open sections/01-ai-foundation/index.html
 ```
 
 ## 검증

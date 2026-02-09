@@ -6,9 +6,9 @@ objectives:
   - "Databricks Genie API의 구조와 호출 방법 이해"
   - "FastMCP로 Genie MCP 서버를 직접 구현"
   - "Claude Code에서 Genie MCP를 연결하여 자연어 데이터 질의"
-slides: "slides/index.html"
+slides: "index.html"
 code_files:
-  - "code/exercise_01_genie_api.py"
-  - "code/exercise_02_genie_mcp_server.py"
+  - "exercise_01_genie_api.py"
+  - "exercise_02_genie_mcp_server.py"
 prerequisites:
   - "03-mcp-architecture"

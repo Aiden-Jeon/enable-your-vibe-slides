@@ -20,10 +20,10 @@ def validate_section(section_path: str) -> dict:
     results = {"passed": [], "failed": [], "warnings": []}
     section_name = os.path.basename(section_path)
 
-    # 1. slides/index.html 확인
-    slides_path = os.path.join(section_path, "slides", "index.html")
+    # 1. index.html 확인
+    slides_path = os.path.join(section_path, "index.html")
     if os.path.exists(slides_path):
-        results["passed"].append("slides/index.html 존재")
+        results["passed"].append("index.html 존재")
         content = open(slides_path, encoding="utf-8").read()
         if "reveal.js" in content:
             results["passed"].append("reveal.js 참조 확인")
@@ -38,7 +38,7 @@ def validate_section(section_path: str) -> dict:
         else:
             results["warnings"].append("스피커 노트가 없음")
     else:
-        results["failed"].append("slides/index.html 없음")
+        results["failed"].append("index.html 없음")
 
     # 2. section.yaml 확인
     yaml_path = os.path.join(section_path, "section.yaml")
@@ -67,24 +67,23 @@ def validate_section(section_path: str) -> dict:
     else:
         results["failed"].append("section.yaml 없음")
 
-    # 3. code/ 디렉토리 확인
-    code_dir = os.path.join(section_path, "code")
-    if os.path.exists(code_dir):
-        py_files = [f for f in os.listdir(code_dir) if f.endswith(".py")]
-        for py_file in py_files:
-            py_path = os.path.join(code_dir, py_file)
-            try:
-                with open(py_path, encoding="utf-8") as f:
-                    ast.parse(f.read())
-                results["passed"].append(f"구문 검증 통과: {py_file}")
-            except SyntaxError as e:
-                results["failed"].append(f"구문 에러: {py_file} - {e}")
+    # 3. 코드 파일 확인 (섹션 루트)
+    py_files = [f for f in os.listdir(section_path) if f.endswith(".py")]
+    for py_file in py_files:
+        py_path = os.path.join(section_path, py_file)
+        try:
+            with open(py_path, encoding="utf-8") as f:
+                ast.parse(f.read())
+            results["passed"].append(f"구문 검증 통과: {py_file}")
+        except SyntaxError as e:
+            results["failed"].append(f"구문 에러: {py_file} - {e}")
 
-        readme_path = os.path.join(code_dir, "README.md")
+    readme_path = os.path.join(section_path, "README.md")
+    if py_files:
         if os.path.exists(readme_path):
-            results["passed"].append("code/README.md 존재")
+            results["passed"].append("README.md 존재")
         else:
-            results["warnings"].append("code/README.md 없음")
+            results["warnings"].append("README.md 없음")
 
     return results
 

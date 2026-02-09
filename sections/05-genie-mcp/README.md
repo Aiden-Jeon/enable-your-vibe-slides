@@ -79,7 +79,7 @@ python exercise_02_genie_mcp_server.py
   "mcpServers": {
     "genie": {
       "command": "python",
-      "args": ["sections/05-genie-mcp/code/exercise_02_genie_mcp_server.py"],
+      "args": ["sections/05-genie-mcp/exercise_02_genie_mcp_server.py"],
       "cwd": "."
     }
   }

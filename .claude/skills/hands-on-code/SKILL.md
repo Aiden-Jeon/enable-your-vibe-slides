@@ -18,7 +18,7 @@
 3. 실행 가능한 Python 파일 생성
 4. `.env.example` 파일 생성 (환경변수 필요 시)
 5. `README.md` 작성 (실행 방법, 학습 포인트)
-6. `sections/[섹션번호]-[섹션명]/code/`에 저장
+6. `sections/[섹션번호]-[섹션명]/`에 저장
 
 ## 코드 구성 원칙
 - 각 파일은 독립 실행 가능
@@ -28,6 +28,6 @@
 - `.env.example` 패턴으로 시크릿 관리
 
 ## 출력
-- `sections/XX-name/code/exercise_XX_description.py` - 실습 코드
-- `sections/XX-name/code/.env.example` - 환경변수 템플릿 (필요 시)
-- `sections/XX-name/code/README.md` - 실행 가이드
+- `sections/XX-name/exercise_XX_description.py` - 실습 코드
+- `sections/XX-name/.env.example` - 환경변수 템플릿 (필요 시)
+- `sections/XX-name/README.md` - 실행 가이드

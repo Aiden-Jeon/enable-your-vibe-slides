@@ -8,9 +8,20 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/theme/black.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/monokai.css">
-    <link rel="stylesheet" href="../../../shared/assets/theme.css">
+    <link rel="stylesheet" href="../../shared/assets/theme.css">
 </head>
 <body>
+    <!-- Sidebar Navigation -->
+    <button id="sidebar-toggle" class="sidebar-toggle"><span></span><span></span><span></span></button>
+    <nav id="sidebar" class="sidebar">
+        <div class="sidebar-header">
+            <h2>Enable Your Vibe</h2>
+            <p>Vibe Coding 핸즈온 세션</p>
+        </div>
+        <ul class="sidebar-sections"></ul>
+    </nav>
+    <div id="sidebar-overlay" class="sidebar-overlay"></div>
+
     <div class="reveal"><div class="slides">
 
         <!-- Slide 1: Title -->
@@ -143,10 +154,10 @@ reveal.js 기반 슬라이드 프레젠테이션을 생성합니다.
 3. 주제개요를 분석하여 적절한
    슬라이드 수와 구성 결정
 4. 각 슬라이드에 스피커 노트 포함
-5. sections/[번호]-[이름]/slides/index.html에 저장
+5. sections/[번호]-[이름]/index.html에 저장
 
 ## 출력
-- sections/XX-name/slides/index.html
+- sections/XX-name/index.html
             </code></pre>
             <aside class="notes">
                 이 프레젠테이션 자체가 slide-deck 스킬로 만들어진 것입니다.
@@ -408,5 +419,6 @@ reveal.js 기반 슬라이드 프레젠테이션을 생성합니다.
     <script>
         Reveal.initialize({ hash: true, slideNumber: true, plugins: [RevealNotes, RevealHighlight] });
     </script>
+    <script src="../../shared/scripts/sidebar.js"></script>
 </body>
 </html>

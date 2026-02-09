@@ -6,9 +6,9 @@ objectives:
   - "Skill 설계 원칙과 SKILL.md 작성법 학습"
   - "레퍼런스 파일을 활용한 품질 보장 방법 이해"
   - "직접 Custom Skill을 만들어보기"
-slides: "slides/index.html"
+slides: "index.html"
 code_files:
-  - "code/exercise_01_simple_skill/SKILL.md"
-  - "code/exercise_02_skill_with_refs/SKILL.md"
+  - "exercise_01_simple_skill/SKILL.md"
+  - "exercise_02_skill_with_refs/SKILL.md"
 prerequisites:
   - "04-skills-ecosystem"

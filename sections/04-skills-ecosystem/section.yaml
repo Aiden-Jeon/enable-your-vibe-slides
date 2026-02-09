@@ -6,7 +6,7 @@ objectives:
   - "Claude Code Skills와 Agents의 개념 이해"
   - "SKILL.md 파일 구조와 작성법 학습"
   - "Skills 생태계를 활용한 워크플로우 표준화 가능성 파악"
-slides: "slides/index.html"
+slides: "index.html"
 code_files: []
 prerequisites:
   - "03-mcp-architecture"

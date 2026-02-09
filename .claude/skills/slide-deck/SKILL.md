@@ -17,7 +17,7 @@ reveal.js 기반 슬라이드 프레젠테이션을 생성합니다.
 2. `templates/reveal-template.html`을 기반으로 슬라이드 생성
 3. 주제개요를 분석하여 적절한 슬라이드 수와 구성 결정
 4. 각 슬라이드에 스피커 노트 포함
-5. `sections/[섹션번호]-[섹션명]/slides/index.html`에 저장
+5. `sections/[섹션번호]-[섹션명]/index.html`에 저장
 
 ## 슬라이드 구성 원칙
 - 타이틀 슬라이드 1장
@@ -29,4 +29,4 @@ reveal.js 기반 슬라이드 프레젠테이션을 생성합니다.
 - 본문은 한국어, 코드/기술용어는 영어
 
 ## 출력
-- `sections/XX-name/slides/index.html` - 단일 HTML 파일 (CDN 기반, 빌드 불필요)
+- `sections/XX-name/index.html` - 단일 HTML 파일 (CDN 기반, 빌드 불필요)

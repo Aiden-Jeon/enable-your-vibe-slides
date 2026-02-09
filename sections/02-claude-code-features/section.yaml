@@ -6,7 +6,7 @@ objectives:
   - "Claude Code CLI의 설치와 기본 사용법 숙지"
   - "CLAUDE.md를 활용한 프로젝트 컨텍스트 관리법 이해"
   - "주요 명령어와 실용 팁 학습"
-slides: "slides/index.html"
+slides: "index.html"
 code_files: []
 prerequisites:
   - "01-ai-foundation"

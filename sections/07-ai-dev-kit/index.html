@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/theme/black.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/monokai.css">
-    <link rel="stylesheet" href="../../../shared/assets/theme.css">
+    <link rel="stylesheet" href="../../shared/assets/theme.css">
     <style>
         /* Section-specific styles */
         .reveal .subtitle {
@@ -115,6 +115,17 @@
     </style>
 </head>
 <body>
+    <!-- Sidebar Navigation -->
+    <button id="sidebar-toggle" class="sidebar-toggle"><span></span><span></span><span></span></button>
+    <nav id="sidebar" class="sidebar">
+        <div class="sidebar-header">
+            <h2>Enable Your Vibe</h2>
+            <p>Vibe Coding 핸즈온 세션</p>
+        </div>
+        <ul class="sidebar-sections"></ul>
+    </nav>
+    <div id="sidebar-overlay" class="sidebar-overlay"></div>
+
     <div class="reveal">
         <div class="slides">
 
@@ -591,5 +602,6 @@ print(result.messages[0].content)
             plugins: [ RevealNotes, RevealHighlight ]
         });
     </script>
+    <script src="../../shared/scripts/sidebar.js"></script>
 </body>
 </html>
