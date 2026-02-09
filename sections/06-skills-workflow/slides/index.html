@@ -1,0 +1,592 @@
+<!doctype html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>06 - Skills Workflow - Enable Your Vibe</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reset.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/theme/black.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/monokai.css">
+    <link rel="stylesheet" href="../../../shared/assets/theme.css">
+    <style>
+        /* Section-specific styles */
+        .reveal .skill-card {
+            background: var(--ev-bg-alt);
+            border: 1px solid #333;
+            border-radius: 10px;
+            padding: 1em 1.2em;
+            margin: 0.5em 0;
+        }
+        .reveal .skill-card h4 {
+            color: var(--ev-accent-light);
+            margin: 0 0 0.3em 0;
+            font-size: 1em;
+        }
+        .reveal .skill-card p {
+            margin: 0;
+            font-size: 0.85em;
+            color: var(--ev-text-muted);
+        }
+        .reveal .principle-box {
+            background: var(--ev-bg-alt);
+            border-left: 4px solid var(--ev-accent);
+            border-radius: 0 8px 8px 0;
+            padding: 0.8em 1.2em;
+            margin: 0.6em 0;
+        }
+        .reveal .principle-box h4 {
+            color: var(--ev-accent-light);
+            margin: 0 0 0.2em 0;
+            font-size: 0.95em;
+        }
+        .reveal .principle-box p {
+            margin: 0;
+            font-size: 0.8em;
+            color: var(--ev-text-muted);
+        }
+        .reveal .flow-chain {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.6em;
+            margin: 1em 0;
+            flex-wrap: wrap;
+        }
+        .reveal .flow-chain .chain-step {
+            background: var(--ev-bg-alt);
+            border: 1px solid var(--ev-accent);
+            border-radius: 10px;
+            padding: 0.5em 0.9em;
+            text-align: center;
+            min-width: 90px;
+        }
+        .reveal .flow-chain .chain-step .step-label {
+            font-size: 0.7em;
+            color: var(--ev-text-muted);
+            display: block;
+        }
+        .reveal .flow-chain .chain-step .step-name {
+            font-size: 0.85em;
+            font-weight: bold;
+            color: var(--ev-accent-light);
+        }
+        .reveal .flow-chain .chain-arrow {
+            color: var(--ev-accent);
+            font-size: 1.3em;
+        }
+        .reveal .tree-diagram {
+            font-family: "Courier New", monospace;
+            text-align: left;
+            font-size: 0.7em;
+            line-height: 1.6;
+            background: var(--ev-code-bg);
+            padding: 1.2em 1.5em;
+            border-radius: 8px;
+            border: 1px solid #333;
+        }
+        .reveal .tree-diagram .dir {
+            color: var(--ev-accent-light);
+            font-weight: bold;
+        }
+        .reveal .tree-diagram .file {
+            color: var(--ev-text);
+        }
+        .reveal .tree-diagram .desc {
+            color: var(--ev-text-muted);
+        }
+        .reveal .section-number {
+            font-size: 0.5em;
+            color: var(--ev-text-muted);
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+        }
+        .reveal .subtitle {
+            color: var(--ev-accent-light);
+            font-size: 1.2em;
+            margin-top: 0.2em;
+        }
+        .reveal .objective-list li {
+            padding: 0.4em 0;
+            font-size: 0.95em;
+        }
+        .reveal .objective-list li::marker {
+            color: var(--ev-accent);
+        }
+        .reveal .badge {
+            display: inline-block;
+            background: var(--ev-accent);
+            color: white;
+            font-size: 0.6em;
+            padding: 0.2em 0.6em;
+            border-radius: 20px;
+            vertical-align: middle;
+            margin-left: 0.5em;
+        }
+        .reveal .md-section {
+            background: var(--ev-bg-alt);
+            border: 1px solid var(--ev-accent);
+            border-radius: 8px;
+            padding: 0.8em 1.2em;
+            margin: 0.4em 0;
+        }
+        .reveal .md-section h4 {
+            color: var(--ev-accent-light);
+            margin: 0 0 0.3em 0;
+            font-size: 0.9em;
+        }
+        .reveal .md-section p,
+        .reveal .md-section ul {
+            font-size: 0.8em;
+            margin: 0;
+            color: var(--ev-text-muted);
+        }
+        .reveal .exercise-box {
+            background: var(--ev-bg-alt);
+            border: 2px solid var(--ev-accent);
+            border-radius: 12px;
+            padding: 1.2em 1.5em;
+            margin: 0.8em 0;
+        }
+        .reveal .exercise-box h4 {
+            color: var(--ev-accent);
+            margin: 0 0 0.5em 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="reveal">
+        <div class="slides">
+
+            <!-- Slide 1: Title -->
+            <section>
+                <p class="section-number">Section 06</p>
+                <h1>Skills Workflow</h1>
+                <p class="subtitle">Skills로 워크플로우 구조화</p>
+                <br>
+                <p style="font-size: 0.7em; color: var(--ev-text-muted);">
+                    Enable Your Vibe &mdash; AI-Powered Development Hands-on
+                </p>
+                <p style="font-size: 0.6em; color: var(--ev-text-muted);">
+                    25분 | 실습
+                </p>
+                <aside class="notes">
+                    섹션 6을 시작합니다. 이번 세션에서는 Skills를 활용하여 개발 워크플로우를 구조화하는 방법을 배웁니다.
+                    앞서 섹션 4에서 Skills 생태계의 개념을 배웠다면, 이번 세션에서는 직접 나만의 Skill을 설계하고 만들어보는 실습을 진행합니다.
+                    참가자들에게 질문: "반복적으로 수행하는 개발 작업이 있으신가요? 예를 들어 API 엔드포인트 추가, 데이터 처리 파이프라인 작성 등."
+                </aside>
+            </section>
+
+            <!-- Slide 2: 학습 목표 -->
+            <section>
+                <h2>학습 목표</h2>
+                <ol class="objective-list">
+                    <li class="fragment fade-up">
+                        <strong>Skill 설계 원칙</strong>을 이해하고 SKILL.md를 작성할 수 있다
+                    </li>
+                    <li class="fragment fade-up">
+                        <strong>레퍼런스 파일</strong>을 활용하여 일관된 품질의 코드를 생성할 수 있다
+                    </li>
+                    <li class="fragment fade-up">
+                        <strong>Skill 체이닝</strong> 패턴으로 복잡한 워크플로우를 구성할 수 있다
+                    </li>
+                    <li class="fragment fade-up">
+                        직접 <strong>Custom Skill</strong>을 만들어 팀에서 활용할 수 있다
+                    </li>
+                </ol>
+                <aside class="notes">
+                    이번 세션이 끝나면 참가자들은 네 가지 역량을 갖추게 됩니다.
+                    첫째, Skill을 어떻게 설계하는지 원칙을 이해하고 SKILL.md 파일을 직접 작성할 수 있습니다.
+                    둘째, 레퍼런스 파일을 활용해서 AI가 항상 팀 컨벤션에 맞는 코드를 생성하게 할 수 있습니다.
+                    셋째, 여러 Skill을 연결하는 체이닝 패턴을 이해합니다.
+                    넷째, 실습을 통해 실제로 Custom Skill을 만들어봅니다.
+                </aside>
+            </section>
+
+            <!-- Slide 3: 왜 Skills가 필요한가? -->
+            <section>
+                <h2>왜 Skills가 필요한가?</h2>
+                <div class="columns">
+                    <div>
+                        <h3>반복 작업의 자동화</h3>
+                        <ul style="font-size: 0.85em;">
+                            <li class="fragment fade-up">매번 같은 프롬프트를 반복 작성</li>
+                            <li class="fragment fade-up">동일한 패턴의 코드를 매번 설명</li>
+                            <li class="fragment fade-up">컨벤션을 매번 상기시켜야 함</li>
+                            <li class="fragment fade-up">실수와 누락이 발생</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3>팀 표준화</h3>
+                        <ul style="font-size: 0.85em;">
+                            <li class="fragment fade-up">팀원마다 다른 프롬프트 사용</li>
+                            <li class="fragment fade-up">코드 스타일이 일관되지 않음</li>
+                            <li class="fragment fade-up">베스트 프랙티스 공유가 어려움</li>
+                            <li class="fragment fade-up">온보딩에 시간이 많이 소요</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="fragment fade-up emphasis-box" style="margin-top: 1em; text-align: center;">
+                    <p style="font-size: 0.95em; margin: 0;">
+                        <strong style="color: var(--ev-accent);">Skills</strong> = 반복 작업을 표준화된 명령으로 캡슐화
+                    </p>
+                </div>
+                <aside class="notes">
+                    Skills가 왜 필요한지 두 가지 관점에서 살펴봅시다.
+                    첫째, 반복 작업의 자동화입니다. 매번 같은 프롬프트를 작성하고, 같은 패턴의 코드를 설명하는 것은 비효율적입니다.
+                    게다가 매번 컨벤션을 상기시켜야 하고, 그 과정에서 실수가 발생할 수 있습니다.
+                    둘째, 팀 표준화입니다. 팀원마다 다른 프롬프트를 사용하면 코드 품질이 들쭉날쭉해집니다.
+                    Skills는 이런 문제를 해결합니다. 검증된 프롬프트와 레퍼런스를 하나의 명령으로 캡슐화하여,
+                    누구나 동일한 품질의 결과물을 얻을 수 있게 합니다.
+                </aside>
+            </section>
+
+            <!-- Slide 4: Skill 설계 원칙 -->
+            <section>
+                <h2>Skill 설계 원칙</h2>
+                <div class="principle-box fragment fade-up">
+                    <h4>1. 하나의 Skill = 하나의 명확한 목적</h4>
+                    <p>Skill은 한 가지 작업만 수행해야 합니다. "API 엔드포인트 생성", "데이터 요약 보고서 작성" 등 목적이 명확해야 합니다.</p>
+                </div>
+                <div class="principle-box fragment fade-up">
+                    <h4>2. 입력 &rarr; 처리 &rarr; 출력 구조</h4>
+                    <p>사용자 입력이 무엇이고, 어떤 처리를 거쳐, 어떤 결과물이 나오는지 명확히 정의합니다.</p>
+                </div>
+                <div class="principle-box fragment fade-up">
+                    <h4>3. 레퍼런스 파일로 품질 보장</h4>
+                    <p>컨벤션, 템플릿, 예시 파일을 레퍼런스로 제공하면 AI가 일관된 품질의 코드를 생성합니다.</p>
+                </div>
+                <div class="fragment fade-up" style="margin-top: 0.8em;">
+                    <p style="font-size: 0.8em; color: var(--ev-text-muted); text-align: center;">
+                        좋은 Skill = <span style="color: var(--ev-accent-light);">명확한 목적</span> +
+                        <span style="color: var(--ev-accent-light);">구조화된 절차</span> +
+                        <span style="color: var(--ev-accent-light);">레퍼런스 기반 품질</span>
+                    </p>
+                </div>
+                <aside class="notes">
+                    Skill을 잘 설계하기 위한 세 가지 핵심 원칙입니다.
+                    첫째, 하나의 Skill은 하나의 명확한 목적만 가져야 합니다. 너무 많은 기능을 하나에 넣으면 복잡해지고 유지보수가 어렵습니다.
+                    Unix 철학의 "한 가지를 잘 하라"와 같은 맥락입니다.
+                    둘째, 입력-처리-출력 구조를 명확히 정의해야 합니다. 함수를 설계하듯이, Skill도 인터페이스가 명확해야 합니다.
+                    셋째, 레퍼런스 파일을 적극 활용해야 합니다. AI에게 "이런 스타일로 만들어줘"라고 말하는 것보다,
+                    실제 컨벤션 문서나 예시 코드를 레퍼런스로 제공하는 것이 훨씬 정확한 결과를 냅니다.
+                </aside>
+            </section>
+
+            <!-- Slide 5: SKILL.md 작성법 상세 -->
+            <section>
+                <h2>SKILL.md 작성법</h2>
+                <p style="font-size: 0.85em; margin-bottom: 0.6em;">
+                    SKILL.md는 Claude Code에게 <strong>Skill의 동작 방식</strong>을 알려주는 명세서입니다
+                </p>
+                <div class="columns">
+                    <div>
+                        <div class="md-section fragment fade-up">
+                            <h4>사용법 섹션</h4>
+                            <p>Skill을 호출하는 방법과 전달할 인자를 정의</p>
+                            <pre style="margin: 0.5em 0 0 0;"><code class="language-markdown">## 사용법
+/api-endpoint [엔드포인트설명]</code></pre>
+                        </div>
+                        <div class="md-section fragment fade-up">
+                            <h4>처리 절차 섹션</h4>
+                            <p>Skill이 수행할 단계별 작업을 순서대로 기술</p>
+                            <pre style="margin: 0.5em 0 0 0;"><code class="language-markdown">## 처리 절차
+1. 레퍼런스 파일 읽기
+2. 입력 분석
+3. 코드 생성</code></pre>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="md-section fragment fade-up">
+                            <h4>출력 형식 섹션</h4>
+                            <p>최종 결과물의 형태와 포맷을 명시</p>
+                            <pre style="margin: 0.5em 0 0 0;"><code class="language-markdown">## 출력
+- 엔드포인트 코드 (Python)
+- Pydantic 모델 (Python)</code></pre>
+                        </div>
+                        <div class="md-section fragment fade-up">
+                            <h4>전체 구조 예시</h4>
+                            <pre style="margin: 0.5em 0 0 0;"><code class="language-markdown"># skill-name 스킬
+설명 한 줄
+
+## 사용법
+## 처리 절차
+## 출력 형식</code></pre>
+                        </div>
+                    </div>
+                </div>
+                <aside class="notes">
+                    SKILL.md의 각 섹션을 자세히 살펴보겠습니다.
+                    사용법 섹션에서는 슬래시 명령과 인자를 정의합니다. 사용자가 어떻게 호출하는지 명확히 해야 합니다.
+                    처리 절차 섹션은 가장 중요한 부분입니다. AI가 어떤 순서로 작업을 수행할지 단계별로 기술합니다.
+                    여기서 레퍼런스 파일을 읽으라는 지시도 포함할 수 있습니다.
+                    출력 형식 섹션에서는 최종 결과물이 어떤 형태인지 명시합니다.
+                    코드 파일인지, 마크다운 문서인지, 어떤 구조를 따르는지 등을 정의합니다.
+                    이 세 가지 섹션만 잘 작성하면 기본적인 Skill을 만들 수 있습니다.
+                </aside>
+            </section>
+
+            <!-- Slide 6: 레퍼런스 파일 활용 -->
+            <section>
+                <h2>레퍼런스 파일 활용</h2>
+                <p style="font-size: 0.85em; margin-bottom: 0.6em;">
+                    레퍼런스 파일은 AI에게 <strong>"이 기준에 맞춰 생성하라"</strong>고 알려주는 가이드입니다
+                </p>
+                <div class="columns">
+                    <div>
+                        <div class="skill-card fragment fade-up">
+                            <h4>conventions (컨벤션)</h4>
+                            <p>코딩 스타일, 네이밍 규칙, 에러 처리 방식 등 팀의 표준을 정의합니다</p>
+                        </div>
+                        <div class="skill-card fragment fade-up">
+                            <h4>templates (템플릿)</h4>
+                            <p>코드 생성의 기반이 되는 골격 코드를 제공합니다</p>
+                        </div>
+                        <div class="skill-card fragment fade-up">
+                            <h4>examples (예시)</h4>
+                            <p>완성된 코드 예시를 보여주어 AI가 패턴을 학습하게 합니다</p>
+                        </div>
+                    </div>
+                    <div class="fragment fade-up">
+                        <pre><code class="language-markdown"># api-conventions.md
+
+## 응답 형식
+{
+  "status": "success" | "error",
+  "data": { ... },
+  "message": "설명"
+}
+
+## 네이밍 규칙
+- 엔드포인트: kebab-case
+- 함수명: snake_case
+- 모델명: PascalCase
+
+## 에러 처리
+- HTTPException 사용
+- 400, 404, 500 상태 코드</code></pre>
+                    </div>
+                </div>
+                <aside class="notes">
+                    레퍼런스 파일은 Skill의 품질을 결정짓는 핵심 요소입니다.
+                    세 가지 유형의 레퍼런스 파일이 있습니다.
+                    Conventions는 팀의 코딩 컨벤션을 정의합니다. 네이밍 규칙, 에러 처리 방식, 응답 형식 등을 담습니다.
+                    Templates는 코드의 골격을 제공합니다. AI가 이 골격을 기반으로 코드를 생성하므로 구조가 일관됩니다.
+                    Examples는 완성된 코드 예시입니다. AI는 예시를 참고하여 유사한 패턴의 코드를 생성합니다.
+                    오른쪽에 보이는 것이 실제 API 컨벤션 레퍼런스 파일의 예시입니다.
+                    이 파일을 Skill의 references 디렉토리에 넣어두면, AI가 항상 이 규칙에 맞춰 코드를 생성합니다.
+                </aside>
+            </section>
+
+            <!-- Slide 7: 실제 Skill 구조 예시 -->
+            <section>
+                <h2>실제 Skill 구조 예시</h2>
+                <div class="columns">
+                    <div>
+                        <div class="tree-diagram">
+                            <span class="dir">.claude/skills/</span><br>
+                            <span class="file">&boxvr;&boxh;&boxh; <span class="dir">api-endpoint/</span></span><br>
+                            <span class="file">&boxvr;&ensp;&ensp; &boxvr;&boxh;&boxh; SKILL.md</span> <span class="desc">&larr; 스킬 정의</span><br>
+                            <span class="file">&boxvr;&ensp;&ensp; &boxur;&boxh;&boxh; <span class="dir">references/</span></span><br>
+                            <span class="file">&boxvr;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp; &boxvr;&boxh;&boxh; api-conventions.md</span><br>
+                            <span class="file">&boxvr;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp; &boxvr;&boxh;&boxh; endpoint-template.py</span><br>
+                            <span class="file">&boxvr;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp; &boxur;&boxh;&boxh; example-endpoint.py</span><br>
+                            <span class="file">&boxvr;&boxh;&boxh; <span class="dir">data-summary/</span></span><br>
+                            <span class="file">&boxvr;&ensp;&ensp; &boxur;&boxh;&boxh; SKILL.md</span> <span class="desc">&larr; 간단한 스킬</span><br>
+                            <span class="file">&boxur;&boxh;&boxh; <span class="dir">test-generator/</span></span><br>
+                            <span class="file">&ensp;&ensp;&ensp; &boxvr;&boxh;&boxh; SKILL.md</span><br>
+                            <span class="file">&ensp;&ensp;&ensp; &boxur;&boxh;&boxh; <span class="dir">references/</span></span><br>
+                            <span class="file">&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp; &boxur;&boxh;&boxh; test-conventions.md</span>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="fragment fade-up" style="margin-bottom: 0.8em;">
+                            <h3>핵심 포인트</h3>
+                            <ul style="font-size: 0.8em;">
+                                <li><code>.claude/skills/</code> 디렉토리에 배치</li>
+                                <li>각 Skill은 <strong>독립된 디렉토리</strong></li>
+                                <li><code>SKILL.md</code>는 <strong>필수</strong> 파일</li>
+                                <li><code>references/</code>는 선택이지만 <strong>권장</strong></li>
+                            </ul>
+                        </div>
+                        <div class="fragment fade-up emphasis-box">
+                            <p style="font-size: 0.85em; margin: 0;">
+                                <strong>간단한 Skill</strong>: SKILL.md 하나만으로도 동작<br>
+                                <strong>고품질 Skill</strong>: 레퍼런스 파일로 일관성 보장
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <aside class="notes">
+                    실제 프로젝트에서 Skill이 어떤 구조로 배치되는지 보겠습니다.
+                    .claude/skills 디렉토리 아래에 각 Skill별 디렉토리가 위치합니다.
+                    api-endpoint 스킬처럼 레퍼런스가 있는 스킬은 references 하위 디렉토리에 컨벤션, 템플릿, 예시 파일을 둡니다.
+                    data-summary 스킬처럼 간단한 경우에는 SKILL.md 하나만으로도 충분합니다.
+                    핵심은 각 Skill이 독립된 디렉토리를 가진다는 것입니다.
+                    이 구조를 지키면 Skill을 쉽게 추가, 수정, 공유할 수 있습니다.
+                </aside>
+            </section>
+
+            <!-- Slide 8: Skill 체이닝 패턴 -->
+            <section>
+                <h2>Skill 체이닝 패턴</h2>
+                <p style="font-size: 0.85em; margin-bottom: 0.5em;">
+                    Skill A의 출력을 Skill B의 입력으로 연결하여 <strong>복잡한 워크플로우</strong>를 구성합니다
+                </p>
+                <div class="flow-chain fragment fade-up">
+                    <div class="chain-step">
+                        <span class="step-label">Skill A</span>
+                        <span class="step-name">data-summary</span>
+                    </div>
+                    <span class="chain-arrow">&rarr;</span>
+                    <div class="chain-step">
+                        <span class="step-label">출력 &rarr; 입력</span>
+                        <span class="step-name">요약 보고서</span>
+                    </div>
+                    <span class="chain-arrow">&rarr;</span>
+                    <div class="chain-step">
+                        <span class="step-label">Skill B</span>
+                        <span class="step-name">api-endpoint</span>
+                    </div>
+                    <span class="chain-arrow">&rarr;</span>
+                    <div class="chain-step">
+                        <span class="step-label">Skill C</span>
+                        <span class="step-name">test-generator</span>
+                    </div>
+                </div>
+                <div class="fragment fade-up" style="margin-top: 0.8em;">
+                    <h3>체이닝 예시: 기능 개발 워크플로우</h3>
+                    <pre><code class="language-text">1. /api-endpoint "사용자 프로필 조회 API"
+   → 엔드포인트 코드 생성
+
+2. /test-generator "생성된 엔드포인트에 대한 테스트"
+   → 테스트 코드 자동 생성
+
+3. /api-docs "프로필 조회 API 문서화"
+   → API 문서 생성</code></pre>
+                </div>
+                <div class="fragment fade-up emphasis-box" style="margin-top: 0.5em;">
+                    <p style="font-size: 0.85em; margin: 0; text-align: center;">
+                        체이닝의 핵심: 각 Skill의 <strong style="color: var(--ev-accent);">출력 형식</strong>이
+                        다음 Skill의 <strong style="color: var(--ev-accent);">입력 형식</strong>과 호환되어야 합니다
+                    </p>
+                </div>
+                <aside class="notes">
+                    Skill 체이닝은 여러 Skill을 연결하여 복잡한 워크플로우를 구성하는 패턴입니다.
+                    예를 들어, 기능 개발 워크플로우를 생각해봅시다.
+                    먼저 api-endpoint 스킬로 엔드포인트 코드를 생성하고,
+                    그 결과물을 기반으로 test-generator 스킬로 테스트 코드를 만들고,
+                    마지막으로 api-docs 스킬로 API 문서를 생성합니다.
+                    체이닝이 잘 동작하려면 각 Skill의 출력 형식이 다음 Skill의 입력으로 자연스럽게 연결되어야 합니다.
+                    이것은 Skill을 설계할 때부터 염두에 두어야 하는 중요한 포인트입니다.
+                </aside>
+            </section>
+
+            <!-- Slide 9: 실습 - 나만의 Skill 만들기 -->
+            <section>
+                <h2>실습: 나만의 Skill 만들기 <span class="badge">Hands-on</span></h2>
+                <div class="columns">
+                    <div>
+                        <div class="exercise-box fragment fade-up">
+                            <h4>Exercise 1: 간단한 Skill (10분)</h4>
+                            <ol style="font-size: 0.8em;">
+                                <li><code>exercise_01_simple_skill/</code> 디렉토리를 확인합니다</li>
+                                <li>SKILL.md의 구조를 분석합니다</li>
+                                <li>Claude Code에서 <code>/data-summary</code>를 실행해봅니다</li>
+                                <li>결과물을 확인하고 SKILL.md를 수정해봅니다</li>
+                            </ol>
+                        </div>
+                        <div class="exercise-box fragment fade-up">
+                            <h4>Exercise 2: 레퍼런스 있는 Skill (15분)</h4>
+                            <ol style="font-size: 0.8em;">
+                                <li><code>exercise_02_skill_with_refs/</code> 디렉토리를 확인합니다</li>
+                                <li>SKILL.md와 <code>references/</code>의 관계를 파악합니다</li>
+                                <li><code>/api-endpoint</code>를 실행하여 생성된 코드를 확인합니다</li>
+                                <li>컨벤션 파일을 수정하고 다시 실행하여 차이를 비교합니다</li>
+                            </ol>
+                        </div>
+                    </div>
+                    <div class="fragment fade-up">
+                        <h3>체크리스트</h3>
+                        <ul style="font-size: 0.8em;">
+                            <li>SKILL.md에 사용법이 명확히 정의되어 있는가?</li>
+                            <li>처리 절차가 단계별로 기술되어 있는가?</li>
+                            <li>출력 형식이 명시되어 있는가?</li>
+                            <li>레퍼런스 파일이 실제로 참조되고 있는가?</li>
+                            <li>Skill을 실행했을 때 일관된 결과가 나오는가?</li>
+                        </ul>
+                        <div class="emphasis-box" style="margin-top: 0.8em;">
+                            <p style="font-size: 0.8em; margin: 0;">
+                                <strong>도전 과제:</strong> 자신의 업무에 맞는 Skill을 하나 새로 설계해보세요!
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <aside class="notes">
+                    이제 실습 시간입니다. 두 가지 Exercise를 진행합니다.
+                    Exercise 1은 간단한 Skill 만들기입니다. data-summary 스킬의 SKILL.md를 분석하고 직접 실행해봅니다.
+                    약 10분 정도 소요됩니다.
+                    Exercise 2는 레퍼런스 파일이 있는 Skill입니다. api-endpoint 스킬에서 레퍼런스 파일이 어떻게 활용되는지 확인하고,
+                    컨벤션 파일을 수정했을 때 결과가 어떻게 달라지는지 비교합니다. 약 15분 정도 소요됩니다.
+                    체크리스트를 활용하여 자신이 만든 Skill이 올바르게 구성되었는지 확인해보세요.
+                    시간이 남는 분들은 도전 과제로 자신의 업무에 맞는 Skill을 새로 설계해보시기 바랍니다.
+                </aside>
+            </section>
+
+            <!-- Slide 10: 정리 & Q&A -->
+            <section>
+                <h2>정리 &amp; Q&amp;A</h2>
+                <div class="emphasis-box">
+                    <h3>핵심 정리</h3>
+                    <ul style="font-size: 0.9em;">
+                        <li class="fragment fade-up">
+                            <strong>Skill 설계 원칙</strong> &mdash; 하나의 목적, 입력-처리-출력 구조, 레퍼런스 기반 품질
+                        </li>
+                        <li class="fragment fade-up">
+                            <strong>SKILL.md</strong> &mdash; 사용법, 처리 절차, 출력 형식의 3가지 핵심 섹션
+                        </li>
+                        <li class="fragment fade-up">
+                            <strong>레퍼런스 파일</strong> &mdash; conventions, templates, examples로 일관성 보장
+                        </li>
+                        <li class="fragment fade-up">
+                            <strong>Skill 체이닝</strong> &mdash; 출력-입력 연결로 복잡한 워크플로우 구성
+                        </li>
+                    </ul>
+                </div>
+                <div class="fragment fade-up" style="margin-top: 1.5em; text-align: center;">
+                    <h3>다음 섹션 미리보기</h3>
+                    <p style="font-size: 0.9em;">
+                        <strong>Section 07: AI Dev Kit</strong><br>
+                        <span style="color: var(--ev-text-muted);">개발 키트를 활용하여 프로젝트를 더욱 효율적으로 관리합니다</span>
+                    </p>
+                </div>
+                <br>
+                <p class="fragment fade-up" style="text-align: center; font-size: 1.2em; color: var(--ev-accent);">
+                    질문이 있으신가요?
+                </p>
+                <aside class="notes">
+                    세션을 마무리하며 핵심 내용을 정리합니다.
+                    Skill 설계의 세 가지 원칙을 기억하세요: 하나의 목적, 입력-처리-출력 구조, 레퍼런스 기반 품질.
+                    SKILL.md의 세 가지 핵심 섹션: 사용법, 처리 절차, 출력 형식.
+                    레퍼런스 파일 세 가지 유형: conventions, templates, examples.
+                    그리고 Skill 체이닝으로 여러 Skill을 연결할 수 있다는 점도 기억해주세요.
+                    질문을 받은 후 다음 섹션으로 넘어가겠습니다.
+                    다음 섹션에서는 AI Dev Kit을 활용하여 프로젝트를 효율적으로 관리하는 방법을 배웁니다.
+                </aside>
+            </section>
+
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/notes/notes.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/highlight.js"></script>
+    <script>
+        Reveal.initialize({
+            hash: true,
+            slideNumber: true,
+            plugins: [ RevealNotes, RevealHighlight ]
+        });
+    </script>
+</body>
+</html>

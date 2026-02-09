@@ -1,0 +1,381 @@
+<!doctype html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>09 - Deploy to Databricks - Enable Your Vibe</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reset.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/theme/black.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/monokai.css">
+    <link rel="stylesheet" href="../../../shared/assets/theme.css">
+</head>
+<body>
+    <div class="reveal"><div class="slides">
+
+        <!-- Slide 1: Title -->
+        <section>
+            <h1>Deploy to Databricks</h1>
+            <p>Databricks 배포</p>
+            <p style="margin-top: 2em; font-size: 0.7em; color: var(--ev-text-muted);">
+                Section 09 | Hands-on | 15분
+            </p>
+            <aside class="notes">
+                이번 섹션은 전체 워크숍의 마지막 실습입니다.
+                지금까지 만든 Genie 챗봇 UI를 Databricks Apps를 통해 실제 배포하는 과정을 다룹니다.
+                MCP 서버 구축부터 Skill 정의, UI 개발, 그리고 배포까지 전체 여정의 마무리입니다.
+            </aside>
+        </section>
+
+        <!-- Slide 2: 학습 목표 -->
+        <section>
+            <h2>학습 목표</h2>
+            <ul>
+                <li class="fragment">Databricks Apps의 개념과 배포 구조를 이해한다</li>
+                <li class="fragment"><code>app.yaml</code> 설정 파일 작성법을 학습한다</li>
+                <li class="fragment">Databricks CLI를 사용하여 앱을 배포한다</li>
+            </ul>
+            <div class="emphasis-box fragment" style="margin-top: 1.5em;">
+                <strong>핵심:</strong> 로컬에서 만든 웹앱을 Databricks 워크스페이스에 배포하여 팀과 공유할 수 있습니다
+            </div>
+            <aside class="notes">
+                세 가지 학습 목표를 설명합니다.
+                첫째, Databricks Apps가 무엇이고 어떤 구조로 동작하는지 이해합니다.
+                둘째, 배포에 필요한 app.yaml 설정 파일을 작성하는 방법을 배웁니다.
+                셋째, Databricks CLI를 사용해 실제로 앱을 배포하는 과정을 실습합니다.
+                핵심은 Vibe Coding으로 만든 결과물을 팀에 바로 공유할 수 있다는 것입니다.
+            </aside>
+        </section>
+
+        <!-- Slide 3: Databricks Apps 소개 -->
+        <section>
+            <h2>Databricks Apps 소개</h2>
+            <h3>Databricks 워크스페이스에서 웹앱 호스팅</h3>
+            <ul>
+                <li>Python 기반 웹 애플리케이션을 Databricks에서 직접 실행</li>
+                <li>FastAPI, Gradio, Streamlit 등 다양한 프레임워크 지원</li>
+                <li>워크스페이스 URL 하위에 앱 URL이 자동 생성</li>
+                <li>별도의 인프라 관리 없이 간편하게 배포</li>
+            </ul>
+            <div class="diagram fragment" style="margin-top: 1em;">
+<pre style="background: transparent; border: none; box-shadow: none; text-align: center; font-size: 1em;">
+Databricks Workspace
++------------------------------------------+
+|                                          |
+|   your-workspace.cloud.databricks.com    |
+|                                          |
+|   +----------------------------------+   |
+|   |  Databricks Apps                 |   |
+|   |  /apps/genie-chatbot            |   |
+|   |                                  |   |
+|   |  [FastAPI + Static Files]        |   |
+|   +----------------------------------+   |
+|                                          |
++------------------------------------------+
+</pre>
+            </div>
+            <aside class="notes">
+                Databricks Apps는 Databricks 워크스페이스 내에서 웹 애플리케이션을 호스팅할 수 있는 서비스입니다.
+                Python 기반의 다양한 웹 프레임워크를 지원하며, 우리가 만든 FastAPI 앱도 바로 배포할 수 있습니다.
+                배포하면 워크스페이스 URL 하위에 앱 전용 URL이 자동으로 생성됩니다.
+                별도의 서버 관리나 인프라 설정이 필요 없어 개발자가 코드에만 집중할 수 있습니다.
+            </aside>
+        </section>
+
+        <!-- Slide 4: Databricks Apps의 장점 -->
+        <section>
+            <h2>Databricks Apps의 장점</h2>
+            <div class="columns">
+                <div>
+                    <h3>통합 인증 (SSO)</h3>
+                    <ul>
+                        <li>워크스페이스 로그인으로 앱 접근</li>
+                        <li>별도 인증 시스템 불필요</li>
+                    </ul>
+                    <h3 style="margin-top: 1em;">워크스페이스 리소스 접근</h3>
+                    <ul>
+                        <li>테이블, 모델, 시크릿 직접 사용</li>
+                        <li>Genie API 내부 호출 가능</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3>자동 스케일링</h3>
+                    <ul>
+                        <li>트래픽에 따라 자동 확장/축소</li>
+                        <li>사용하지 않으면 0으로 축소</li>
+                    </ul>
+                    <h3 style="margin-top: 1em;">간편한 배포</h3>
+                    <ul>
+                        <li>CLI 명령어 하나로 배포</li>
+                        <li>롤백, 로그 확인 지원</li>
+                    </ul>
+                </div>
+            </div>
+            <aside class="notes">
+                Databricks Apps의 네 가지 핵심 장점을 설명합니다.
+                첫째, 통합 인증입니다. 워크스페이스에 로그인되어 있으면 별도 로그인 없이 앱에 접근할 수 있습니다.
+                둘째, 워크스페이스 내 리소스에 직접 접근할 수 있습니다. Genie API도 내부 네트워크에서 호출 가능합니다.
+                셋째, 자동 스케일링을 지원합니다. 사용량이 없으면 자동으로 리소스를 반환합니다.
+                넷째, 배포가 매우 간편합니다. CLI 명령어 하나로 배포할 수 있고, 문제가 생기면 롤백도 가능합니다.
+            </aside>
+        </section>
+
+        <!-- Slide 5: app.yaml 설정 파일 구조 -->
+        <section>
+            <h2>app.yaml 설정 파일 구조</h2>
+            <pre><code class="yaml" data-trim data-noescape>
+# Databricks Apps 설정 파일
+command:
+  - uvicorn
+  - app:app
+  - --host
+  - "0.0.0.0"
+  - --port
+  - "8000"
+
+env:
+  - name: DATABRICKS_HOST
+    value: "{{DATABRICKS_HOST}}"
+  - name: DATABRICKS_TOKEN
+    valueFrom: secret
+  - name: GENIE_SPACE_ID
+    value: "{{GENIE_SPACE_ID}}"
+            </code></pre>
+            <table style="font-size: 0.75em; margin-top: 0.5em;">
+                <thead>
+                    <tr>
+                        <th>필드</th>
+                        <th>설명</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>command</code></td>
+                        <td>앱 실행 명령어 (리스트 형태)</td>
+                    </tr>
+                    <tr>
+                        <td><code>env[].value</code></td>
+                        <td>일반 환경변수 값</td>
+                    </tr>
+                    <tr>
+                        <td><code>env[].valueFrom</code></td>
+                        <td>Databricks 시크릿에서 값을 가져옴</td>
+                    </tr>
+                </tbody>
+            </table>
+            <aside class="notes">
+                app.yaml은 Databricks Apps의 핵심 설정 파일입니다.
+                command 필드에 앱을 실행하는 명령어를 리스트 형태로 지정합니다.
+                우리 앱의 경우 uvicorn으로 FastAPI 서버를 실행합니다.
+                env 필드에 환경변수를 설정합니다.
+                value는 직접 값을 지정하고, valueFrom: secret은 Databricks 시크릿에서 가져옵니다.
+                토큰 같은 민감한 정보는 반드시 secret을 사용해야 합니다.
+            </aside>
+        </section>
+
+        <!-- Slide 6: 배포 준비 - 프로젝트 구조 정리 -->
+        <section>
+            <h2>배포 준비: 프로젝트 구조</h2>
+            <pre><code class="text" data-trim>
+genie-chatbot/
++-- app.py                 # FastAPI 서버 (메인)
++-- app.yaml               # Databricks Apps 설정
++-- requirements.txt        # Python 의존성
++-- static/
+|   +-- index.html         # 챗봇 UI
+|   +-- style.css          # 스타일
+|   +-- app.js             # 프론트엔드 로직
+            </code></pre>
+            <div class="emphasis-box fragment" style="margin-top: 1em;">
+                <strong>체크리스트:</strong>
+                <ul style="margin: 0.5em 0 0 1em;">
+                    <li><code>app.py</code>에서 <code>$PORT</code> 환경변수를 사용하고 있는지 확인</li>
+                    <li><code>requirements.txt</code>에 모든 의존성이 포함되어 있는지 확인</li>
+                    <li><code>app.yaml</code>의 command가 올바른지 확인</li>
+                </ul>
+            </div>
+            <aside class="notes">
+                배포 전에 프로젝트 구조를 정리해야 합니다.
+                핵심 파일은 app.py(FastAPI 서버), app.yaml(설정), requirements.txt(의존성), 그리고 static 폴더입니다.
+                Section 08에서 만든 파일들이 이 구조와 일치하는지 확인합니다.
+                특히 PORT 환경변수 처리, 의존성 목록, 실행 명령어가 올바른지 체크해야 합니다.
+                이 과정을 자동화하는 스크립트를 실습에서 직접 실행해봅니다.
+            </aside>
+        </section>
+
+        <!-- Slide 7: Databricks CLI로 배포 -->
+        <section>
+            <h2>Databricks CLI로 배포</h2>
+            <h3>Step 1: 앱 생성</h3>
+            <pre><code class="bash" data-trim>
+# Databricks CLI 인증 확인
+databricks auth profiles
+
+# 앱 생성
+databricks apps create genie-chatbot
+            </code></pre>
+            <h3 style="margin-top: 1em;">Step 2: 앱 배포</h3>
+            <pre><code class="bash" data-trim>
+# 소스 코드를 업로드하여 배포
+databricks apps deploy genie-chatbot --source-code-path .
+            </code></pre>
+            <h3 style="margin-top: 1em;">Step 3: 상태 확인</h3>
+            <pre><code class="bash" data-trim>
+# 배포 상태 확인
+databricks apps get genie-chatbot
+            </code></pre>
+            <aside class="notes">
+                배포는 세 단계로 진행됩니다.
+                먼저 databricks apps create로 앱을 생성합니다. 이름은 워크스페이스 내에서 고유해야 합니다.
+                다음으로 databricks apps deploy로 현재 디렉토리의 소스 코드를 업로드하고 배포합니다.
+                마지막으로 databricks apps get으로 배포 상태를 확인합니다.
+                RUNNING 상태가 되면 배포가 완료된 것입니다.
+                참고로 CLI가 설치되어 있지 않다면 pip install databricks-cli로 설치할 수 있습니다.
+            </aside>
+        </section>
+
+        <!-- Slide 8: 배포 후 확인 -->
+        <section>
+            <h2>배포 후 확인</h2>
+            <div class="columns">
+                <div>
+                    <h3>URL 접속 확인</h3>
+                    <ul>
+                        <li>배포 완료 시 URL이 출력됨</li>
+                        <li>형식: <code>https://&lt;workspace&gt;/apps/genie-chatbot</code></li>
+                        <li>브라우저에서 접속하여 UI 확인</li>
+                        <li>실제 Genie 질의가 동작하는지 테스트</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3>로그 확인</h3>
+                    <pre><code class="bash" data-trim>
+# 앱 로그 확인
+databricks apps logs genie-chatbot
+
+# 실시간 로그 스트리밍
+databricks apps logs genie-chatbot --follow
+                    </code></pre>
+                    <p style="font-size: 0.8em; color: var(--ev-text-muted); margin-top: 0.5em;">
+                        에러 발생 시 로그에서 원인을 파악할 수 있습니다
+                    </p>
+                </div>
+            </div>
+            <aside class="notes">
+                배포가 완료되면 두 가지를 확인합니다.
+                첫째, 출력된 URL에 브라우저로 접속하여 UI가 정상적으로 표시되는지 확인합니다.
+                실제로 Genie에 질문을 보내서 응답이 오는지도 테스트합니다.
+                둘째, 로그를 확인합니다. databricks apps logs 명령으로 서버 로그를 볼 수 있고,
+                --follow 옵션을 추가하면 실시간으로 로그를 스트리밍할 수 있습니다.
+                문제가 있다면 로그에서 에러 메시지를 확인하여 디버깅합니다.
+            </aside>
+        </section>
+
+        <!-- Slide 9: 트러블슈팅 팁 -->
+        <section>
+            <h2>트러블슈팅 팁</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>문제</th>
+                        <th>원인</th>
+                        <th>해결 방법</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>앱이 시작되지 않음</td>
+                        <td>포트 설정 오류</td>
+                        <td><code>$PORT</code> 환경변수 사용 또는 <code>8000</code> 고정</td>
+                    </tr>
+                    <tr>
+                        <td><code>ModuleNotFoundError</code></td>
+                        <td>의존성 누락</td>
+                        <td><code>requirements.txt</code> 또는 <code>pyproject.toml</code> 확인</td>
+                    </tr>
+                    <tr>
+                        <td>Genie API 오류</td>
+                        <td>인증 실패</td>
+                        <td>시크릿에 토큰이 올바르게 설정되었는지 확인</td>
+                    </tr>
+                    <tr>
+                        <td>Static 파일 404</td>
+                        <td>경로 오류</td>
+                        <td><code>app.mount("/static", ...)</code> 경로 확인</td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="emphasis-box fragment" style="margin-top: 1em;">
+                <strong>팁:</strong> 로컬에서 <code>uvicorn app:app --port 8000</code>으로 먼저 테스트한 후 배포하세요
+            </div>
+            <aside class="notes">
+                배포 시 자주 발생하는 문제와 해결 방법을 정리했습니다.
+                가장 흔한 문제는 포트 설정입니다. Databricks Apps는 PORT 환경변수를 주입하므로 이를 사용하거나, app.yaml에서 고정 포트를 지정해야 합니다.
+                의존성 누락도 자주 발생합니다. 로컬에서는 이미 설치되어 있어서 모르고 지나치기 쉽습니다.
+                Genie API 인증 오류는 시크릿 설정을 확인하면 해결됩니다.
+                Static 파일 404 에러는 FastAPI의 mount 경로와 실제 파일 경로가 일치하는지 확인해야 합니다.
+                배포 전에 로컬에서 먼저 테스트하는 것을 강력히 권장합니다.
+            </aside>
+        </section>
+
+        <!-- Slide 10: 전체 여정 되돌아보기 -->
+        <section>
+            <h2>전체 여정 되돌아보기</h2>
+            <div class="diagram">
+<pre style="background: transparent; border: none; box-shadow: none; text-align: center; font-size: 0.9em;">
+MCP 서버 구축          Skill 정의           UI 개발              배포
++-----------+      +-----------+      +-----------+      +-----------+
+|           |      |           |      |           |      |           |
+|  Genie    | ---> |  Claude   | ---> |  FastAPI  | ---> | Databricks|
+|  MCP      |      |  Code     |      |  +        |      |  Apps     |
+|  Server   |      |  Skill    |      |  Static   |      |           |
+|           |      |           |      |  Files    |      |           |
++-----------+      +-----------+      +-----------+      +-----------+
+  Section 05         Section 06         Section 08         Section 09
+</pre>
+            </div>
+            <div class="emphasis-box fragment" style="margin-top: 0.5em; text-align: center;">
+                <strong>Vibe Coding의 힘:</strong> 아이디어에서 배포까지, AI와 함께 빠르게 구현
+            </div>
+            <aside class="notes">
+                전체 워크숍의 여정을 되돌아봅니다.
+                Section 05에서 Genie API를 MCP 서버로 만들었습니다.
+                Section 06에서 이 MCP 서버를 Claude Code의 Skill로 정의했습니다.
+                Section 08에서 FastAPI와 정적 파일로 챗봇 UI를 만들었습니다.
+                그리고 지금 Section 09에서 이 모든 것을 Databricks Apps로 배포했습니다.
+                이것이 Vibe Coding의 힘입니다. AI와 함께 아이디어에서 배포까지 빠르게 구현할 수 있습니다.
+            </aside>
+        </section>
+
+        <!-- Slide 11: 정리 & Q&A -->
+        <section>
+            <h2>정리 & Q&A</h2>
+            <ul>
+                <li><strong>Databricks Apps</strong>: 워크스페이스 내 웹앱 호스팅 서비스 (SSO, 자동 스케일링)</li>
+                <li><strong>app.yaml</strong>: 실행 명령어와 환경변수를 정의하는 설정 파일</li>
+                <li><strong>배포 흐름</strong>: <code>apps create</code> &rarr; <code>apps deploy</code> &rarr; URL 접속 확인</li>
+                <li><strong>트러블슈팅</strong>: 포트 설정, 의존성, 시크릿, 로그 확인이 핵심</li>
+            </ul>
+            <div class="emphasis-box" style="margin-top: 1.5em; text-align: center;">
+                <p style="font-size: 1.1em; margin: 0;"><strong>축하합니다!</strong></p>
+                <p style="margin: 0.3em 0 0 0;">MCP 서버 구축부터 프로덕션 배포까지, Vibe Coding 전체 워크플로우를 완성했습니다</p>
+            </div>
+            <aside class="notes">
+                이번 섹션의 핵심을 정리합니다.
+                Databricks Apps는 별도 인프라 없이 웹앱을 배포할 수 있는 편리한 서비스입니다.
+                app.yaml 하나로 실행 환경을 정의하고, CLI 명령어로 간편하게 배포합니다.
+                트러블슈팅은 포트, 의존성, 시크릿, 로그 네 가지를 확인하면 대부분 해결됩니다.
+                이것으로 전체 워크숍이 완료되었습니다. MCP 서버 구축부터 프로덕션 배포까지의 전체 여정을 경험하셨습니다.
+                질문이 있으시면 자유롭게 해주세요. 감사합니다.
+            </aside>
+        </section>
+
+    </div></div>
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/notes/notes.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/highlight.js"></script>
+    <script>
+        Reveal.initialize({ hash: true, slideNumber: true, plugins: [RevealNotes, RevealHighlight] });
+    </script>
+</body>
+</html>

@@ -1,0 +1,209 @@
+/* Enable Your Vibe - Custom reveal.js Theme */
+
+:root {
+    --ev-bg: #1a1a2e;
+    --ev-bg-alt: #16213e;
+    --ev-accent: #e94560;
+    --ev-accent-light: #ff6b81;
+    --ev-blue: #0f3460;
+    --ev-text: #eee;
+    --ev-text-muted: #888;
+    --ev-code-bg: #0d1117;
+}
+
+/* Override reveal.js defaults */
+.reveal {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR", sans-serif;
+    color: var(--ev-text);
+}
+
+.reveal .slides {
+    text-align: left;
+}
+
+.reveal .slides section {
+    padding: 2rem;
+}
+
+/* Background */
+.reveal {
+    background-color: var(--ev-bg);
+}
+
+/* Headings */
+.reveal h1,
+.reveal h2,
+.reveal h3 {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR", sans-serif;
+    color: var(--ev-text);
+    text-transform: none;
+    letter-spacing: -0.02em;
+}
+
+.reveal h1 {
+    font-size: 2.2em;
+    color: var(--ev-accent);
+}
+
+.reveal h2 {
+    font-size: 1.6em;
+    border-bottom: 2px solid var(--ev-accent);
+    padding-bottom: 0.3em;
+    margin-bottom: 0.8em;
+}
+
+.reveal h3 {
+    font-size: 1.2em;
+    color: var(--ev-accent-light);
+}
+
+/* Text */
+.reveal p {
+    line-height: 1.6;
+}
+
+.reveal ul,
+.reveal ol {
+    margin-left: 1em;
+}
+
+.reveal li {
+    margin-bottom: 0.4em;
+    line-height: 1.5;
+}
+
+/* Links */
+.reveal a {
+    color: var(--ev-accent-light);
+    text-decoration: underline;
+}
+
+.reveal a:hover {
+    color: var(--ev-accent);
+}
+
+/* Code blocks */
+.reveal pre {
+    background: var(--ev-code-bg);
+    border: 1px solid #333;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    font-size: 0.65em;
+    width: 100%;
+}
+
+.reveal pre code {
+    padding: 1.2em;
+    line-height: 1.5;
+    max-height: 500px;
+}
+
+/* Inline code */
+.reveal code:not(pre code) {
+    background: var(--ev-code-bg);
+    color: var(--ev-accent-light);
+    padding: 0.15em 0.4em;
+    border-radius: 4px;
+    font-size: 0.85em;
+}
+
+/* Speaker notes trigger */
+.reveal .controls {
+    color: var(--ev-accent);
+}
+
+/* Slide number */
+.reveal .slide-number {
+    color: var(--ev-text-muted);
+    font-size: 0.7em;
+    background: transparent;
+}
+
+/* Blockquote */
+.reveal blockquote {
+    border-left: 4px solid var(--ev-accent);
+    background: var(--ev-bg-alt);
+    padding: 1em 1.5em;
+    border-radius: 0 8px 8px 0;
+    font-style: italic;
+    width: 90%;
+}
+
+/* Tables */
+.reveal table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.reveal table th {
+    background: var(--ev-blue);
+    color: var(--ev-text);
+    padding: 0.6em 1em;
+    text-align: left;
+}
+
+.reveal table td {
+    padding: 0.5em 1em;
+    border-bottom: 1px solid #333;
+}
+
+.reveal table tr:hover td {
+    background: var(--ev-bg-alt);
+}
+
+/* Emphasis box */
+.reveal .emphasis-box {
+    background: var(--ev-bg-alt);
+    border: 1px solid var(--ev-accent);
+    border-radius: 8px;
+    padding: 1em 1.5em;
+    margin: 1em 0;
+}
+
+/* Two column layout */
+.reveal .columns {
+    display: flex;
+    gap: 2rem;
+}
+
+.reveal .columns > * {
+    flex: 1;
+}
+
+/* Architecture diagram box */
+.reveal .diagram {
+    font-family: "Courier New", monospace;
+    text-align: center;
+    font-size: 0.75em;
+    line-height: 1.4;
+    background: var(--ev-code-bg);
+    padding: 1.5em;
+    border-radius: 8px;
+    border: 1px solid #333;
+}
+
+/* Fragment highlight */
+.reveal .fragment.highlight-red.visible {
+    color: var(--ev-accent);
+}
+
+/* Progress bar */
+.reveal .progress {
+    color: var(--ev-accent);
+    height: 4px;
+}
+
+/* Title slide special styling */
+.reveal .slides > section:first-child {
+    text-align: center;
+}
+
+.reveal .slides > section:first-child h1 {
+    font-size: 2.5em;
+    margin-bottom: 0.5em;
+}
+
+.reveal .slides > section:first-child p {
+    color: var(--ev-text-muted);
+    font-size: 1.1em;
+}

@@ -1,0 +1,373 @@
+<!doctype html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>05 - Genie MCP - Enable Your Vibe</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reset.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/theme/black.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/monokai.css">
+    <link rel="stylesheet" href="../../../shared/assets/theme.css">
+</head>
+<body>
+    <div class="reveal"><div class="slides">
+
+        <!-- Slide 1: Title -->
+        <section>
+            <h1>Genie MCP</h1>
+            <p>Genie MCP 서버 만들기</p>
+            <p style="margin-top: 2em; font-size: 0.7em; color: var(--ev-text-muted);">
+                Section 05 | Hands-on | 30분
+            </p>
+            <aside class="notes">
+                이번 섹션에서는 Databricks Genie API를 MCP 서버로 래핑하여
+                Claude Code에서 자연어로 데이터를 질의할 수 있는 환경을 직접 구축합니다.
+                Section 03에서 배운 MCP 아키텍처를 실제로 적용하는 핵심 실습입니다.
+            </aside>
+        </section>
+
+        <!-- Slide 2: 학습 목표 -->
+        <section>
+            <h2>학습 목표</h2>
+            <ul>
+                <li class="fragment">Databricks Genie API의 구조와 호출 방법을 이해한다</li>
+                <li class="fragment">FastMCP로 Genie MCP 서버를 직접 구현한다</li>
+                <li class="fragment">Claude Code에서 Genie MCP를 연결하여 자연어 데이터 질의를 수행한다</li>
+            </ul>
+            <div class="emphasis-box fragment" style="margin-top: 1.5em;">
+                <strong>핵심:</strong> API를 MCP로 래핑하면 Claude Code가 데이터베이스와 직접 대화할 수 있습니다
+            </div>
+            <aside class="notes">
+                세 가지 학습 목표를 설명합니다.
+                첫째, Genie API가 어떻게 동작하는지 직접 호출해보며 이해합니다.
+                둘째, 이 API를 FastMCP로 감싸서 MCP 서버를 만듭니다.
+                셋째, 만든 서버를 Claude Code에 연결해서 실제로 사용해봅니다.
+                핵심은 '래핑' 패턴입니다. 기존 API를 MCP 인터페이스로 변환하는 것이죠.
+            </aside>
+        </section>
+
+        <!-- Slide 3: Databricks Genie Space란? -->
+        <section>
+            <h2>Databricks Genie Space란?</h2>
+            <div class="columns">
+                <div>
+                    <h3>자연어 데이터 질의 AI</h3>
+                    <ul>
+                        <li>자연어 질문을 SQL로 변환</li>
+                        <li>Databricks 테이블에서 데이터 조회</li>
+                        <li>결과를 자연어로 요약하여 반환</li>
+                        <li>대화형 인터페이스 지원</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3>활용 사례</h3>
+                    <ul>
+                        <li>"이번 달 매출 합계는?"</li>
+                        <li>"가장 많이 팔린 상품 Top 5"</li>
+                        <li>"지난 분기 대비 성장률"</li>
+                        <li>"고객 이탈률 추이"</li>
+                    </ul>
+                </div>
+            </div>
+            <aside class="notes">
+                Genie Space는 Databricks에서 제공하는 자연어 데이터 질의 인터페이스입니다.
+                사용자가 자연어로 질문하면 내부적으로 SQL을 생성하고,
+                Databricks 테이블에서 데이터를 조회한 뒤 결과를 반환합니다.
+                웹 UI뿐 아니라 API를 통해서도 접근이 가능한데,
+                이 API를 MCP 서버로 만들면 Claude Code에서 직접 데이터를 질의할 수 있게 됩니다.
+            </aside>
+        </section>
+
+        <!-- Slide 4: Genie API 구조 -->
+        <section>
+            <h2>Genie API 구조</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>단계</th>
+                        <th>메서드</th>
+                        <th>엔드포인트</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>1. 대화 생성</strong></td>
+                        <td><code>POST</code></td>
+                        <td><code>/api/2.0/genie/spaces/{space_id}/conversations</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>2. 메시지 전송</strong></td>
+                        <td><code>POST</code></td>
+                        <td><code>.../conversations/{conversation_id}/messages</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>3. 결과 조회</strong></td>
+                        <td><code>GET</code></td>
+                        <td><code>.../messages/{message_id}</code></td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="emphasis-box fragment" style="margin-top: 1em;">
+                <strong>인증:</strong> Bearer 토큰 방식 &mdash; <code>Authorization: Bearer {token}</code>
+            </div>
+            <aside class="notes">
+                Genie API는 3단계로 구성됩니다.
+                첫째, Conversation을 생성합니다. 이것은 하나의 대화 세션입니다.
+                둘째, 생성된 대화에 메시지를 전송합니다. 여기서 자연어 질문을 보냅니다.
+                셋째, 메시지의 결과를 GET으로 조회합니다.
+                비동기 방식이므로 결과가 바로 오지 않을 수 있어 폴링이 필요합니다.
+                인증은 Databricks Personal Access Token을 Bearer 방식으로 사용합니다.
+            </aside>
+        </section>
+
+        <!-- Slide 5: API 호출 흐름 다이어그램 -->
+        <section>
+            <h2>API 호출 흐름</h2>
+            <div class="diagram">
+<pre style="background: transparent; border: none; box-shadow: none; text-align: center; font-size: 1em;">
+Client                          Genie API
+  |                                 |
+  |  POST /conversations            |
+  |-------------------------------->|
+  |  { conversation_id }            |
+  |<--------------------------------|
+  |                                 |
+  |  POST /messages                 |
+  |  { content: "매출 합계는?" }    |
+  |-------------------------------->|
+  |  { message_id }                 |
+  |<--------------------------------|
+  |                                 |
+  |  GET /messages/{id}             |
+  |-------------------------------->|
+  |  { status: "EXECUTING_QUERY" }  |
+  |<--------------------------------|
+  |                                 |
+  |  GET /messages/{id}  (polling)  |
+  |-------------------------------->|
+  |  { status: "COMPLETED", ... }   |
+  |<--------------------------------|
+  |                                 |
+</pre>
+            </div>
+            <aside class="notes">
+                이 다이어그램은 실제 API 호출 흐름을 보여줍니다.
+                먼저 POST로 대화를 만들고, conversation_id를 받습니다.
+                그 다음 메시지를 보내면 message_id를 받습니다.
+                결과 조회 시 처음에는 EXECUTING_QUERY 등의 중간 상태를 받게 됩니다.
+                COMPLETED가 될 때까지 반복 조회(폴링)해야 합니다.
+                이 비동기 패턴을 MCP 서버 내부에서 처리해줄 것입니다.
+            </aside>
+        </section>
+
+        <!-- Slide 6: FastMCP로 Genie MCP 서버 구현 전략 -->
+        <section>
+            <h2>FastMCP로 Genie MCP 구현 전략</h2>
+            <div class="columns">
+                <div>
+                    <h3>래핑(Wrapping) 패턴</h3>
+                    <ul>
+                        <li>기존 REST API를 MCP tool로 변환</li>
+                        <li>복잡한 3단계 호출을 하나의 tool로 단순화</li>
+                        <li>폴링 로직을 내부에서 처리</li>
+                        <li>에러 처리를 사용자 친화적으로 변환</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3>설계 포인트</h3>
+                    <ul>
+                        <li><code>ask_genie</code> &mdash; 핵심 질의 tool</li>
+                        <li><code>get_genie_space_info</code> &mdash; 연결 정보 확인</li>
+                        <li>환경변수로 인증 정보 관리</li>
+                        <li><code>dotenv</code>로 로컬 설정 로드</li>
+                    </ul>
+                </div>
+            </div>
+            <aside class="notes">
+                MCP 서버 설계의 핵심은 '래핑 패턴'입니다.
+                사용자(Claude Code)는 단순히 ask_genie("매출 합계는?")만 호출하면 되고,
+                내부적으로는 대화 생성, 메시지 전송, 폴링까지 모두 처리됩니다.
+                이것이 MCP의 장점입니다 - 복잡한 API 호출을 간단한 tool 인터페이스로 추상화합니다.
+                두 개의 tool을 제공합니다: 핵심 질의 tool과 연결 정보 확인 tool입니다.
+            </aside>
+        </section>
+
+        <!-- Slide 7: 핵심 코드 - ask_genie tool 구현 -->
+        <section>
+            <h2>핵심 코드: ask_genie tool</h2>
+            <pre><code class="python" data-trim data-noescape>
+@mcp.tool()
+def ask_genie(question: str) -> str:
+    """Databricks Genie에 자연어로 데이터를 질의합니다.
+
+    Args:
+        question: 데이터에 대한 자연어 질문
+    """
+    # 1. 대화 생성
+    conversation_id = _create_conversation()
+
+    # 2. 메시지 전송 + 폴링
+    result = _send_and_poll(conversation_id, question)
+
+    if "error" in result:
+        return f"오류: {result['error']}"
+
+    # 3. 결과 추출
+    attachments = result.get("attachments", [])
+    text_parts = []
+    for attachment in attachments:
+        if "text" in attachment:
+            text_parts.append(attachment["text"]["content"])
+        if "query" in attachment:
+            text_parts.append(f"SQL: {attachment['query']['query']}")
+
+    return "\n".join(text_parts) if text_parts else str(result)
+            </code></pre>
+            <aside class="notes">
+                이것이 핵심 tool 코드입니다.
+                @mcp.tool() 데코레이터로 MCP tool을 선언합니다.
+                docstring은 Claude Code가 이 tool의 용도를 이해하는 데 사용됩니다.
+                내부적으로 3단계 호출을 모두 처리합니다.
+                결과에서 text 응답과 SQL 쿼리를 추출하여 반환합니다.
+                에러 처리도 포함되어 있어 실패 시 적절한 메시지를 반환합니다.
+            </aside>
+        </section>
+
+        <!-- Slide 8: 폴링 패턴 -->
+        <section>
+            <h2>폴링 패턴: 비동기 결과 대기</h2>
+            <pre><code class="python" data-trim data-noescape>
+def _send_and_poll(conversation_id: str, question: str,
+                   max_wait: int = 60) -> dict:
+    # 메시지 전송
+    resp = httpx.post(
+        f"{base_url}/conversations/{conversation_id}/messages",
+        headers=headers,
+        json={"content": question},
+    )
+    resp.raise_for_status()
+    message_id = resp.json()["message_id"]
+
+    # 폴링: 2초 간격으로 결과 확인
+    url = f"{base_url}/conversations/{conversation_id}/messages/{message_id}"
+    for _ in range(max_wait // 2):
+        resp = httpx.get(url, headers=headers)
+        data = resp.json()
+        status = data.get("status", "")
+        if status == "COMPLETED":
+            return data
+        if status in ("FAILED", "CANCELLED"):
+            return {"error": f"질의 실패: {status}"}
+        time.sleep(2)
+    return {"error": "응답 시간 초과"}
+            </code></pre>
+            <aside class="notes">
+                폴링 패턴은 비동기 API에서 자주 사용되는 패턴입니다.
+                메시지를 보낸 뒤 message_id를 받고, 이를 이용해 주기적으로 상태를 확인합니다.
+                2초 간격으로 최대 60초까지 대기하며, 상태가 COMPLETED가 되면 결과를 반환합니다.
+                FAILED나 CANCELLED 상태면 에러를 반환하고, 시간이 초과되면 타임아웃 에러를 반환합니다.
+                이 로직이 MCP 서버 내부에 캡슐화되어 있으므로 사용자는 단순히 질문만 하면 됩니다.
+            </aside>
+        </section>
+
+        <!-- Slide 9: Claude Code에서 Genie MCP 활용 시나리오 -->
+        <section>
+            <h2>Claude Code에서 활용 시나리오</h2>
+            <h3>settings.local.json 설정</h3>
+            <pre><code class="json" data-trim>
+{
+  "mcpServers": {
+    "genie": {
+      "command": "python",
+      "args": ["exercise_02_genie_mcp_server.py"],
+      "cwd": "./sections/05-genie-mcp/code"
+    }
+  }
+}
+            </code></pre>
+            <h3 style="margin-top: 1em;">대화 예시</h3>
+            <div class="emphasis-box" style="font-size: 0.85em;">
+                <p><strong>사용자:</strong> "이번 달 매출 데이터를 분석해서 보고서를 작성해줘"</p>
+                <p><strong>Claude:</strong> Genie MCP의 <code>ask_genie</code> tool을 사용하여 매출 데이터를 조회하고, 분석 보고서를 생성합니다.</p>
+            </div>
+            <aside class="notes">
+                실제로 Claude Code에서 사용하려면 settings.local.json에 MCP 서버를 등록합니다.
+                command는 python, args에 서버 파일 경로를 지정합니다.
+                등록 후 Claude Code에서 데이터 질문을 하면 자동으로 ask_genie tool이 호출됩니다.
+                Claude Code가 Genie의 응답을 받아 분석, 요약, 보고서 작성까지 해줄 수 있습니다.
+                기존에는 Databricks 웹 UI에서 수동으로 해야 했던 작업을 자동화할 수 있는 것입니다.
+            </aside>
+        </section>
+
+        <!-- Slide 10: 실습 안내 -->
+        <section>
+            <h2>실습 안내</h2>
+            <div class="columns">
+                <div>
+                    <h3>Exercise 01</h3>
+                    <p>Genie API 직접 호출</p>
+                    <ul>
+                        <li><code>.env</code> 설정</li>
+                        <li>대화 생성 API 호출</li>
+                        <li>메시지 전송 및 폴링</li>
+                        <li>결과 확인</li>
+                    </ul>
+                    <pre><code class="bash" data-trim>
+python exercise_01_genie_api.py
+                    </code></pre>
+                </div>
+                <div>
+                    <h3>Exercise 02</h3>
+                    <p>Genie MCP 서버 구현</p>
+                    <ul>
+                        <li>FastMCP 서버 코드 분석</li>
+                        <li>MCP 서버 실행</li>
+                        <li>Claude Code에 연결</li>
+                        <li>자연어 질의 테스트</li>
+                    </ul>
+                    <pre><code class="bash" data-trim>
+python exercise_02_genie_mcp_server.py
+                    </code></pre>
+                </div>
+            </div>
+            <aside class="notes">
+                두 가지 실습을 진행합니다.
+                Exercise 01은 Genie API를 직접 호출하는 스크립트입니다.
+                API의 3단계 호출을 직접 체험하며 동작 원리를 이해합니다.
+                Exercise 02는 이 API를 FastMCP로 래핑한 MCP 서버입니다.
+                서버를 실행하고 Claude Code에 연결하여 실제로 자연어 질의를 해봅니다.
+                먼저 .env.example을 복사하여 .env 파일을 만들고 환경변수를 설정하세요.
+            </aside>
+        </section>
+
+        <!-- Slide 11: 정리 & Q&A -->
+        <section>
+            <h2>정리 & Q&A</h2>
+            <ul>
+                <li><strong>Genie API</strong>: 대화 생성 &rarr; 메시지 전송 &rarr; 폴링으로 결과 조회</li>
+                <li><strong>래핑 패턴</strong>: 복잡한 REST API를 단순한 MCP tool로 추상화</li>
+                <li><strong>폴링 패턴</strong>: 비동기 API의 결과를 동기적으로 대기</li>
+                <li><strong>Claude Code 연동</strong>: <code>settings.local.json</code>에 MCP 서버 등록</li>
+            </ul>
+            <div class="emphasis-box" style="margin-top: 1.5em;">
+                <strong>다음 섹션:</strong> Skills Workflow &mdash; MCP 서버들을 Skill로 조합하여 워크플로우 구성
+            </div>
+            <aside class="notes">
+                이번 섹션의 핵심을 정리합니다.
+                Genie API의 3단계 구조를 이해하고, 이를 MCP 서버로 래핑하는 패턴을 배웠습니다.
+                폴링 패턴은 비동기 API를 다룰 때 핵심적인 기법입니다.
+                이 패턴은 Genie뿐 아니라 다른 Databricks API나 외부 서비스를 MCP로 만들 때도 동일하게 적용됩니다.
+                질문이 있으시면 자유롭게 해주세요.
+            </aside>
+        </section>
+
+    </div></div>
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/notes/notes.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/highlight.js"></script>
+    <script>
+        Reveal.initialize({ hash: true, slideNumber: true, plugins: [RevealNotes, RevealHighlight] });
+    </script>
+</body>
+</html>

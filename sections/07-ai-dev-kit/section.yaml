@@ -1,0 +1,12 @@
+number: "07"
+title: "AI Dev Kit: Databricks AI Dev Kit"
+duration_minutes: 15
+type: "lecture+demo"
+objectives:
+  - "Databricks AI Dev Kit의 구성 요소 이해"
+  - "databricks-agents 프레임워크의 ChatAgent 인터페이스 학습"
+  - "MLflow Tracing을 활용한 에이전트 모니터링 방법 파악"
+slides: "slides/index.html"
+code_files: []
+prerequisites:
+  - "05-genie-mcp"

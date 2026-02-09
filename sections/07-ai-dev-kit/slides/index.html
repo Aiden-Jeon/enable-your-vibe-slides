@@ -1,0 +1,595 @@
+<!doctype html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>07 - AI Dev Kit - Enable Your Vibe</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reset.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/theme/black.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/monokai.css">
+    <link rel="stylesheet" href="../../../shared/assets/theme.css">
+    <style>
+        /* Section-specific styles */
+        .reveal .subtitle {
+            color: var(--ev-accent-light);
+            font-size: 1.2em;
+            margin-top: 0.2em;
+        }
+        .reveal .section-number {
+            font-size: 0.5em;
+            color: var(--ev-text-muted);
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+        }
+        .reveal .objective-list li {
+            padding: 0.4em 0;
+            font-size: 0.95em;
+        }
+        .reveal .objective-list li::marker {
+            color: var(--ev-accent);
+        }
+        .reveal .component-card {
+            background: var(--ev-bg-alt);
+            border-radius: 10px;
+            padding: 1em 1.2em;
+            margin: 0.5em 0;
+            border: 1px solid #333;
+        }
+        .reveal .component-card h4 {
+            color: var(--ev-accent-light);
+            margin: 0 0 0.3em 0;
+            font-size: 1em;
+        }
+        .reveal .component-card p {
+            margin: 0;
+            font-size: 0.85em;
+            color: var(--ev-text-muted);
+        }
+        .reveal .component-card code {
+            font-size: 0.9em;
+        }
+        .reveal .deploy-flow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.6em;
+            margin: 1.2em 0;
+            flex-wrap: wrap;
+        }
+        .reveal .deploy-flow .flow-step {
+            background: var(--ev-bg-alt);
+            border: 1px solid var(--ev-accent);
+            border-radius: 10px;
+            padding: 0.6em 1em;
+            text-align: center;
+            min-width: 120px;
+        }
+        .reveal .deploy-flow .flow-step .step-label {
+            font-size: 0.75em;
+            color: var(--ev-text-muted);
+            display: block;
+            margin-top: 0.2em;
+        }
+        .reveal .deploy-flow .flow-arrow {
+            color: var(--ev-accent);
+            font-size: 1.5em;
+        }
+        .reveal .badge {
+            display: inline-block;
+            background: var(--ev-accent);
+            color: white;
+            font-size: 0.6em;
+            padding: 0.2em 0.6em;
+            border-radius: 20px;
+            vertical-align: middle;
+            margin-left: 0.5em;
+        }
+        .reveal .arch-overview {
+            background: var(--ev-code-bg);
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 1.5em;
+            font-family: "Courier New", monospace;
+            font-size: 0.7em;
+            line-height: 1.5;
+            text-align: center;
+        }
+        .reveal .tracing-box {
+            background: var(--ev-bg-alt);
+            border-left: 4px solid var(--ev-accent);
+            border-radius: 0 8px 8px 0;
+            padding: 0.8em 1.2em;
+            margin: 0.6em 0;
+        }
+        .reveal .tracing-box h4 {
+            color: var(--ev-accent-light);
+            margin: 0 0 0.2em 0;
+            font-size: 0.95em;
+        }
+        .reveal .tracing-box p {
+            margin: 0;
+            font-size: 0.8em;
+            color: var(--ev-text-muted);
+        }
+    </style>
+</head>
+<body>
+    <div class="reveal">
+        <div class="slides">
+
+            <!-- Slide 1: Title -->
+            <section>
+                <p class="section-number">Section 07</p>
+                <h1>AI Dev Kit</h1>
+                <p class="subtitle">Databricks AI Dev Kit</p>
+                <br>
+                <p style="font-size: 0.7em; color: var(--ev-text-muted);">
+                    Enable Your Vibe &mdash; AI-Powered Development Hands-on
+                </p>
+                <p style="font-size: 0.6em; color: var(--ev-text-muted);">
+                    15분 | 강의+데모
+                </p>
+                <aside class="notes">
+                    섹션 7을 시작합니다. 이 세션에서는 Databricks AI Dev Kit를 소개합니다.
+                    지금까지 Claude Code와 MCP를 활용한 개발 방법을 배웠다면,
+                    이제는 만든 에이전트를 실제 프로덕션 환경에 배포하기 위한 프레임워크를 알아봅니다.
+                    databricks-agents, MLflow Tracing, Unity Catalog가 어떻게 통합되는지 전체 그림을 먼저 보여드리겠습니다.
+                </aside>
+            </section>
+
+            <!-- Slide 2: 학습 목표 -->
+            <section>
+                <h2>학습 목표</h2>
+                <ol class="objective-list">
+                    <li class="fragment fade-up">
+                        <strong>Databricks AI Dev Kit</strong>의 구성 요소와 역할을 이해한다
+                    </li>
+                    <li class="fragment fade-up">
+                        <strong>databricks-agents</strong> 프레임워크의 <code>ChatAgent</code> 인터페이스를 학습한다
+                    </li>
+                    <li class="fragment fade-up">
+                        <strong>MLflow Tracing</strong>을 활용한 에이전트 모니터링 방법을 파악한다
+                    </li>
+                </ol>
+                <aside class="notes">
+                    이 세션이 끝나면 참가자들은 세 가지를 이해하게 됩니다.
+                    첫째, AI Dev Kit가 어떤 구성 요소로 이루어져 있고 각각의 역할이 무엇인지.
+                    둘째, ChatAgent라는 표준 인터페이스를 사용해 에이전트를 정의하는 방법.
+                    셋째, MLflow Tracing으로 에이전트의 동작을 추적하고 모니터링하는 방법입니다.
+                    이 세 가지가 합쳐져서 로컬 개발부터 프로덕션 배포까지의 워크플로우가 완성됩니다.
+                </aside>
+            </section>
+
+            <!-- Slide 3: Databricks AI Dev Kit 소개 -->
+            <section>
+                <h2>Databricks AI Dev Kit 소개</h2>
+                <p style="font-size: 0.9em; margin-bottom: 0.8em;">
+                    AI 에이전트를 <strong>개발</strong>하고, <strong>추적</strong>하고, <strong>배포</strong>하기 위한 통합 프레임워크
+                </p>
+                <div class="arch-overview fragment fade-up">
+                    <span style="color: var(--ev-accent);">+----------------------------------------------+</span><br>
+                    <span style="color: var(--ev-accent);">|</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: var(--ev-accent-light);">Databricks AI Dev Kit</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: var(--ev-accent);">|</span><br>
+                    <span style="color: var(--ev-accent);">|</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: var(--ev-accent);">|</span><br>
+                    <span style="color: var(--ev-accent);">|</span>&nbsp;&nbsp;<span style="color: #4ecdc4;">[databricks-agents]</span>&nbsp;&nbsp;&nbsp;개발 &amp; 배포&nbsp;&nbsp;<span style="color: var(--ev-accent);">|</span><br>
+                    <span style="color: var(--ev-accent);">|</span>&nbsp;&nbsp;<span style="color: #ffe66d;">[MLflow Tracing]</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;추적 &amp; 모니터링<span style="color: var(--ev-accent);">|</span><br>
+                    <span style="color: var(--ev-accent);">|</span>&nbsp;&nbsp;<span style="color: #a8e6cf;">[Unity Catalog]</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;거버넌스&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: var(--ev-accent);">|</span><br>
+                    <span style="color: var(--ev-accent);">|</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: var(--ev-accent);">|</span><br>
+                    <span style="color: var(--ev-accent);">+----------------------------------------------+</span>
+                </div>
+                <div class="fragment fade-up" style="margin-top: 1em;">
+                    <p style="font-size: 0.8em; color: var(--ev-text-muted); text-align: center;">
+                        <code>pip install databricks-agents</code> &mdash; 하나의 패키지로 시작
+                    </p>
+                </div>
+                <aside class="notes">
+                    Databricks AI Dev Kit는 세 가지 핵심 요소로 구성됩니다.
+                    databricks-agents는 에이전트를 정의하고 배포하는 프레임워크입니다.
+                    MLflow Tracing은 에이전트의 모든 동작을 자동으로 추적합니다.
+                    Unity Catalog는 모델과 데이터의 거버넌스를 담당합니다.
+                    이 세 가지가 통합되어 로컬 개발부터 프로덕션 배포까지 일관된 경험을 제공합니다.
+                    pip install databricks-agents 한 줄로 시작할 수 있습니다.
+                </aside>
+            </section>
+
+            <!-- Slide 4: 핵심 구성 요소 -->
+            <section>
+                <h2>핵심 구성 요소</h2>
+                <div class="columns">
+                    <div>
+                        <div class="component-card fragment fade-up">
+                            <h4>databricks-agents</h4>
+                            <p>에이전트 프레임워크</p>
+                            <ul style="font-size: 0.75em; margin-top: 0.4em; color: var(--ev-text);">
+                                <li><code>ChatAgent</code> 표준 인터페이스</li>
+                                <li>로컬 개발 &amp; 디버깅</li>
+                                <li>원클릭 배포</li>
+                            </ul>
+                        </div>
+                        <div class="component-card fragment fade-up">
+                            <h4>MLflow Tracing</h4>
+                            <p>추적 및 모니터링</p>
+                            <ul style="font-size: 0.75em; margin-top: 0.4em; color: var(--ev-text);">
+                                <li><code>@mlflow.trace</code> 데코레이터</li>
+                                <li>자동 추적 (autolog)</li>
+                                <li>실시간 트레이스 UI</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="component-card fragment fade-up">
+                            <h4>Unity Catalog</h4>
+                            <p>모델/데이터 거버넌스</p>
+                            <ul style="font-size: 0.75em; margin-top: 0.4em; color: var(--ev-text);">
+                                <li>모델 버전 관리</li>
+                                <li>접근 제어 (ACL)</li>
+                                <li>리니지 추적</li>
+                            </ul>
+                        </div>
+                        <div class="component-card fragment fade-up" style="border-color: var(--ev-accent);">
+                            <h4>통합의 가치</h4>
+                            <p style="color: var(--ev-text); font-size: 0.8em;">
+                                개발 &rarr; 추적 &rarr; 배포 &rarr; 거버넌스<br>
+                                <strong>하나의 워크플로우</strong>로 연결
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <aside class="notes">
+                    각 구성 요소를 좀 더 자세히 살펴봅시다.
+                    databricks-agents는 ChatAgent라는 표준 인터페이스를 제공합니다.
+                    이 인터페이스를 구현하면 로컬에서 개발하고 테스트한 후, 같은 코드를 그대로 Databricks에 배포할 수 있습니다.
+                    MLflow Tracing은 에이전트가 어떤 도구를 호출했는지, 얼마나 시간이 걸렸는지, 어떤 결과를 반환했는지를 자동으로 기록합니다.
+                    Unity Catalog는 배포된 모델의 버전 관리와 접근 제어를 담당합니다.
+                    이 세 가지가 유기적으로 연결되어 엔터프라이즈급 AI 에이전트 개발이 가능해집니다.
+                </aside>
+            </section>
+
+            <!-- Slide 5: databricks-agents 프레임워크 -->
+            <section>
+                <h2>databricks-agents 프레임워크</h2>
+                <p style="font-size: 0.85em; margin-bottom: 0.5em;">
+                    <code>ChatAgent</code> &mdash; 모든 에이전트의 표준 인터페이스
+                </p>
+                <pre class="fragment fade-up"><code class="language-python">from databricks.agents import ChatAgent, ChatAgentResponse, ChatAgentMessage
+
+class MyAgent(ChatAgent):
+    """ChatAgent를 상속받아 에이전트를 구현합니다."""
+
+    def predict(self, messages, context=None):
+        """사용자 메시지를 받아 응답을 반환합니다."""
+        user_message = messages[-1]["content"]
+
+        # 여기에 에이전트 로직을 구현
+        response = self._process(user_message)
+
+        return ChatAgentResponse(
+            messages=[
+                ChatAgentMessage(role="assistant", content=response)
+            ]
+        )
+</code></pre>
+                <div class="fragment fade-up" style="margin-top: 0.8em;">
+                    <div class="emphasis-box" style="font-size: 0.8em;">
+                        <strong>핵심 포인트:</strong>
+                        <code>predict()</code> 메서드 하나만 구현하면 로컬 테스트부터 프로덕션 배포까지 동일한 코드 사용
+                    </div>
+                </div>
+                <aside class="notes">
+                    ChatAgent 인터페이스의 핵심은 predict 메서드입니다.
+                    ChatAgent 클래스를 상속받고 predict 메서드를 구현하는 것이 전부입니다.
+                    messages 파라미터로 대화 히스토리가 들어오고,
+                    ChatAgentResponse 객체로 응답을 반환합니다.
+                    이 단순한 인터페이스 덕분에 어떤 LLM 프레임워크를 사용하든
+                    (LangChain, LlamaIndex, 직접 구현 등) ChatAgent로 감싸면 됩니다.
+                    로컬에서 테스트할 때도, Databricks에 배포할 때도 같은 코드가 사용됩니다.
+                </aside>
+            </section>
+
+            <!-- Slide 6: predict() 메서드 상세 -->
+            <section>
+                <h2><code>predict()</code> 메서드 상세</h2>
+                <div class="columns">
+                    <div>
+                        <h3>입력: <code>messages</code></h3>
+                        <pre><code class="language-python"># OpenAI 호환 메시지 형식
+messages = [
+    {
+        "role": "user",
+        "content": "매출 데이터를 분석해줘"
+    }
+]
+
+# context: 추가 메타데이터
+context = {
+    "user_id": "user@company.com",
+    "workspace": "production"
+}
+</code></pre>
+                    </div>
+                    <div>
+                        <h3>출력: <code>ChatAgentResponse</code></h3>
+                        <pre><code class="language-python">return ChatAgentResponse(
+    messages=[
+        ChatAgentMessage(
+            role="assistant",
+            content="분석 결과입니다..."
+        )
+    ]
+)
+
+# 도구 호출 결과도 포함 가능
+# 스트리밍 응답 지원
+# 멀티턴 대화 지원
+</code></pre>
+                    </div>
+                </div>
+                <div class="fragment fade-up" style="margin-top: 0.6em; text-align: center;">
+                    <p style="font-size: 0.8em; color: var(--ev-text-muted);">
+                        OpenAI 호환 메시지 형식 &rarr; 기존 코드와의 높은 호환성
+                    </p>
+                </div>
+                <aside class="notes">
+                    predict 메서드의 입출력을 자세히 살펴봅시다.
+                    입력은 OpenAI 호환 메시지 형식입니다. role과 content로 구성된 딕셔너리 리스트죠.
+                    context 파라미터는 선택적으로 사용할 수 있는 메타데이터입니다.
+                    사용자 정보나 환경 정보를 전달하는 데 유용합니다.
+                    출력은 ChatAgentResponse 객체로, 역시 OpenAI 호환 형식의 메시지를 담습니다.
+                    이 호환성 덕분에 기존에 OpenAI API를 사용하던 코드를 쉽게 마이그레이션할 수 있습니다.
+                </aside>
+            </section>
+
+            <!-- Slide 7: MLflow Tracing 연동 -->
+            <section>
+                <h2>MLflow Tracing 연동</h2>
+                <p style="font-size: 0.85em; margin-bottom: 0.6em;">
+                    에이전트의 모든 동작을 <strong>자동으로 추적</strong>하고 시각화
+                </p>
+                <div class="tracing-box fragment fade-up">
+                    <h4>1. <code>@mlflow.trace</code> 데코레이터</h4>
+                    <p>함수 단위로 추적 포인트를 지정 &mdash; 입출력, 실행 시간 자동 기록</p>
+                </div>
+                <div class="tracing-box fragment fade-up">
+                    <h4>2. 자동 추적 (autolog)</h4>
+                    <p><code>mlflow.openai.autolog()</code> &mdash; OpenAI, LangChain 등 프레임워크 자동 연동</p>
+                </div>
+                <div class="tracing-box fragment fade-up">
+                    <h4>3. 트레이스 UI</h4>
+                    <p>MLflow UI에서 각 요청의 전체 호출 트리, 토큰 사용량, 지연 시간 확인</p>
+                </div>
+                <pre class="fragment fade-up"><code class="language-python">import mlflow
+
+@mlflow.trace
+def retrieve_context(query: str) -> list[str]:
+    """검색 결과를 추적합니다."""
+    results = vector_store.search(query, top_k=5)
+    return [doc.content for doc in results]
+</code></pre>
+                <aside class="notes">
+                    MLflow Tracing은 에이전트의 모든 동작을 추적하는 기능입니다.
+                    세 가지 방법으로 사용할 수 있습니다.
+                    첫째, @mlflow.trace 데코레이터를 함수에 붙이면 해당 함수의 입출력과 실행 시간이 자동 기록됩니다.
+                    둘째, autolog를 활성화하면 OpenAI API 호출, LangChain 체인 실행 등이 자동으로 추적됩니다.
+                    셋째, MLflow UI에서 각 요청의 전체 호출 트리를 시각적으로 확인할 수 있습니다.
+                    예를 들어 RAG 에이전트의 경우, 검색 -> LLM 호출 -> 응답 생성의 전체 과정을 한눈에 볼 수 있습니다.
+                    디버깅과 성능 최적화에 매우 유용합니다.
+                </aside>
+            </section>
+
+            <!-- Slide 8: MLflow Tracing 코드 예시 -->
+            <section>
+                <h2>Tracing 적용 예시</h2>
+                <pre><code class="language-python">import mlflow
+from openai import OpenAI
+
+# 자동 추적 활성화 - OpenAI 호출이 자동으로 기록됨
+mlflow.openai.autolog()
+
+class MyAgent(ChatAgent):
+    def __init__(self):
+        self.client = OpenAI()
+
+    @mlflow.trace(name="agent_predict")
+    def predict(self, messages, context=None):
+        # 1. 컨텍스트 검색 (추적됨)
+        docs = self._retrieve(messages[-1]["content"])
+
+        # 2. LLM 호출 (autolog로 자동 추적됨)
+        response = self.client.chat.completions.create(
+            model="gpt-4o",
+            messages=[
+                {"role": "system", "content": f"참고: {docs}"},
+                *messages
+            ]
+        )
+
+        return ChatAgentResponse(
+            messages=[ChatAgentMessage(
+                role="assistant",
+                content=response.choices[0].message.content
+            )]
+        )
+
+    @mlflow.trace(name="retrieve_context")
+    def _retrieve(self, query: str) -> str:
+        # 벡터 검색 로직
+        return "검색된 문서 내용..."
+</code></pre>
+                <aside class="notes">
+                    실제로 Tracing을 적용한 코드 예시입니다.
+                    상단에서 mlflow.openai.autolog()를 호출하면 OpenAI API 호출이 자동으로 추적됩니다.
+                    predict 메서드에 @mlflow.trace 데코레이터를 붙여 전체 처리 과정을 추적하고,
+                    _retrieve 메서드에도 별도로 데코레이터를 붙여 검색 단계를 세분화해서 추적합니다.
+                    이렇게 하면 MLflow UI에서 agent_predict 아래에 retrieve_context와 OpenAI 호출이
+                    트리 구조로 표시되어 각 단계의 소요 시간과 입출력을 한눈에 확인할 수 있습니다.
+                </aside>
+            </section>
+
+            <!-- Slide 9: 로컬 개발 → Databricks 배포 흐름 -->
+            <section>
+                <h2>로컬 개발 &rarr; Databricks 배포</h2>
+                <div class="deploy-flow fragment fade-up">
+                    <div class="flow-step">
+                        <strong>로컬 개발</strong>
+                        <span class="step-label">ChatAgent 구현<br>&amp; 테스트</span>
+                    </div>
+                    <span class="flow-arrow">&rarr;</span>
+                    <div class="flow-step">
+                        <strong>MLflow 로깅</strong>
+                        <span class="step-label">모델 &amp; 트레이스<br>기록</span>
+                    </div>
+                    <span class="flow-arrow">&rarr;</span>
+                    <div class="flow-step">
+                        <strong>Model Serving</strong>
+                        <span class="step-label">엔드포인트<br>배포</span>
+                    </div>
+                </div>
+                <pre class="fragment fade-up"><code class="language-python"># Step 1: 로컬에서 테스트
+agent = MyAgent()
+response = agent.predict(
+    messages=[{"role": "user", "content": "안녕하세요"}]
+)
+print(response.messages[0].content)
+</code></pre>
+                <pre class="fragment fade-up"><code class="language-python"># Step 2: MLflow로 모델 로깅
+import mlflow
+
+with mlflow.start_run():
+    model_info = mlflow.pyfunc.log_model(
+        artifact_path="agent",
+        python_model=MyAgent(),
+        pip_requirements=["databricks-agents", "openai"],
+    )
+</code></pre>
+                <pre class="fragment fade-up"><code class="language-python"># Step 3: Databricks Model Serving으로 배포
+from databricks.agents import deploy
+
+deploy(
+    model_uri=model_info.model_uri,
+    endpoint_name="my-agent-endpoint"
+)
+</code></pre>
+                <aside class="notes">
+                    로컬 개발부터 Databricks 배포까지의 전체 흐름을 보겠습니다.
+                    Step 1에서는 로컬에서 ChatAgent를 구현하고 predict를 직접 호출해서 테스트합니다.
+                    Step 2에서는 테스트가 완료된 에이전트를 MLflow에 로깅합니다.
+                    mlflow.pyfunc.log_model을 사용해서 에이전트 객체와 의존성을 함께 기록합니다.
+                    Step 3에서는 databricks.agents의 deploy 함수 한 줄로 Model Serving 엔드포인트에 배포합니다.
+                    이 세 단계가 AI Dev Kit의 핵심 워크플로우입니다.
+                    로컬에서 개발한 코드를 수정 없이 그대로 프로덕션에 배포할 수 있다는 것이 가장 큰 장점입니다.
+                </aside>
+            </section>
+
+            <!-- Slide 10: 데모 - 간단한 ChatAgent 구현 -->
+            <section>
+                <h2>데모: ChatAgent 구현 <span class="badge">LIVE</span></h2>
+                <p style="font-size: 0.85em; margin-bottom: 0.6em;">
+                    간단한 Q&amp;A 에이전트를 만들고 로컬에서 테스트합니다
+                </p>
+                <pre><code class="language-python">import mlflow
+from databricks.agents import ChatAgent, ChatAgentResponse, ChatAgentMessage
+from openai import OpenAI
+
+mlflow.openai.autolog()
+
+class QAAgent(ChatAgent):
+    """간단한 Q&A 에이전트"""
+
+    def __init__(self):
+        self.client = OpenAI()
+        self.system_prompt = (
+            "당신은 Databricks 관련 질문에 답변하는 도우미입니다. "
+            "한국어로 친절하게 답변해주세요."
+        )
+
+    @mlflow.trace(name="qa_predict")
+    def predict(self, messages, context=None):
+        response = self.client.chat.completions.create(
+            model="gpt-4o",
+            messages=[
+                {"role": "system", "content": self.system_prompt},
+                *messages
+            ]
+        )
+        return ChatAgentResponse(
+            messages=[ChatAgentMessage(
+                role="assistant",
+                content=response.choices[0].message.content
+            )]
+        )
+
+# 로컬 테스트
+agent = QAAgent()
+result = agent.predict(
+    messages=[{"role": "user", "content": "Unity Catalog가 뭔가요?"}]
+)
+print(result.messages[0].content)
+</code></pre>
+                <aside class="notes">
+                    데모 시간입니다. 간단한 Q&A 에이전트를 만들어보겠습니다.
+                    QAAgent 클래스는 ChatAgent를 상속받고 predict 메서드를 구현합니다.
+                    시스템 프롬프트로 Databricks 관련 질문에 한국어로 답변하도록 설정했습니다.
+                    OpenAI API를 사용해서 응답을 생성하고, ChatAgentResponse로 감싸서 반환합니다.
+                    mlflow.openai.autolog()와 @mlflow.trace 데코레이터로 전체 과정이 자동 추적됩니다.
+                    로컬에서 predict를 직접 호출해서 테스트할 수 있습니다.
+                    이 코드가 그대로 Databricks에 배포될 수 있다는 것이 핵심입니다.
+                    [실제 실행하여 결과를 보여주세요]
+                </aside>
+            </section>
+
+            <!-- Slide 11: 정리 & Q&A -->
+            <section>
+                <h2>정리 &amp; Q&amp;A</h2>
+                <div class="emphasis-box">
+                    <h3>핵심 정리</h3>
+                    <ul style="font-size: 0.9em;">
+                        <li class="fragment fade-up">
+                            <strong>Databricks AI Dev Kit</strong> &mdash; databricks-agents, MLflow Tracing, Unity Catalog의 통합 프레임워크
+                        </li>
+                        <li class="fragment fade-up">
+                            <strong>ChatAgent</strong> &mdash; <code>predict()</code> 메서드 하나로 에이전트를 정의하는 표준 인터페이스
+                        </li>
+                        <li class="fragment fade-up">
+                            <strong>MLflow Tracing</strong> &mdash; <code>@mlflow.trace</code>와 autolog로 에이전트 동작을 자동 추적
+                        </li>
+                        <li class="fragment fade-up">
+                            <strong>워크플로우</strong> &mdash; 로컬 개발 &rarr; MLflow 로깅 &rarr; Model Serving 배포
+                        </li>
+                    </ul>
+                </div>
+                <div class="fragment fade-up" style="margin-top: 1.5em; text-align: center;">
+                    <h3>다음 섹션 미리보기</h3>
+                    <p style="font-size: 0.9em;">
+                        <strong>Section 08: Build UI</strong><br>
+                        <span style="color: var(--ev-text-muted);">에이전트와 상호작용할 수 있는 UI를 구축합니다</span>
+                    </p>
+                </div>
+                <br>
+                <p class="fragment fade-up" style="text-align: center; font-size: 1.2em; color: var(--ev-accent);">
+                    질문이 있으신가요?
+                </p>
+                <aside class="notes">
+                    세션을 마무리하며 핵심 내용을 정리합니다.
+                    Databricks AI Dev Kit는 에이전트 개발, 추적, 배포를 위한 통합 프레임워크입니다.
+                    ChatAgent의 predict 메서드 하나만 구현하면 로컬 개발부터 프로덕션 배포까지 같은 코드를 사용할 수 있습니다.
+                    MLflow Tracing으로 에이전트의 모든 동작을 자동 추적할 수 있습니다.
+                    다음 섹션에서는 이 에이전트와 상호작용할 수 있는 UI를 만들어보겠습니다.
+                    질문이 있으시면 지금 해주세요.
+                </aside>
+            </section>
+
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/notes/notes.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/highlight.js"></script>
+    <script>
+        Reveal.initialize({
+            hash: true,
+            slideNumber: true,
+            plugins: [ RevealNotes, RevealHighlight ]
+        });
+    </script>
+</body>
+</html>

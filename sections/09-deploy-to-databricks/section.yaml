@@ -1,0 +1,14 @@
+number: "09"
+title: "Deploy to Databricks: Databricks 배포"
+duration_minutes: 15
+type: "hands-on"
+objectives:
+  - "Databricks Apps의 개념과 배포 구조 이해"
+  - "app.yaml 설정 파일 작성법 학습"
+  - "databricks CLI를 사용한 앱 배포 실습"
+slides: "slides/index.html"
+code_files:
+  - "code/exercise_01_prepare_deploy.py"
+  - "code/app.yaml"
+prerequisites:
+  - "08-build-ui"

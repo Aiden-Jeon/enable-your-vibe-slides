@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{SECTION_TITLE}} - Enable Your Vibe</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reset.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/theme/black.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/monokai.css">
+    <link rel="stylesheet" href="../../../shared/assets/theme.css">
+</head>
+<body>
+    <div class="reveal">
+        <div class="slides">
+
+            <!-- 타이틀 슬라이드 -->
+            <section>
+                <h1>{{SECTION_TITLE}}</h1>
+                <p>{{SECTION_SUBTITLE}}</p>
+                <p style="font-size: 0.5em; color: #888;">Enable Your Vibe - Vibe Coding 핸즈온</p>
+            </section>
+
+            <!-- 학습 목표 -->
+            <section>
+                <h2>학습 목표</h2>
+                <ul>
+                    <li>{{OBJECTIVE_1}}</li>
+                    <li>{{OBJECTIVE_2}}</li>
+                    <li>{{OBJECTIVE_3}}</li>
+                </ul>
+            </section>
+
+            <!-- 본문 슬라이드를 여기에 추가 -->
+
+            <!-- 요약 -->
+            <section>
+                <h2>정리</h2>
+                <ul>
+                    <li>{{SUMMARY_1}}</li>
+                    <li>{{SUMMARY_2}}</li>
+                    <li>{{SUMMARY_3}}</li>
+                </ul>
+            </section>
+
+            <!-- Q&A -->
+            <section>
+                <h1>Q&A</h1>
+                <p>질문이 있으신가요?</p>
+            </section>
+
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/notes/notes.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/highlight.js"></script>
+    <script>
+        Reveal.initialize({
+            hash: true,
+            slideNumber: true,
+            plugins: [ RevealNotes, RevealHighlight ]
+        });
+    </script>
+</body>
+</html>

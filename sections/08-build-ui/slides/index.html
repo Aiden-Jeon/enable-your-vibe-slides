@@ -1,0 +1,477 @@
+<!doctype html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>08 - Build UI - Enable Your Vibe</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reset.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/theme/black.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/monokai.css">
+    <link rel="stylesheet" href="../../../shared/assets/theme.css">
+</head>
+<body>
+    <div class="reveal"><div class="slides">
+
+        <!-- Slide 1: Title -->
+        <section>
+            <h1>Build UI</h1>
+            <p>UI 만들기</p>
+            <p style="margin-top: 2em; font-size: 0.7em; color: var(--ev-text-muted);">
+                Section 08 | Hands-on | 30분
+            </p>
+            <aside class="notes">
+                이번 섹션에서는 Genie API를 연동한 채팅 UI를 직접 만들어봅니다.
+                FastAPI로 백엔드를 구성하고, HTML/CSS/JS로 프론트엔드를 만들어
+                비개발자도 자연어로 데이터를 질의할 수 있는 웹 애플리케이션을 완성합니다.
+                빌드 도구 없이 순수한 정적 파일만으로 구현하므로 구조가 매우 심플합니다.
+            </aside>
+        </section>
+
+        <!-- Slide 2: 학습 목표 -->
+        <section>
+            <h2>학습 목표</h2>
+            <ul>
+                <li class="fragment">FastAPI로 웹 서버를 만드는 기본 구조를 이해한다</li>
+                <li class="fragment">Genie API를 연동한 채팅 UI를 구현한다</li>
+                <li class="fragment">프론트엔드와 백엔드의 통합 패턴을 학습한다</li>
+            </ul>
+            <div class="emphasis-box fragment" style="margin-top: 1.5em;">
+                <strong>핵심:</strong> 코드를 작성할 줄 모르는 비개발자도 데이터를 질의할 수 있는 웹 UI를 만듭니다
+            </div>
+            <aside class="notes">
+                세 가지 학습 목표를 설명합니다.
+                첫째, FastAPI의 기본 구조를 익힙니다. 라우터, 정적 파일 서빙, 요청/응답 모델 등을 다룹니다.
+                둘째, Section 05에서 배운 Genie API를 웹 UI와 연동합니다.
+                셋째, 프론트엔드(HTML/CSS/JS)와 백엔드(FastAPI)가 어떻게 통신하는지 이해합니다.
+                핵심은 비개발자가 사용할 수 있는 인터페이스를 만드는 것입니다.
+                CLI나 코드가 아닌, 웹 브라우저에서 바로 데이터를 질의할 수 있게 됩니다.
+            </aside>
+        </section>
+
+        <!-- Slide 3: 왜 UI가 필요한가? -->
+        <section>
+            <h2>왜 UI가 필요한가?</h2>
+            <div class="columns">
+                <div>
+                    <h3>CLI/코드 기반</h3>
+                    <ul>
+                        <li>개발자만 사용 가능</li>
+                        <li>환경 설정이 필요</li>
+                        <li>Python, 터미널 지식 필수</li>
+                        <li>진입 장벽이 높음</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3>웹 UI 기반</h3>
+                    <ul>
+                        <li>누구나 브라우저로 접속</li>
+                        <li>별도 설치 불필요</li>
+                        <li>직관적인 채팅 인터페이스</li>
+                        <li>비개발자도 바로 사용</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="emphasis-box fragment" style="margin-top: 1em;">
+                <strong>목표:</strong> 데이터 앱을 전사 누구나 사용할 수 있는 형태로 배포
+            </div>
+            <aside class="notes">
+                지금까지 만든 Genie MCP 서버는 Claude Code에서만 사용 가능했습니다.
+                개발자에게는 훌륭하지만, 비개발자 동료가 사용하기엔 진입 장벽이 높습니다.
+                웹 UI를 만들면 브라우저만 있으면 누구나 자연어로 데이터를 질의할 수 있습니다.
+                이것이 Vibe Coding의 진정한 가치입니다 - AI를 통해 누구나 데이터에 접근할 수 있게 만드는 것.
+                이번 실습에서는 이 목표를 직접 실현해봅니다.
+            </aside>
+        </section>
+
+        <!-- Slide 4: 기술 스택 선택 -->
+        <section>
+            <h2>기술 스택 선택</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>레이어</th>
+                        <th>기술</th>
+                        <th>선택 이유</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>백엔드</strong></td>
+                        <td><code>FastAPI</code></td>
+                        <td>Python 기반, 자동 API 문서, 비동기 지원</td>
+                    </tr>
+                    <tr>
+                        <td><strong>프론트엔드</strong></td>
+                        <td><code>HTML + CSS + JS</code></td>
+                        <td>빌드 도구 없이 심플하게</td>
+                    </tr>
+                    <tr>
+                        <td><strong>서버 실행</strong></td>
+                        <td><code>Uvicorn</code></td>
+                        <td>ASGI 서버, 개발/배포 모두 사용</td>
+                    </tr>
+                    <tr>
+                        <td><strong>HTTP 클라이언트</strong></td>
+                        <td><code>httpx</code></td>
+                        <td>async 지원, requests 호환</td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="emphasis-box fragment" style="margin-top: 1em;">
+                React, Vue 같은 프레임워크 없이 <strong>순수 HTML/CSS/JS</strong>로 구현합니다.<br>
+                Vibe Coding에서는 복잡한 도구보다 <strong>빠르게 동작하는 것</strong>이 중요합니다.
+            </div>
+            <aside class="notes">
+                기술 스택을 심플하게 유지하는 것이 핵심입니다.
+                백엔드는 FastAPI를 사용합니다. Python 기반이므로 이미 익숙하고, 자동 API 문서 생성도 지원합니다.
+                프론트엔드는 React나 Vue 같은 프레임워크 없이 순수 HTML, CSS, JavaScript만 사용합니다.
+                npm install, webpack 설정 같은 복잡한 과정이 전혀 필요 없습니다.
+                Vibe Coding에서는 완벽한 아키텍처보다 빠르게 동작하는 프로토타입이 중요합니다.
+                이 스택이면 30분 안에 동작하는 채팅 UI를 만들 수 있습니다.
+            </aside>
+        </section>
+
+        <!-- Slide 5: FastAPI 기본 구조 -->
+        <section>
+            <h2>FastAPI 기본 구조</h2>
+            <pre><code class="python" data-trim data-noescape>
+from fastapi import FastAPI
+from fastapi.responses import HTMLResponse
+from fastapi.staticfiles import StaticFiles
+
+app = FastAPI(title="My App")
+
+# 정적 파일 서빙 (CSS, JS, 이미지 등)
+app.mount("/static", StaticFiles(directory="static"), name="static")
+
+# HTML 페이지 라우트
+@app.get("/", response_class=HTMLResponse)
+async def home():
+    return "&lt;h1&gt;Hello World&lt;/h1&gt;"
+
+# JSON API 라우트
+@app.get("/api/health")
+async def health():
+    return {"status": "healthy"}
+
+# POST API 라우트
+@app.post("/api/chat")
+async def chat(message: str):
+    return {"reply": f"Echo: {message}"}
+            </code></pre>
+            <p style="font-size: 0.8em; color: var(--ev-text-muted);">
+                <code>/docs</code> 접속 시 자동 생성된 Swagger UI에서 API를 테스트할 수 있습니다
+            </p>
+            <aside class="notes">
+                FastAPI의 기본 구조입니다.
+                app 객체를 생성하고, 데코레이터로 라우트를 등록합니다.
+                StaticFiles를 마운트하면 CSS, JS, 이미지 같은 정적 파일을 서빙할 수 있습니다.
+                GET으로는 페이지를 반환하고, POST로는 데이터를 받아 처리합니다.
+                FastAPI의 큰 장점 중 하나는 /docs 경로에 자동으로 Swagger UI가 생성된다는 것입니다.
+                API를 브라우저에서 바로 테스트할 수 있어 개발이 매우 편리합니다.
+            </aside>
+        </section>
+
+        <!-- Slide 6: 채팅 UI 설계 -->
+        <section>
+            <h2>채팅 UI 설계</h2>
+            <div class="diagram">
+<pre style="background: transparent; border: none; box-shadow: none; text-align: center; font-size: 0.95em;">
++------------------------------------------+
+|  Header: Genie Chatbot                   |
++------------------------------------------+
+|                                          |
+|  [Bot] 안녕하세요! 질문해보세요.         |
+|                                          |
+|        [User] 이번 달 매출은?            |
+|                                          |
+|  [Bot] 이번 달 총 매출은                 |
+|        1,234,567원 입니다.               |
+|        SQL: SELECT SUM(amount)...        |
+|                                          |
++------------------------------------------+
+| [ 질문을 입력하세요...      ] [전송]     |
++------------------------------------------+
+</pre>
+            </div>
+            <div style="margin-top: 0.8em; font-size: 0.85em;">
+                <strong>흐름:</strong> 메시지 입력 &rarr; <code>POST /api/chat</code> 호출 &rarr; 로딩 표시 &rarr; 응답 표시
+            </div>
+            <aside class="notes">
+                채팅 UI의 전체 설계입니다.
+                상단에 헤더, 중앙에 메시지 영역, 하단에 입력창과 전송 버튼으로 구성됩니다.
+                사용자가 메시지를 입력하고 전송 버튼을 누르면, JavaScript가 POST /api/chat API를 호출합니다.
+                응답이 올 때까지 로딩 표시를 보여주고, 응답이 오면 봇 메시지로 표시합니다.
+                매우 심플한 구조이지만, 실제 서비스에서도 이 패턴이 기본이 됩니다.
+            </aside>
+        </section>
+
+        <!-- Slide 7: 백엔드 구현 - FastAPI + Genie API 연동 -->
+        <section>
+            <h2>백엔드 구현: FastAPI + Genie API</h2>
+            <pre><code class="python" data-trim data-noescape>
+@app.post("/api/chat", response_model=ChatResponse)
+async def chat(req: ChatRequest):
+    # 1. 대화 생성 (또는 기존 대화 사용)
+    if req.conversation_id:
+        conversation_id = req.conversation_id
+    else:
+        resp = httpx.post(f"{base_url}/conversations", headers=headers)
+        conversation_id = resp.json()["conversation_id"]
+
+    # 2. 메시지 전송
+    resp = httpx.post(
+        f"{base_url}/conversations/{conversation_id}/messages",
+        headers=headers,
+        json={"content": req.message},
+    )
+    message_id = resp.json()["message_id"]
+
+    # 3. 결과 폴링 (최대 60초)
+    for _ in range(30):
+        resp = httpx.get(f".../{message_id}", headers=headers)
+        if resp.json()["status"] == "COMPLETED":
+            break
+        time.sleep(2)
+
+    # 4. 응답 파싱 후 반환
+    return ChatResponse(reply=reply, conversation_id=conversation_id)
+            </code></pre>
+            <aside class="notes">
+                백엔드의 핵심 로직입니다.
+                Section 05에서 배운 Genie API 호출 패턴과 동일합니다.
+                차이점은 이것을 FastAPI 엔드포인트로 감싸서 HTTP API로 노출한다는 것입니다.
+                conversation_id를 클라이언트에 반환하여 같은 대화를 이어갈 수 있게 합니다.
+                Pydantic의 BaseModel로 요청/응답 스키마를 정의하면 자동 검증이 됩니다.
+                폴링 패턴은 이전 섹션에서 이미 익숙해졌을 것입니다.
+            </aside>
+        </section>
+
+        <!-- Slide 8: 프론트엔드 구현 -->
+        <section>
+            <h2>프론트엔드 구현</h2>
+            <div class="columns">
+                <div>
+                    <h3>HTML 구조</h3>
+                    <pre><code class="html" data-trim data-noescape>
+&lt;div class="chat-container"&gt;
+  &lt;header&gt;Genie Chatbot&lt;/header&gt;
+  &lt;div id="messages"&gt;
+    &lt;!-- 메시지 동적 추가 --&gt;
+  &lt;/div&gt;
+  &lt;div class="chat-input"&gt;
+    &lt;input id="messageInput"&gt;
+    &lt;button onclick="sendMessage()"&gt;
+      전송
+    &lt;/button&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+                    </code></pre>
+                </div>
+                <div>
+                    <h3>JS 핵심 로직</h3>
+                    <pre><code class="javascript" data-trim data-noescape>
+async function sendMessage() {
+  const message = inputEl.value;
+
+  // 사용자 메시지 표시
+  addMessage(message, 'user');
+
+  // API 호출
+  const resp = await fetch(
+    '/api/chat', {
+    method: 'POST',
+    headers: {
+      'Content-Type':
+        'application/json'
+    },
+    body: JSON.stringify({
+      message,
+      conversation_id
+    }),
+  });
+  const data = await resp.json();
+
+  // 봇 응답 표시
+  addMessage(data.reply, 'bot');
+}
+                    </code></pre>
+                </div>
+            </div>
+            <aside class="notes">
+                프론트엔드는 세 파일로 구성됩니다: index.html, style.css, app.js.
+                HTML은 채팅 컨테이너, 메시지 영역, 입력 영역으로 나뉩니다.
+                JavaScript의 핵심은 sendMessage 함수입니다.
+                fetch API로 백엔드의 /api/chat에 POST 요청을 보내고, 응답을 받아 화면에 표시합니다.
+                CSS는 다크 테마로 스타일링합니다. 우리 프로젝트의 테마 색상인 #1a1a2e, #e94560을 사용합니다.
+                React나 Vue 없이도 이 정도의 인터랙티브 UI를 만들 수 있습니다.
+            </aside>
+        </section>
+
+        <!-- Slide 9: SSE로 실시간 스트리밍 (개념 소개) -->
+        <section>
+            <h2>SSE(Server-Sent Events)로 실시간 스트리밍</h2>
+            <div class="columns">
+                <div>
+                    <h3>현재 방식: 폴링</h3>
+                    <ul>
+                        <li>요청 &rarr; 전체 응답 한 번에 수신</li>
+                        <li>응답이 올 때까지 로딩 대기</li>
+                        <li>구현이 단순</li>
+                        <li>사용자 경험이 다소 답답할 수 있음</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3>개선 방식: SSE</h3>
+                    <ul>
+                        <li>서버에서 클라이언트로 실시간 푸시</li>
+                        <li>글자가 한 글자씩 나타나는 효과</li>
+                        <li>ChatGPT와 같은 스트리밍 UX</li>
+                        <li>체감 응답 속도 크게 향상</li>
+                    </ul>
+                </div>
+            </div>
+            <pre><code class="python" data-trim data-noescape>
+from fastapi.responses import StreamingResponse
+
+@app.post("/api/chat/stream")
+async def chat_stream(req: ChatRequest):
+    async def event_generator():
+        yield f"data: {json.dumps({'type': 'status', 'content': '질의 중...'})}\n\n"
+        # ... Genie API 호출 및 결과 스트리밍 ...
+        yield f"data: {json.dumps({'type': 'result', 'content': reply})}\n\n"
+    return StreamingResponse(event_generator(), media_type="text/event-stream")
+            </code></pre>
+            <aside class="notes">
+                현재 구현은 폴링 방식으로, 전체 응답이 올 때까지 기다려야 합니다.
+                SSE(Server-Sent Events)를 사용하면 서버에서 클라이언트로 실시간으로 데이터를 푸시할 수 있습니다.
+                ChatGPT처럼 글자가 한 글자씩 나타나는 효과를 구현할 수 있습니다.
+                이번 실습에서는 기본적인 폴링 방식을 구현하고, SSE는 개념만 소개합니다.
+                SSE 구현은 FastAPI의 StreamingResponse를 사용하면 됩니다.
+                프론트엔드에서는 EventSource API로 서버의 이벤트를 수신합니다.
+                다음 단계로 개선하고 싶은 분은 이 패턴을 참고하세요.
+            </aside>
+        </section>
+
+        <!-- Slide 10: 전체 아키텍처 다이어그램 -->
+        <section>
+            <h2>전체 아키텍처</h2>
+            <div class="diagram">
+<pre style="background: transparent; border: none; box-shadow: none; text-align: center; font-size: 0.95em;">
++-------------+          +----------------+          +------------------+
+|             |  fetch   |                |  httpx   |                  |
+|   Browser   |--------->|    FastAPI     |--------->|    Genie API     |
+|  (HTML/JS)  |<---------|   (Python)     |<---------|  (Databricks)    |
+|             |   JSON   |                |   JSON   |                  |
++-------------+          +----------------+          +------------------+
+                          |
+                          | StaticFiles
+                          |
+                    +-------------+
+                    | static/     |
+                    | index.html  |
+                    | style.css   |
+                    | app.js      |
+                    +-------------+
+</pre>
+            </div>
+            <div class="emphasis-box fragment" style="margin-top: 0.8em; font-size: 0.9em;">
+                <strong>핵심 포인트:</strong>
+                FastAPI가 프록시 역할 &mdash; 프론트엔드는 Genie API를 직접 호출하지 않음<br>
+                (토큰 보안 + CORS 회피 + 비즈니스 로직 캡슐화)
+            </div>
+            <aside class="notes">
+                전체 아키텍처를 정리합니다.
+                브라우저에서 JavaScript의 fetch로 FastAPI 서버에 요청을 보냅니다.
+                FastAPI 서버는 httpx를 사용하여 Databricks Genie API를 호출합니다.
+                결과를 JSON으로 변환하여 브라우저에 반환합니다.
+                FastAPI는 정적 파일도 서빙하므로, 별도의 웹 서버가 필요 없습니다.
+                프론트엔드가 Genie API를 직접 호출하지 않는 이유가 세 가지 있습니다.
+                첫째, 토큰을 브라우저에 노출하면 보안 위험이 있습니다.
+                둘째, 브라우저의 CORS 정책으로 외부 API 직접 호출이 제한될 수 있습니다.
+                셋째, 폴링 같은 비즈니스 로직을 서버에서 처리하는 것이 깔끔합니다.
+            </aside>
+        </section>
+
+        <!-- Slide 11: 실습 안내 -->
+        <section>
+            <h2>실습 안내</h2>
+            <div class="columns">
+                <div>
+                    <h3>Exercise 01</h3>
+                    <p>FastAPI 기본 서버</p>
+                    <ul>
+                        <li>FastAPI 앱 생성</li>
+                        <li>HTML 응답 라우트</li>
+                        <li>JSON API 라우트</li>
+                        <li><code>/docs</code>에서 API 테스트</li>
+                    </ul>
+                    <pre><code class="bash" data-trim>
+python exercise_01_fastapi_basic.py
+# http://localhost:8000
+                    </code></pre>
+                </div>
+                <div>
+                    <h3>Exercise 02</h3>
+                    <p>Genie 채팅 UI</p>
+                    <ul>
+                        <li><code>.env</code> 설정</li>
+                        <li>FastAPI + Genie API 연동</li>
+                        <li>채팅 프론트엔드 확인</li>
+                        <li>자연어 데이터 질의</li>
+                    </ul>
+                    <pre><code class="bash" data-trim>
+cd exercise_02_genie_chatbot
+python app.py
+# http://localhost:8000
+                    </code></pre>
+                </div>
+            </div>
+            <div class="emphasis-box fragment" style="margin-top: 0.8em; font-size: 0.9em;">
+                먼저 <code>cp .env.example .env</code>로 환경변수 파일을 생성하고 값을 설정하세요
+            </div>
+            <aside class="notes">
+                두 가지 실습을 진행합니다.
+                Exercise 01은 FastAPI 기본 서버입니다. FastAPI가 처음인 분들을 위한 워밍업입니다.
+                서버를 실행하고 브라우저에서 접속해보세요. /docs에서 API를 직접 테스트할 수 있습니다.
+                Exercise 02는 Genie API를 연동한 완전한 채팅 UI입니다.
+                .env 파일에 Databricks 접속 정보를 설정한 뒤 서버를 실행합니다.
+                브라우저에서 자연어로 데이터를 질의해보세요.
+                Databricks 환경이 없는 분은 코드 구조를 분석하는 것만으로도 충분합니다.
+            </aside>
+        </section>
+
+        <!-- Slide 12: 정리 & Q&A -->
+        <section>
+            <h2>정리 & Q&A</h2>
+            <ul>
+                <li><strong>FastAPI</strong>: Python으로 빠르게 웹 서버를 만들 수 있는 프레임워크</li>
+                <li><strong>프록시 패턴</strong>: FastAPI가 Genie API 호출을 대행 (보안 + CORS + 로직 캡슐화)</li>
+                <li><strong>정적 파일 서빙</strong>: 빌드 도구 없이 HTML/CSS/JS를 직접 서빙</li>
+                <li><strong>채팅 UI</strong>: fetch API로 백엔드와 JSON 통신</li>
+                <li><strong>SSE</strong>: 실시간 스트리밍으로 UX 개선 가능 (확장 과제)</li>
+            </ul>
+            <div class="emphasis-box" style="margin-top: 1.5em;">
+                <strong>다음 섹션:</strong> Deploy to Databricks &mdash; 만든 앱을 Databricks에 배포하기
+            </div>
+            <aside class="notes">
+                이번 섹션의 핵심을 정리합니다.
+                FastAPI로 웹 서버를 만들고, 정적 파일을 서빙하는 방법을 배웠습니다.
+                Genie API를 프록시하는 패턴으로 보안과 기능을 모두 확보했습니다.
+                순수 HTML/CSS/JS로도 충분히 사용성 좋은 채팅 UI를 만들 수 있다는 것을 확인했습니다.
+                SSE를 적용하면 ChatGPT 같은 실시간 스트리밍 UX도 가능합니다.
+                다음 섹션에서는 이렇게 만든 앱을 Databricks 환경에 배포하는 방법을 다룹니다.
+                질문이 있으시면 자유롭게 해주세요.
+            </aside>
+        </section>
+
+    </div></div>
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/notes/notes.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/highlight.js"></script>
+    <script>
+        Reveal.initialize({ hash: true, slideNumber: true, plugins: [RevealNotes, RevealHighlight] });
+    </script>
+</body>
+</html>
