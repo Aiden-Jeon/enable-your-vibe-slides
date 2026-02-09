@@ -1,5 +1,6 @@
 (function () {
   var sections = [
+    { number: '00', dir: '00-home', title: 'Welcome', subtitle: '세션 소개', type: 'lecture' },
     { number: '01', dir: '01-ai-foundation', title: 'AI Foundation', subtitle: 'Claude AI 기초', type: 'lecture' },
     { number: '02', dir: '02-claude-code-features', title: 'Claude Code Features', subtitle: 'Claude Code 사용법', type: 'lecture+demo' },
     { number: '03', dir: '03-mcp-architecture', title: 'MCP Architecture', subtitle: 'MCP 아키텍처', type: 'lecture+hands-on' },

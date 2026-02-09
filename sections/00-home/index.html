@@ -1,0 +1,485 @@
+<!doctype html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>00 - Welcome - Enable Your Vibe</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reset.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/theme/black.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/monokai.css">
+    <link rel="stylesheet" href="../../shared/assets/theme.css">
+    <style>
+        /* Section-specific styles */
+        .reveal .goal-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.6em;
+            margin: 0.5em 0;
+            font-size: 0.85em;
+        }
+        .reveal .goal-item .goal-icon {
+            font-size: 1.2em;
+            min-width: 1.5em;
+            text-align: center;
+        }
+        .reveal .flow-diagram {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5em;
+            flex-wrap: wrap;
+            margin: 1em 0;
+        }
+        .reveal .flow-step {
+            background: var(--ev-bg-alt);
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 0.6em 1em;
+            text-align: center;
+            font-size: 0.75em;
+        }
+        .reveal .flow-step strong {
+            display: block;
+            color: var(--ev-accent-light);
+            font-size: 1.1em;
+        }
+        .reveal .flow-arrow {
+            color: var(--ev-accent);
+            font-size: 1.2em;
+        }
+        .reveal .tool-table td:first-child {
+            font-weight: bold;
+            color: var(--ev-accent-light);
+            white-space: nowrap;
+        }
+        .reveal .format-card {
+            background: var(--ev-bg-alt);
+            border-radius: 10px;
+            padding: 0.8em 1em;
+            margin: 0.4em 0;
+            border: 1px solid #333;
+        }
+        .reveal .format-card h4 {
+            color: var(--ev-accent-light);
+            margin: 0 0 0.2em 0;
+            font-size: 0.95em;
+        }
+        .reveal .format-card p {
+            margin: 0;
+            font-size: 0.8em;
+            color: var(--ev-text-muted);
+        }
+        .reveal .roadmap-card {
+            background: var(--ev-bg-alt);
+            border-left: 3px solid var(--ev-accent);
+            border-radius: 0 8px 8px 0;
+            padding: 0.5em 0.8em;
+            margin: 0.35em 0;
+            display: flex;
+            align-items: center;
+            gap: 0.6em;
+            font-size: 0.75em;
+        }
+        .reveal .roadmap-card .rm-num {
+            font-weight: 700;
+            color: var(--ev-accent);
+            min-width: 1.8em;
+            font-size: 1.1em;
+        }
+        .reveal .roadmap-card .rm-title {
+            flex: 1;
+        }
+        .reveal .roadmap-card .rm-meta {
+            color: var(--ev-text-muted);
+            white-space: nowrap;
+            font-size: 0.9em;
+        }
+        .reveal .subtitle {
+            color: var(--ev-accent-light);
+            font-size: 1.2em;
+            margin-top: 0.2em;
+        }
+        .reveal .section-number {
+            font-size: 0.5em;
+            color: var(--ev-text-muted);
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar Navigation -->
+    <button id="sidebar-toggle" class="sidebar-toggle"><span></span><span></span><span></span></button>
+    <nav id="sidebar" class="sidebar">
+        <div class="sidebar-header">
+            <h2>Enable Your Vibe</h2>
+            <p>Vibe Coding 핸즈온 세션</p>
+        </div>
+        <ul class="sidebar-sections"></ul>
+    </nav>
+    <div id="sidebar-overlay" class="sidebar-overlay"></div>
+
+    <div class="reveal">
+        <div class="slides">
+
+            <!-- Slide 1: Title -->
+            <section>
+                <p class="section-number">Section 00</p>
+                <h1>Enable Your Vibe</h1>
+                <p class="subtitle">Vibe Coding 핸즈온 세션</p>
+                <br>
+                <p style="font-size: 0.7em; color: var(--ev-text-muted);">
+                    AI-Powered Development Hands-on &mdash; 반나절, 3&ndash;4시간
+                </p>
+                <p style="font-size: 0.6em; color: var(--ev-text-muted);">
+                    10분 | 세션 소개
+                </p>
+                <aside class="notes">
+                    안녕하세요! Enable Your Vibe 핸즈온 세션에 오신 것을 환영합니다.
+                    오늘은 약 3-4시간에 걸쳐 Vibe Coding을 직접 경험하는 시간을 갖겠습니다.
+                    먼저 세션 전체 소개와 로지스틱을 안내드리고, 바로 본 내용으로 들어가겠습니다.
+                </aside>
+            </section>
+
+            <!-- Slide 2: 오늘의 목표 -->
+            <section>
+                <h2>오늘의 목표</h2>
+                <div class="goal-item fragment fade-up">
+                    <span class="goal-icon">1.</span>
+                    <span><strong>AI 기초</strong> 이해 &mdash; AI Fluency, Vibe Coding 개념과 Claude AI의 핵심 특징 파악</span>
+                </div>
+                <div class="goal-item fragment fade-up">
+                    <span class="goal-icon">2.</span>
+                    <span><strong>핵심 도구</strong> 습득 &mdash; Claude Code, MCP, Skills 등 개발 도구 직접 사용</span>
+                </div>
+                <div class="goal-item fragment fade-up">
+                    <span class="goal-icon">3.</span>
+                    <span><strong>실전 구현</strong> 경험 &mdash; Genie MCP 서버부터 웹 UI까지 전체 파이프라인 구축</span>
+                </div>
+                <div class="goal-item fragment fade-up">
+                    <span class="goal-icon">4.</span>
+                    <span><strong>배포</strong>까지 완성 &mdash; Databricks Apps로 실제 서비스 배포 경험</span>
+                </div>
+                <aside class="notes">
+                    오늘 세션의 네 가지 목표입니다.
+                    첫째, AI와 협업하기 위한 기초 개념을 이해합니다.
+                    둘째, Claude Code, MCP, Skills 등 실제 도구를 직접 사용해봅니다.
+                    셋째, 자연어로 데이터를 조회하는 MCP 서버부터 웹 UI까지 전체를 구현합니다.
+                    넷째, 만든 것을 Databricks에 배포하여 실제 서비스로 만듭니다.
+                    기초부터 배포까지 전체 흐름을 하루에 경험하는 것이 핵심입니다.
+                </aside>
+            </section>
+
+            <!-- Slide 3: 무엇을 만드나요? -->
+            <section>
+                <h2>무엇을 만드나요?</h2>
+                <p style="font-size: 0.85em; margin-bottom: 0.8em;">
+                    자연어로 데이터를 조회하는 <strong>AI 에이전트 웹 앱</strong>을 만들고 배포합니다
+                </p>
+                <div class="flow-diagram">
+                    <div class="flow-step">
+                        <strong>자연어 질문</strong>
+                        "이번 달 매출은?"
+                    </div>
+                    <span class="flow-arrow">&rarr;</span>
+                    <div class="flow-step">
+                        <strong>Genie MCP</strong>
+                        SQL 생성 &amp; 실행
+                    </div>
+                    <span class="flow-arrow">&rarr;</span>
+                    <div class="flow-step">
+                        <strong>Web UI</strong>
+                        결과 시각화
+                    </div>
+                    <span class="flow-arrow">&rarr;</span>
+                    <div class="flow-step">
+                        <strong>Databricks</strong>
+                        서비스 배포
+                    </div>
+                </div>
+                <div class="emphasis-box fragment fade-up" style="margin-top: 1em;">
+                    <p style="font-size: 0.8em; margin: 0;">
+                        이 모든 것을 <strong style="color: var(--ev-accent);">Vibe Coding</strong>으로 &mdash;
+                        코드를 직접 작성하지 않고, AI에게 의도를 전달하여 구현합니다
+                    </p>
+                </div>
+                <aside class="notes">
+                    오늘 만들 것의 전체 그림입니다.
+                    사용자가 자연어로 데이터 관련 질문을 하면,
+                    Genie MCP 서버가 SQL을 생성하고 실행해서 데이터를 가져오고,
+                    웹 UI에서 결과를 보여주는 앱을 만듭니다.
+                    그리고 이것을 Databricks에 배포하여 실제로 접근 가능한 서비스로 만듭니다.
+                    중요한 점은 이 모든 과정을 Vibe Coding으로 진행한다는 것입니다.
+                </aside>
+            </section>
+
+            <!-- Slide 4: 대상 참가자 -->
+            <section>
+                <h2>대상 참가자</h2>
+                <div class="columns">
+                    <div>
+                        <h3>추천 대상</h3>
+                        <ul style="font-size: 0.8em;">
+                            <li class="fragment fade-up">데이터 엔지니어</li>
+                            <li class="fragment fade-up">데이터 사이언티스트</li>
+                            <li class="fragment fade-up">ML 엔지니어</li>
+                            <li class="fragment fade-up">AI에 관심 있는 개발자</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3>사전 경험</h3>
+                        <ul style="font-size: 0.8em;">
+                            <li class="fragment fade-up">Python 기본 문법</li>
+                            <li class="fragment fade-up">터미널(CLI) 사용 경험</li>
+                            <li class="fragment fade-up">SQL 기본 이해</li>
+                            <li class="fragment fade-up" style="color: var(--ev-text-muted);">AI 코딩 도구 경험은 불필요!</li>
+                        </ul>
+                    </div>
+                </div>
+                <aside class="notes">
+                    이 세션은 데이터 엔지니어와 데이터 사이언티스트를 주요 대상으로 설계되었습니다.
+                    ML 엔지니어나 AI에 관심 있는 개발자 분들도 환영합니다.
+                    Python 기본 문법, 터미널 사용 경험, SQL 기본 이해 정도면 충분합니다.
+                    AI 코딩 도구 경험은 전혀 필요 없습니다. 오늘 처음부터 함께 배워나갈 겁니다.
+                </aside>
+            </section>
+
+            <!-- Slide 5: 사전 준비 -->
+            <section>
+                <h2>사전 준비</h2>
+                <table class="tool-table" style="font-size: 0.7em;">
+                    <thead>
+                        <tr>
+                            <th>도구</th>
+                            <th>용도</th>
+                            <th>확인</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="fragment fade-up">
+                            <td>Python 3.11+</td>
+                            <td>실습 코드 실행</td>
+                            <td><code>python --version</code></td>
+                        </tr>
+                        <tr class="fragment fade-up">
+                            <td>uv</td>
+                            <td>패키지 매니저</td>
+                            <td><code>uv --version</code></td>
+                        </tr>
+                        <tr class="fragment fade-up">
+                            <td>Claude Code</td>
+                            <td>AI 코딩 에이전트</td>
+                            <td><code>claude --version</code></td>
+                        </tr>
+                        <tr class="fragment fade-up">
+                            <td>Databricks CLI</td>
+                            <td>배포 (후반부)</td>
+                            <td><code>databricks --version</code></td>
+                        </tr>
+                        <tr class="fragment fade-up">
+                            <td>VS Code / 터미널</td>
+                            <td>코드 편집 &amp; 실행 환경</td>
+                            <td>&mdash;</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <p class="fragment fade-up" style="font-size: 0.75em; color: var(--ev-text-muted); margin-top: 1em;">
+                    설치가 안 된 도구가 있다면 지금 알려주세요. 함께 해결하겠습니다!
+                </p>
+                <aside class="notes">
+                    실습에 필요한 도구들입니다.
+                    Python 3.11 이상, uv 패키지 매니저, Claude Code CLI가 핵심입니다.
+                    Databricks CLI는 후반부 배포 실습에서 사용합니다.
+                    각 도구의 확인 명령어를 화면에 표시했으니, 잠시 터미널을 열어 확인해보세요.
+                    설치가 안 된 도구가 있다면 지금 말씀해주세요. 함께 해결하겠습니다.
+                </aside>
+            </section>
+
+            <!-- Slide 6: 세션 진행 방식 -->
+            <section>
+                <h2>세션 진행 방식</h2>
+                <div class="format-card fragment fade-up">
+                    <h4>강의 (Lecture)</h4>
+                    <p>핵심 개념 설명 &mdash; 슬라이드 중심, 배경 지식과 이론을 전달합니다</p>
+                </div>
+                <div class="format-card fragment fade-up">
+                    <h4>데모 (Demo)</h4>
+                    <p>라이브 시연 &mdash; 발표자가 실시간으로 도구를 사용하는 모습을 보여드립니다</p>
+                </div>
+                <div class="format-card fragment fade-up">
+                    <h4>실습 (Hands-on)</h4>
+                    <p>직접 코딩 &mdash; 가이드를 따라 각자의 환경에서 직접 구현합니다</p>
+                </div>
+                <p class="fragment fade-up" style="font-size: 0.8em; margin-top: 1em; color: var(--ev-text-muted);">
+                    각 섹션은 이 세 가지 형태를 조합하여 진행됩니다
+                </p>
+                <aside class="notes">
+                    세션은 세 가지 형태로 진행됩니다.
+                    강의는 슬라이드 중심으로 개념을 설명합니다.
+                    데모는 발표자가 직접 도구를 사용하는 모습을 실시간으로 보여드립니다.
+                    실습은 참가자 여러분이 직접 코드를 작성하는 시간입니다.
+                    대부분의 섹션은 이 세 가지를 적절히 조합하여 진행합니다.
+                </aside>
+            </section>
+
+            <!-- Slide 7: 로드맵 Part 1 -->
+            <section>
+                <h2>로드맵: Part 1 &mdash; 기초 다지기</h2>
+                <p style="font-size: 0.8em; color: var(--ev-text-muted); margin-bottom: 0.6em;">75분 | 강의 중심</p>
+                <div class="roadmap-card fragment fade-up">
+                    <span class="rm-num">01</span>
+                    <span class="rm-title"><strong>AI Foundation</strong> &mdash; AI Fluency, 4D Framework, Vibe Coding 개념</span>
+                    <span class="rm-meta">15분 &middot; 강의</span>
+                </div>
+                <div class="roadmap-card fragment fade-up">
+                    <span class="rm-num">02</span>
+                    <span class="rm-title"><strong>Claude Code Features</strong> &mdash; CLI 설치, 기본 사용법, 핵심 기능</span>
+                    <span class="rm-meta">20분 &middot; 강의+데모</span>
+                </div>
+                <div class="roadmap-card fragment fade-up">
+                    <span class="rm-num">03</span>
+                    <span class="rm-title"><strong>MCP Architecture</strong> &mdash; MCP 프로토콜, FastMCP로 첫 서버 만들기</span>
+                    <span class="rm-meta">25분 &middot; 강의+실습</span>
+                </div>
+                <div class="roadmap-card fragment fade-up">
+                    <span class="rm-num">04</span>
+                    <span class="rm-title"><strong>Skills Ecosystem</strong> &mdash; Skills, Agents, Hooks 개념</span>
+                    <span class="rm-meta">15분 &middot; 강의</span>
+                </div>
+                <aside class="notes">
+                    전체 로드맵의 Part 1, 기초 다지기입니다. 총 75분으로 강의 중심입니다.
+                    섹션 1에서 AI Fluency와 Vibe Coding의 기초 개념을 다루고,
+                    섹션 2에서 Claude Code를 직접 설치하고 사용법을 익힙니다.
+                    섹션 3에서 MCP라는 도구 연동 프로토콜을 배우며 첫 MCP 서버를 만들어보고,
+                    섹션 4에서 Skills 생태계 개념을 이해합니다.
+                    Part 1이 끝나면 AI 코딩의 기반 지식이 갖춰집니다.
+                </aside>
+            </section>
+
+            <!-- Slide 8: 로드맵 Part 2 -->
+            <section>
+                <h2>로드맵: Part 2 &mdash; 실전 구현</h2>
+                <p style="font-size: 0.8em; color: var(--ev-text-muted); margin-bottom: 0.6em;">115분 | 실습 중심</p>
+                <div class="roadmap-card fragment fade-up">
+                    <span class="rm-num">05</span>
+                    <span class="rm-title"><strong>Genie MCP</strong> &mdash; Databricks Genie API, MCP 서버 래핑</span>
+                    <span class="rm-meta">30분 &middot; 실습</span>
+                </div>
+                <div class="roadmap-card fragment fade-up">
+                    <span class="rm-num">06</span>
+                    <span class="rm-title"><strong>Skills Workflow</strong> &mdash; SKILL.md 작성, Custom Skill 만들기</span>
+                    <span class="rm-meta">25분 &middot; 실습</span>
+                </div>
+                <div class="roadmap-card fragment fade-up">
+                    <span class="rm-num">07</span>
+                    <span class="rm-title"><strong>AI Dev Kit</strong> &mdash; ChatAgent, MLflow Tracing, 배포 파이프라인</span>
+                    <span class="rm-meta">15분 &middot; 강의+데모</span>
+                </div>
+                <div class="roadmap-card fragment fade-up">
+                    <span class="rm-num">08</span>
+                    <span class="rm-title"><strong>Build UI</strong> &mdash; FastAPI 웹 서버, Genie 채팅 UI 구축</span>
+                    <span class="rm-meta">30분 &middot; 실습</span>
+                </div>
+                <div class="roadmap-card fragment fade-up">
+                    <span class="rm-num">09</span>
+                    <span class="rm-title"><strong>Deploy</strong> &mdash; Databricks Apps로 서비스 배포</span>
+                    <span class="rm-meta">15분 &middot; 실습</span>
+                </div>
+                <aside class="notes">
+                    Part 2는 실전 구현입니다. 총 115분으로 실습 중심입니다.
+                    섹션 5에서 Genie MCP 서버를 만들어 자연어 데이터 조회를 구현하고,
+                    섹션 6에서 Skills로 워크플로우를 구조화합니다.
+                    섹션 7에서 Databricks AI Dev Kit을 알아보고,
+                    섹션 8에서 웹 UI를 만들어 프론트엔드와 백엔드를 통합합니다.
+                    마지막으로 섹션 9에서 Databricks Apps에 배포합니다.
+                    Part 2가 끝나면 실제로 동작하는 AI 웹 앱이 완성됩니다.
+                </aside>
+            </section>
+
+            <!-- Slide 9: 학습 경로 -->
+            <section>
+                <h2>학습 경로</h2>
+                <div class="diagram">
+<pre style="margin: 0; background: transparent; border: none; box-shadow: none; font-size: 0.85em;">
+ Part 1: 기초 다지기                    Part 2: 실전 구현
+ ─────────────────                    ─────────────────
+
+ ┌──────────┐   ┌──────────┐         ┌──────────┐   ┌──────────┐
+ │ 01. AI   │──▶│ 02.Claude│         │ 05.Genie │──▶│ 06.Skills│
+ │Foundation│   │   Code   │         │   MCP    │   │ Workflow │
+ └──────────┘   └────┬─────┘         └──────────┘   └──────────┘
+                     │                     ▲
+                     ▼                     │
+ ┌──────────┐   ┌──────────┐         ┌──────────┐   ┌──────────┐
+ │ 04.Skills│◀──│ 03. MCP  │────────▶│ 07.AI    │──▶│ 08.Build │
+ │Ecosystem │   │   Arch   │         │ Dev Kit  │   │   UI     │
+ └──────────┘   └──────────┘         └──────────┘   └────┬─────┘
+                                                         │
+                                                         ▼
+                                                    ┌──────────┐
+                                                    │ 09.Deploy│
+                                                    │to Databri│
+                                                    └──────────┘
+</pre>
+                </div>
+                <p class="fragment fade-up" style="font-size: 0.75em; color: var(--ev-text-muted); margin-top: 0.5em; text-align: center;">
+                    각 섹션은 이전 섹션의 지식을 기반으로 하지만, 독립적으로도 참고 가능합니다
+                </p>
+                <aside class="notes">
+                    섹션 간 관계를 시각적으로 보여드립니다.
+                    Part 1에서는 AI Foundation에서 시작하여 Claude Code, MCP, Skills 순서로 기초를 다집니다.
+                    MCP 아키텍처 이해가 Part 2의 핵심 기반이 됩니다.
+                    Part 2에서는 MCP 지식을 바탕으로 Genie MCP 서버를 만들고,
+                    Skills로 워크플로우를 구조화하고, AI Dev Kit과 UI를 거쳐 최종 배포까지 이어집니다.
+                    순서대로 따라가면 자연스러운 흐름이지만, 필요한 섹션만 참고하셔도 됩니다.
+                </aside>
+            </section>
+
+            <!-- Slide 10: 시작합시다! -->
+            <section>
+                <h2 style="text-align: center; border: none;">시작합시다!</h2>
+                <br>
+                <p style="font-size: 0.95em; text-align: center;">
+                    오늘 핸즈온이 끝나면 여러분은
+                </p>
+                <div class="emphasis-box" style="text-align: center; margin: 1em auto; max-width: 80%;">
+                    <p style="font-size: 1em; margin: 0;">
+                        <strong style="color: var(--ev-accent);">자연어로 데이터를 조회하는 AI 웹 앱</strong>을<br>
+                        직접 만들고 배포한 경험을 가지게 됩니다
+                    </p>
+                </div>
+                <br>
+                <p style="text-align: center; font-size: 0.9em;">
+                    다음: <strong>Section 01 &mdash; AI Foundation</strong>
+                </p>
+                <p style="text-align: center; font-size: 0.75em; color: var(--ev-text-muted);">
+                    AI Fluency, 4D Framework, Vibe Coding 기초
+                </p>
+                <aside class="notes">
+                    자, 그럼 시작하겠습니다!
+                    오늘 세션이 끝나면 여러분은 자연어로 데이터를 조회하는 AI 웹 앱을
+                    직접 만들고 배포한 경험을 가지게 됩니다.
+                    코드를 직접 작성하는 것이 아니라, AI에게 의도를 전달하여 만드는 경험입니다.
+                    바로 다음 섹션인 AI Foundation으로 넘어가겠습니다.
+                    AI Fluency와 4D Framework부터 시작합니다.
+                </aside>
+            </section>
+
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/notes/notes.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/highlight.js"></script>
+    <script>
+        Reveal.initialize({
+            hash: true,
+            slideNumber: true,
+            plugins: [ RevealNotes, RevealHighlight ]
+        });
+    </script>
+    <script src="../../shared/scripts/sidebar.js"></script>
+    <script src="../../shared/scripts/copy-code.js"></script>
+</body>
+</html>

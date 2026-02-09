@@ -34,111 +34,269 @@
             padding: 3rem 2rem;
         }
 
-        header {
+        /* ===== Hero Section ===== */
+        .hero {
             text-align: center;
-            margin-bottom: 3rem;
+            padding: 2rem 0 3rem;
         }
 
-        header h1 {
-            font-size: 2.5rem;
+        .hero h1 {
+            font-size: 3rem;
             color: var(--accent);
             margin-bottom: 0.5rem;
             letter-spacing: -0.02em;
         }
 
-        header p {
+        .hero .tagline {
             color: var(--text-muted);
-            font-size: 1.1rem;
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
         }
 
-        .info-bar {
+        .hero .cta-group {
             display: flex;
             justify-content: center;
-            gap: 2rem;
-            margin-top: 1.5rem;
+            gap: 1rem;
+            margin-bottom: 2.5rem;
             flex-wrap: wrap;
         }
 
-        .info-bar span {
+        .cta-btn {
+            display: inline-block;
+            padding: 0.8em 1.8em;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: transform 0.15s, box-shadow 0.2s;
+        }
+
+        .cta-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(233, 69, 96, 0.3);
+        }
+
+        .cta-primary {
+            background: var(--accent);
+            color: #fff;
+        }
+
+        .cta-secondary {
+            background: transparent;
+            color: var(--accent-light);
+            border: 2px solid var(--accent);
+        }
+
+        .cta-secondary:hover {
+            background: rgba(233, 69, 96, 0.1);
+        }
+
+        /* ===== Info Pills ===== */
+        .info-pills {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .pill {
+            background: var(--bg-alt);
+            border: 1px solid #2a2a4a;
+            border-radius: 50px;
+            padding: 0.5em 1.2em;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .pill strong {
+            color: var(--text);
+        }
+
+        /* ===== Section Headers ===== */
+        .section-header {
+            margin-top: 3rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .section-header h2 {
+            font-size: 1.5rem;
+            color: var(--text);
+            margin-bottom: 0.3rem;
+        }
+
+        .section-header p {
             color: var(--text-muted);
             font-size: 0.9rem;
         }
 
-        .info-bar strong {
-            color: var(--text);
+        /* ===== Audience & Prerequisites ===== */
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
         }
 
-        .part-header {
-            margin-top: 2.5rem;
-            margin-bottom: 1rem;
-            padding-bottom: 0.5rem;
-            border-bottom: 2px solid var(--accent);
+        .info-card {
+            background: var(--bg-alt);
+            border: 1px solid #2a2a4a;
+            border-radius: 12px;
+            padding: 1.5rem;
         }
 
-        .part-header h2 {
-            font-size: 1.3rem;
-            color: var(--text);
+        .info-card h3 {
+            font-size: 1.05rem;
+            color: var(--accent-light);
+            margin-bottom: 0.8rem;
         }
 
-        .part-header span {
+        .info-card ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .info-card li {
+            font-size: 0.9rem;
+            padding: 0.3em 0;
             color: var(--text-muted);
+        }
+
+        .info-card li::before {
+            content: "· ";
+            color: var(--accent);
+            font-weight: bold;
+        }
+
+        /* ===== Build Preview ===== */
+        .build-preview {
+            background: var(--bg-alt);
+            border: 1px solid var(--accent);
+            border-radius: 12px;
+            padding: 1.5rem 2rem;
+            margin: 2rem 0;
+            text-align: center;
+        }
+
+        .build-preview h3 {
+            font-size: 1.1rem;
+            color: var(--accent-light);
+            margin-bottom: 1rem;
+        }
+
+        .build-flow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .build-step {
+            background: var(--bg);
+            border: 1px solid #2a2a4a;
+            border-radius: 8px;
+            padding: 0.6em 1em;
             font-size: 0.85rem;
         }
 
-        .sections {
-            display: flex;
-            flex-direction: column;
-            gap: 0.75rem;
+        .build-step strong {
+            display: block;
+            color: var(--accent-light);
+            font-size: 0.95rem;
         }
 
-        .section-card {
+        .build-arrow {
+            color: var(--accent);
+            font-size: 1.2rem;
+        }
+
+        /* ===== Timeline ===== */
+        .timeline {
+            position: relative;
+            padding-left: 2.5rem;
+        }
+
+        .timeline::before {
+            content: "";
+            position: absolute;
+            left: 0.7rem;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: #2a2a4a;
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 0.6rem;
+        }
+
+        .timeline-item::before {
+            content: "";
+            position: absolute;
+            left: -1.95rem;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--bg);
+            border: 2px solid var(--accent);
+        }
+
+        .timeline-item a {
             display: flex;
             align-items: center;
-            gap: 1.2rem;
+            gap: 1rem;
             background: var(--bg-alt);
             border: 1px solid #2a2a4a;
             border-radius: 10px;
-            padding: 1.2rem 1.5rem;
+            padding: 1rem 1.2rem;
             text-decoration: none;
             color: var(--text);
             transition: border-color 0.2s, transform 0.15s;
         }
 
-        .section-card:hover {
+        .timeline-item a:hover {
             border-color: var(--accent);
             transform: translateX(4px);
         }
 
-        .section-number {
-            font-size: 1.8rem;
+        .timeline-item a:hover::before {
+            background: var(--accent);
+        }
+
+        .timeline-number {
+            font-size: 1.6rem;
             font-weight: 700;
             color: var(--accent);
-            min-width: 2.5rem;
+            min-width: 2.2rem;
             text-align: center;
         }
 
-        .section-info {
+        .timeline-info {
             flex: 1;
         }
 
-        .section-info h3 {
-            font-size: 1.05rem;
-            margin-bottom: 0.25rem;
+        .timeline-info h3 {
+            font-size: 1rem;
+            margin-bottom: 0.2rem;
         }
 
-        .section-info p {
+        .timeline-info p {
             color: var(--text-muted);
-            font-size: 0.85rem;
+            font-size: 0.82rem;
         }
 
-        .section-meta {
+        .timeline-meta {
             display: flex;
-            gap: 0.75rem;
+            gap: 0.6rem;
             align-items: center;
         }
 
         .badge {
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             padding: 0.2em 0.6em;
             border-radius: 4px;
             text-transform: uppercase;
@@ -163,10 +321,32 @@
 
         .duration {
             color: var(--text-muted);
-            font-size: 0.8rem;
+            font-size: 0.78rem;
             white-space: nowrap;
         }
 
+        /* ===== Part Divider ===== */
+        .part-divider {
+            position: relative;
+            margin: 2rem 0 1.2rem;
+            padding-left: 0;
+        }
+
+        .part-divider h2 {
+            font-size: 1.2rem;
+            color: var(--text);
+            padding-bottom: 0.3rem;
+            border-bottom: 2px solid var(--accent);
+            display: inline-block;
+        }
+
+        .part-divider span {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-left: 0.8rem;
+        }
+
+        /* ===== Footer ===== */
         footer {
             text-align: center;
             margin-top: 3rem;
@@ -185,21 +365,43 @@
             text-decoration: underline;
         }
 
+        /* ===== Responsive ===== */
         @media (max-width: 600px) {
             .container {
                 padding: 2rem 1rem;
             }
 
-            header h1 {
-                font-size: 1.8rem;
+            .hero h1 {
+                font-size: 2rem;
             }
 
-            .section-card {
+            .hero .tagline {
+                font-size: 1rem;
+            }
+
+            .cta-btn {
+                font-size: 0.9rem;
+                padding: 0.7em 1.4em;
+            }
+
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .build-flow {
+                flex-direction: column;
+            }
+
+            .build-arrow {
+                transform: rotate(90deg);
+            }
+
+            .timeline-item a {
                 flex-wrap: wrap;
                 gap: 0.5rem;
             }
 
-            .section-meta {
+            .timeline-meta {
                 width: 100%;
                 justify-content: flex-end;
             }
@@ -208,140 +410,236 @@
 </head>
 <body>
     <div class="container">
-        <header>
-            <h1>Enable Your Vibe</h1>
-            <p>Vibe Coding 핸즈온 세션</p>
-            <div class="info-bar">
-                <span><strong>9</strong> 섹션</span>
-                <span><strong>190</strong>분</span>
-                <span><strong>5</strong> 실습</span>
-                <span>대상: 데이터 엔지니어 / 사이언티스트</span>
-            </div>
-        </header>
 
-        <div class="part-header">
+        <!-- Hero -->
+        <div class="hero">
+            <h1>Enable Your Vibe</h1>
+            <p class="tagline">Vibe Coding 핸즈온 세션</p>
+            <div class="cta-group">
+                <a href="sections/00-home/index.html" class="cta-btn cta-primary">발표 시작하기</a>
+                <a href="sections/01-ai-foundation/index.html" class="cta-btn cta-secondary">Section 01부터 시작</a>
+            </div>
+            <div class="info-pills">
+                <span class="pill"><strong>10</strong> 섹션</span>
+                <span class="pill"><strong>200</strong>분</span>
+                <span class="pill"><strong>5</strong> 실습</span>
+                <span class="pill">대상: 데이터 엔지니어 / 사이언티스트</span>
+            </div>
+        </div>
+
+        <!-- Audience & Prerequisites -->
+        <div class="section-header">
+            <h2>참가자 안내</h2>
+            <p>누가 참여하면 좋을까요?</p>
+        </div>
+        <div class="info-grid">
+            <div class="info-card">
+                <h3>추천 대상</h3>
+                <ul>
+                    <li>데이터 엔지니어</li>
+                    <li>데이터 사이언티스트</li>
+                    <li>ML 엔지니어</li>
+                    <li>AI에 관심 있는 개발자</li>
+                </ul>
+            </div>
+            <div class="info-card">
+                <h3>사전 준비</h3>
+                <ul>
+                    <li>Python 3.11+</li>
+                    <li>uv 패키지 매니저</li>
+                    <li>Claude Code CLI</li>
+                    <li>Databricks CLI (후반부)</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Build Preview -->
+        <div class="build-preview">
+            <h3>무엇을 만드나요?</h3>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem;">
+                자연어로 데이터를 조회하는 AI 에이전트 웹 앱을 만들고 배포합니다
+            </p>
+            <div class="build-flow">
+                <div class="build-step">
+                    <strong>자연어 질문</strong>
+                    "이번 달 매출은?"
+                </div>
+                <span class="build-arrow">&rarr;</span>
+                <div class="build-step">
+                    <strong>Genie MCP</strong>
+                    SQL 생성 &amp; 실행
+                </div>
+                <span class="build-arrow">&rarr;</span>
+                <div class="build-step">
+                    <strong>Web UI</strong>
+                    결과 시각화
+                </div>
+                <span class="build-arrow">&rarr;</span>
+                <div class="build-step">
+                    <strong>Databricks</strong>
+                    서비스 배포
+                </div>
+            </div>
+        </div>
+
+        <!-- Timeline: Part 1 -->
+        <div class="part-divider">
             <h2>Part 1: 기초 다지기</h2>
             <span>75분 | 강의 중심</span>
         </div>
-        <div class="sections">
-            <a href="sections/01-ai-foundation/index.html" class="section-card">
-                <div class="section-number">01</div>
-                <div class="section-info">
-                    <h3>AI Foundation: Claude AI 기초</h3>
-                    <p>Vibe Coding 개념, AI 코딩 도구 발전, Claude 차별점, 에이전틱 코딩</p>
-                </div>
-                <div class="section-meta">
-                    <span class="badge badge-lecture">강의</span>
-                    <span class="duration">15분</span>
-                </div>
-            </a>
+        <div class="timeline">
+            <div class="timeline-item">
+                <a href="sections/00-home/index.html">
+                    <div class="timeline-number">00</div>
+                    <div class="timeline-info">
+                        <h3>Welcome: 세션 소개</h3>
+                        <p>오늘의 목표, 대상 참가자, 사전 준비, 전체 로드맵</p>
+                    </div>
+                    <div class="timeline-meta">
+                        <span class="badge badge-lecture">강의</span>
+                        <span class="duration">10분</span>
+                    </div>
+                </a>
+            </div>
 
-            <a href="sections/02-claude-code-features/index.html" class="section-card">
-                <div class="section-number">02</div>
-                <div class="section-info">
-                    <h3>Claude Code Features: Claude Code 사용법</h3>
-                    <p>CLI 설치, 기본 사용법, CLAUDE.md, 4가지 핵심 기능, 컨텍스트 관리</p>
-                </div>
-                <div class="section-meta">
-                    <span class="badge badge-demo">강의+데모</span>
-                    <span class="duration">20분</span>
-                </div>
-            </a>
+            <div class="timeline-item">
+                <a href="sections/01-ai-foundation/index.html">
+                    <div class="timeline-number">01</div>
+                    <div class="timeline-info">
+                        <h3>AI Foundation: Claude AI 기초</h3>
+                        <p>Vibe Coding 개념, AI 코딩 도구 발전, Claude 차별점, 에이전틱 코딩</p>
+                    </div>
+                    <div class="timeline-meta">
+                        <span class="badge badge-lecture">강의</span>
+                        <span class="duration">15분</span>
+                    </div>
+                </a>
+            </div>
 
-            <a href="sections/03-mcp-architecture/index.html" class="section-card">
-                <div class="section-number">03</div>
-                <div class="section-info">
-                    <h3>MCP Architecture: MCP 아키텍처</h3>
-                    <p>MCP 프로토콜, N+M 연결 구조, FastMCP로 첫 MCP 서버 만들기</p>
-                </div>
-                <div class="section-meta">
-                    <span class="badge badge-handson">강의+실습</span>
-                    <span class="duration">25분</span>
-                </div>
-            </a>
+            <div class="timeline-item">
+                <a href="sections/02-claude-code-features/index.html">
+                    <div class="timeline-number">02</div>
+                    <div class="timeline-info">
+                        <h3>Claude Code Features: Claude Code 사용법</h3>
+                        <p>CLI 설치, 기본 사용법, CLAUDE.md, 4가지 핵심 기능, 컨텍스트 관리</p>
+                    </div>
+                    <div class="timeline-meta">
+                        <span class="badge badge-demo">강의+데모</span>
+                        <span class="duration">20분</span>
+                    </div>
+                </a>
+            </div>
 
-            <a href="sections/04-skills-ecosystem/index.html" class="section-card">
-                <div class="section-number">04</div>
-                <div class="section-info">
-                    <h3>Skills Ecosystem: Skills 생태계</h3>
-                    <p>Skills, Agents, Hooks 개념, SKILL.md 구조, 워크플로우 표준화</p>
-                </div>
-                <div class="section-meta">
-                    <span class="badge badge-lecture">강의</span>
-                    <span class="duration">15분</span>
-                </div>
-            </a>
+            <div class="timeline-item">
+                <a href="sections/03-mcp-architecture/index.html">
+                    <div class="timeline-number">03</div>
+                    <div class="timeline-info">
+                        <h3>MCP Architecture: MCP 아키텍처</h3>
+                        <p>MCP 프로토콜, N+M 연결 구조, FastMCP로 첫 MCP 서버 만들기</p>
+                    </div>
+                    <div class="timeline-meta">
+                        <span class="badge badge-handson">강의+실습</span>
+                        <span class="duration">25분</span>
+                    </div>
+                </a>
+            </div>
+
+            <div class="timeline-item">
+                <a href="sections/04-skills-ecosystem/index.html">
+                    <div class="timeline-number">04</div>
+                    <div class="timeline-info">
+                        <h3>Skills Ecosystem: Skills 생태계</h3>
+                        <p>Skills, Agents, Hooks 개념, SKILL.md 구조, 워크플로우 표준화</p>
+                    </div>
+                    <div class="timeline-meta">
+                        <span class="badge badge-lecture">강의</span>
+                        <span class="duration">15분</span>
+                    </div>
+                </a>
+            </div>
         </div>
 
-        <div class="part-header">
+        <!-- Timeline: Part 2 -->
+        <div class="part-divider">
             <h2>Part 2: 실전 구현</h2>
             <span>115분 | 실습 중심</span>
         </div>
-        <div class="sections">
-            <a href="sections/05-genie-mcp/index.html" class="section-card">
-                <div class="section-number">05</div>
-                <div class="section-info">
-                    <h3>Genie MCP: Genie MCP 서버 만들기</h3>
-                    <p>Databricks Genie API, 비동기 폴링 패턴, FastMCP로 MCP 서버 래핑</p>
-                </div>
-                <div class="section-meta">
-                    <span class="badge badge-handson">실습</span>
-                    <span class="duration">30분</span>
-                </div>
-            </a>
+        <div class="timeline">
+            <div class="timeline-item">
+                <a href="sections/05-genie-mcp/index.html">
+                    <div class="timeline-number">05</div>
+                    <div class="timeline-info">
+                        <h3>Genie MCP: Genie MCP 서버 만들기</h3>
+                        <p>Databricks Genie API, 비동기 폴링 패턴, FastMCP로 MCP 서버 래핑</p>
+                    </div>
+                    <div class="timeline-meta">
+                        <span class="badge badge-handson">실습</span>
+                        <span class="duration">30분</span>
+                    </div>
+                </a>
+            </div>
 
-            <a href="sections/06-skills-workflow/index.html" class="section-card">
-                <div class="section-number">06</div>
-                <div class="section-info">
-                    <h3>Skills Workflow: Skills로 워크플로우 구조화</h3>
-                    <p>Skill 설계 원칙, SKILL.md 작성, 레퍼런스 활용, Custom Skill 만들기</p>
-                </div>
-                <div class="section-meta">
-                    <span class="badge badge-handson">실습</span>
-                    <span class="duration">25분</span>
-                </div>
-            </a>
+            <div class="timeline-item">
+                <a href="sections/06-skills-workflow/index.html">
+                    <div class="timeline-number">06</div>
+                    <div class="timeline-info">
+                        <h3>Skills Workflow: Skills로 워크플로우 구조화</h3>
+                        <p>Skill 설계 원칙, SKILL.md 작성, 레퍼런스 활용, Custom Skill 만들기</p>
+                    </div>
+                    <div class="timeline-meta">
+                        <span class="badge badge-handson">실습</span>
+                        <span class="duration">25분</span>
+                    </div>
+                </a>
+            </div>
 
-            <a href="sections/07-ai-dev-kit/index.html" class="section-card">
-                <div class="section-number">07</div>
-                <div class="section-info">
-                    <h3>AI Dev Kit: Databricks AI Dev Kit</h3>
-                    <p>ChatAgent 인터페이스, predict() 메서드, MLflow Tracing, 배포 파이프라인</p>
-                </div>
-                <div class="section-meta">
-                    <span class="badge badge-demo">강의+데모</span>
-                    <span class="duration">15분</span>
-                </div>
-            </a>
+            <div class="timeline-item">
+                <a href="sections/07-ai-dev-kit/index.html">
+                    <div class="timeline-number">07</div>
+                    <div class="timeline-info">
+                        <h3>AI Dev Kit: Databricks AI Dev Kit</h3>
+                        <p>ChatAgent 인터페이스, predict() 메서드, MLflow Tracing, 배포 파이프라인</p>
+                    </div>
+                    <div class="timeline-meta">
+                        <span class="badge badge-demo">강의+데모</span>
+                        <span class="duration">15분</span>
+                    </div>
+                </a>
+            </div>
 
-            <a href="sections/08-build-ui/index.html" class="section-card">
-                <div class="section-number">08</div>
-                <div class="section-info">
-                    <h3>Build UI: UI 만들기</h3>
-                    <p>FastAPI 웹 서버, Genie 채팅 UI, 프론트엔드-백엔드 통합</p>
-                </div>
-                <div class="section-meta">
-                    <span class="badge badge-handson">실습</span>
-                    <span class="duration">30분</span>
-                </div>
-            </a>
+            <div class="timeline-item">
+                <a href="sections/08-build-ui/index.html">
+                    <div class="timeline-number">08</div>
+                    <div class="timeline-info">
+                        <h3>Build UI: UI 만들기</h3>
+                        <p>FastAPI 웹 서버, Genie 채팅 UI, 프론트엔드-백엔드 통합</p>
+                    </div>
+                    <div class="timeline-meta">
+                        <span class="badge badge-handson">실습</span>
+                        <span class="duration">30분</span>
+                    </div>
+                </a>
+            </div>
 
-            <a href="sections/09-deploy-to-databricks/index.html" class="section-card">
-                <div class="section-number">09</div>
-                <div class="section-info">
-                    <h3>Deploy to Databricks: Databricks 배포</h3>
-                    <p>Databricks Apps, app.yaml 설정, CLI 배포, 트러블슈팅</p>
-                </div>
-                <div class="section-meta">
-                    <span class="badge badge-handson">실습</span>
-                    <span class="duration">15분</span>
-                </div>
-            </a>
+            <div class="timeline-item">
+                <a href="sections/09-deploy-to-databricks/index.html">
+                    <div class="timeline-number">09</div>
+                    <div class="timeline-info">
+                        <h3>Deploy to Databricks: Databricks 배포</h3>
+                        <p>Databricks Apps, app.yaml 설정, CLI 배포, 트러블슈팅</p>
+                    </div>
+                    <div class="timeline-meta">
+                        <span class="badge badge-handson">실습</span>
+                        <span class="duration">15분</span>
+                    </div>
+                </a>
+            </div>
         </div>
 
         <footer>
             <p>Enable Your Vibe &mdash; Vibe Coding으로 만든 Vibe Coding 교육 자료</p>
             <p style="margin-top: 0.5rem;">
+                <a href="sections/00-home/index.html">발표 시작하기</a> &middot;
                 <a href="shared/assets/theme.css">Theme CSS</a> &middot;
                 슬라이드: <a href="https://revealjs.com/">reveal.js 5.x</a>
             </p>
