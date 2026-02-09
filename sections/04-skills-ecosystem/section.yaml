@@ -3,9 +3,9 @@ title: "Skills Ecosystem: Skills 생태계"
 duration_minutes: 15
 type: "lecture"
 objectives:
-  - "Claude Code Skills와 Agents의 개념 이해"
-  - "SKILL.md 파일 구조와 작성법 학습"
-  - "Skills 생태계를 활용한 워크플로우 표준화 가능성 파악"
+  - "Skills가 왜 필요한지 이해 (MCP 사용자의 반복 문제 해결)"
+  - "SKILL.md 파일 구조와 핵심 구성 요소 학습"
+  - "효과적인 Skills 작성법 파악"
 slides: "index.html"
 code_files: []
 prerequisites:
