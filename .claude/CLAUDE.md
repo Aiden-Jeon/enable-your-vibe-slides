@@ -1,7 +1,9 @@
 # Enable Your Vibe - 프로젝트 가이드
 
 ## 프로젝트 개요
-Vibe Coding 핸즈온 세션(반나절, 3-4시간) 교육 자료. 대상: 데이터 엔지니어/사이언티스트.
+Vibe Coding 핸즈온 세션(반나절, 3-4시간) 교육 자료 — 슬라이드 전용 레포. 대상: 데이터 엔지니어/사이언티스트.
+
+실습 코드는 별도 레포([enable-your-vibe-code](https://github.com/aiden-jeon/enable-your-vibe-code))에서 관리.
 
 ## 프로젝트 구조
 
@@ -10,8 +12,6 @@ enable-your-vibe/
 ├── sections/                    # 9개 교육 섹션
 │   └── XX-section-name/
 │       ├── index.html           # reveal.js 슬라이드
-│       ├── exercise_XX_xxx.py   # 실습 코드 (해당 시)
-│       ├── README.md            # 코드 가이드 (해당 시)
 │       └── section.yaml         # 섹션 메타데이터
 ├── shared/
 │   ├── assets/theme.css         # 커스텀 reveal.js 테마
@@ -48,12 +48,6 @@ enable-your-vibe/
 - 코드 블록은 highlight.js로 하이라이팅
 - 스피커 노트 필수 포함
 
-### 코드
-- Python 3.11+, uv로 의존성 관리
-- `.env.example` 패턴으로 환경변수 관리
-- 각 실습 파일은 독립 실행 가능해야 함
-- 파일명: `exercise_XX_description.py`
-
 ### 섹션 메타데이터 (section.yaml)
 ```yaml
 number: "01"
@@ -64,13 +58,8 @@ objectives:
   - "학습 목표 1"
   - "학습 목표 2"
 slides: "index.html"
-code_files:
-  - "exercise_01_xxx.py"
 ```
 
 ## 기술 스택
 - **슬라이드**: reveal.js 5.x (CDN)
-- **코드**: Python 3.11+, uv
-- **MCP**: FastMCP 프레임워크
-- **UI**: FastAPI + 정적 HTML/CSS/JS
 - **배포**: Databricks Apps (app.yaml + databricks CLI)

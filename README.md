@@ -19,31 +19,11 @@
 - Python과 Databricks에 익숙한 데이터 엔지니어 / 데이터 사이언티스트
 - AI 코딩 도구에 관심 있는 개발자
 
-## 사전 준비
+## 실습 코드
 
-| 항목 | 설명 |
-|------|------|
-| Python 3.11+ | `python --version`으로 확인 |
-| [uv](https://docs.astral.sh/uv/) | Python 패키지 매니저 (`curl -LsSf https://astral.sh/uv/install.sh \| sh`) |
-| [Claude Code](https://docs.anthropic.com/en/docs/claude-code) | Anthropic CLI (`npm install -g @anthropic-ai/claude-code`) |
-| Databricks CLI | `pip install databricks-cli` 또는 `brew install databricks` |
-| Databricks 워크스페이스 | 접근 권한 + Personal Access Token |
-| Genie Space | 사전 생성된 Genie Space ID 필요 (섹션 05~09) |
+실습 코드는 별도 레포에서 관리됩니다:
 
-## 환경 설정
-
-```bash
-# 1. 프로젝트 클론
-git clone <repo-url>
-cd enable-your-vibe
-
-# 2. 의존성 설치
-uv sync
-
-# 3. 환경변수 설정 (실습 섹션용)
-cp sections/05-genie-mcp/.env.example sections/05-genie-mcp/.env
-# .env 파일에 DATABRICKS_HOST, DATABRICKS_TOKEN, GENIE_SPACE_ID 입력
-```
+**[enable-your-vibe-code](https://github.com/aiden-jeon/enable-your-vibe-code)** — 클론 후 `uv sync`로 환경을 설정하세요.
 
 ## 커리큘럼 (총 190분)
 
@@ -83,7 +63,7 @@ Part 1: 기초                          Part 2: 실전
 
 ```bash
 # 방법 1: 로컬 서버로 전체 슬라이드 서빙
-python shared/scripts/serve-slides.py
+uv run --with pyyaml shared/scripts/serve-slides.py
 # → http://localhost:8000 에서 확인
 
 # 방법 2: 마스터 인덱스 페이지 열기
@@ -98,10 +78,10 @@ open sections/01-ai-foundation/index.html
 
 ```bash
 # 전체 섹션 구조 검증
-python shared/scripts/validate-section.py
+uv run --with pyyaml shared/scripts/validate-section.py
 
 # 특정 섹션만 검증
-python shared/scripts/validate-section.py sections/05-genie-mcp
+uv run --with pyyaml shared/scripts/validate-section.py sections/05-genie-mcp
 ```
 
 ## 프로젝트 구조
@@ -124,11 +104,10 @@ enable-your-vibe/
 │   └── scripts/
 │       ├── serve-slides.py    # 슬라이드 프리뷰 서버
 │       └── validate-section.py # 섹션 구조 검증
-├── .claude/
-│   ├── CLAUDE.md              # 프로젝트 컨벤션 가이드
-│   ├── skills/                # Claude Code Skills (3개)
-│   └── agents/                # Claude Code Agents (2개)
-└── pyproject.toml             # 프로젝트 설정 & 의존성
+└── .claude/
+    ├── CLAUDE.md              # 프로젝트 컨벤션 가이드
+    ├── skills/                # Claude Code Skills (3개)
+    └── agents/                # Claude Code Agents (2개)
 ```
 
 ## 기술 스택
@@ -136,9 +115,6 @@ enable-your-vibe/
 | 영역 | 기술 |
 |------|------|
 | 슬라이드 | reveal.js 5.x (CDN, 빌드 불필요) |
-| 코드 | Python 3.11+, uv |
-| MCP 서버 | FastMCP |
-| 웹 UI | FastAPI + HTML/CSS/JS |
 | 배포 | Databricks Apps |
 | AI 에이전트 | databricks-agents, MLflow |
 

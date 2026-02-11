@@ -32,8 +32,8 @@
                 Section 05 | Hands-on | 30분
             </p>
             <aside class="notes">
-                이번 섹션에서는 Databricks Genie API를 MCP 서버로 래핑하여
-                Claude Code에서 자연어로 데이터를 질의할 수 있는 환경을 직접 구축합니다.
+                이번 섹션에서는 Databricks Genie Space를 API로 직접 생성하고,
+                이를 MCP 서버로 래핑하여 Claude Code에서 자연어로 데이터를 질의할 수 있는 환경을 구축합니다.
                 Section 03에서 배운 MCP 아키텍처를 실제로 적용하는 핵심 실습입니다.
             </aside>
         </section>
@@ -42,19 +42,19 @@
         <section>
             <h2>학습 목표</h2>
             <ul>
-                <li class="fragment">Databricks Genie API의 구조와 호출 방법을 이해한다</li>
-                <li class="fragment">FastMCP로 Genie MCP 서버를 직접 구현한다</li>
-                <li class="fragment">Claude Code에서 Genie MCP를 연결하여 자연어 데이터 질의를 수행한다</li>
+                <li class="fragment">Genie Space 생성 API와 serialized_space 형식을 이해한다</li>
+                <li class="fragment">FastMCP로 Space 생성 + 질의 MCP 서버를 구현한다</li>
+                <li class="fragment">Claude Code에서 Genie MCP를 연결하여 Space 생성 및 데이터 질의</li>
             </ul>
             <div class="emphasis-box fragment" style="margin-top: 1.5em;">
-                <strong>핵심:</strong> API를 MCP로 래핑하면 Claude Code가 데이터베이스와 직접 대화할 수 있습니다
+                <strong>핵심:</strong> Space 생성부터 질의까지 — Genie의 전체 라이프사이클을 API로 제어합니다
             </div>
             <aside class="notes">
                 세 가지 학습 목표를 설명합니다.
-                첫째, Genie API가 어떻게 동작하는지 직접 호출해보며 이해합니다.
+                첫째, Genie Space를 API로 직접 생성하는 방법을 배웁니다. UI에서만 가능하던 것을 코드로 자동화합니다.
                 둘째, 이 API를 FastMCP로 감싸서 MCP 서버를 만듭니다.
-                셋째, 만든 서버를 Claude Code에 연결해서 실제로 사용해봅니다.
-                핵심은 '래핑' 패턴입니다. 기존 API를 MCP 인터페이스로 변환하는 것이죠.
+                셋째, 만든 서버를 Claude Code에 연결해서 Space 생성과 데이터 질의를 모두 수행합니다.
+                핵심은 Genie의 전체 라이프사이클을 코드로 제어하는 것입니다.
             </aside>
         </section>
 
@@ -96,162 +96,1559 @@
             <table>
                 <thead>
                     <tr>
-                        <th>단계</th>
+                        <th>기능</th>
                         <th>메서드</th>
                         <th>엔드포인트</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td><strong>1. 대화 생성</strong></td>
+                    <tr class="fragment">
+                        <td><strong>Space 생성</strong></td>
                         <td><code>POST</code></td>
-                        <td><code>/api/2.0/genie/spaces/{space_id}/conversations</code></td>
+                        <td><code>/api/2.0/genie/spaces</code></td>
                     </tr>
-                    <tr>
-                        <td><strong>2. 메시지 전송</strong></td>
+                    <tr class="fragment">
+                        <td><strong>대화 생성</strong></td>
                         <td><code>POST</code></td>
-                        <td><code>.../conversations/{conversation_id}/messages</code></td>
+                        <td><code>/api/2.0/genie/spaces/{id}/conversations</code></td>
                     </tr>
-                    <tr>
-                        <td><strong>3. 결과 조회</strong></td>
+                    <tr class="fragment">
+                        <td><strong>메시지 전송</strong></td>
+                        <td><code>POST</code></td>
+                        <td><code>.../conversations/{id}/messages</code></td>
+                    </tr>
+                    <tr class="fragment">
+                        <td><strong>결과 조회</strong></td>
                         <td><code>GET</code></td>
-                        <td><code>.../messages/{message_id}</code></td>
+                        <td><code>.../messages/{id}</code></td>
                     </tr>
                 </tbody>
             </table>
             <div class="emphasis-box fragment" style="margin-top: 1em;">
-                <strong>인증:</strong> Bearer 토큰 방식 &mdash; <code>Authorization: Bearer {token}</code>
+                <strong>인증:</strong> Bearer 토큰 &mdash; <code>Authorization: Bearer {token}</code>
             </div>
             <aside class="notes">
-                Genie API는 3단계로 구성됩니다.
-                첫째, Conversation을 생성합니다. 이것은 하나의 대화 세션입니다.
-                둘째, 생성된 대화에 메시지를 전송합니다. 여기서 자연어 질문을 보냅니다.
-                셋째, 메시지의 결과를 GET으로 조회합니다.
-                비동기 방식이므로 결과가 바로 오지 않을 수 있어 폴링이 필요합니다.
+                Genie API는 크게 두 부분으로 나뉩니다.
+                먼저 Space 생성 API — POST /genie/spaces로 새 Space를 만듭니다.
+                그 다음 질의 API — 대화 생성, 메시지 전송, 결과 조회의 3단계입니다.
+                이번 실습에서는 Space 생성부터 질의까지 전체 흐름을 다룹니다.
                 인증은 Databricks Personal Access Token을 Bearer 방식으로 사용합니다.
             </aside>
         </section>
 
-        <!-- Slide 5: API 호출 흐름 다이어그램 -->
+        <!-- Slide 5: 전체 API 흐름 다이어그램 -->
         <section>
-            <h2>API 호출 흐름</h2>
+            <h2>전체 API 흐름</h2>
             <div class="diagram">
-<pre style="background: transparent; border: none; box-shadow: none; text-align: center; font-size: 1em;">
-Client                          Genie API
-  |                                 |
-  |  POST /conversations            |
-  |-------------------------------->|
-  |  { conversation_id }            |
-  |<--------------------------------|
-  |                                 |
-  |  POST /messages                 |
-  |  { content: "매출 합계는?" }    |
-  |-------------------------------->|
-  |  { message_id }                 |
-  |<--------------------------------|
-  |                                 |
-  |  GET /messages/{id}             |
-  |-------------------------------->|
-  |  { status: "EXECUTING_QUERY" }  |
-  |<--------------------------------|
-  |                                 |
-  |  GET /messages/{id}  (polling)  |
-  |-------------------------------->|
-  |  { status: "COMPLETED", ... }   |
-  |<--------------------------------|
-  |                                 |
+<pre style="background: transparent; border: none; box-shadow: none; text-align: center; font-size: 0.85em;">
+Client                               Genie API
+  |                                      |
+  |  POST /genie/spaces                  |
+  |    { title, warehouse_id,            |
+  |     serialized_space }               |
+  |------------------------------------->|
+  |  { space_id }                        |
+  |<-------------------------------------|
+  |                                      |
+  |  POST /spaces/{id}/conversations     |
+  |------------------------------------->|
+  |  { conversation_id }                 |
+  |<-------------------------------------|
+  |                                      |
+  |  POST /conversations/{id}/messages   |
+  |    { content: "Top 10 products?" }   |
+  |------------------------------------->|
+  |  { message_id }                      |
+  |<-------------------------------------|
+  |                                      |
+  |  GET /messages/{id}  (polling)       |
+  |------------------------------------->|
+  |  { status: "COMPLETED", ... }        |
+  |<-------------------------------------|
 </pre>
             </div>
             <aside class="notes">
-                이 다이어그램은 실제 API 호출 흐름을 보여줍니다.
-                먼저 POST로 대화를 만들고, conversation_id를 받습니다.
-                그 다음 메시지를 보내면 message_id를 받습니다.
-                결과 조회 시 처음에는 EXECUTING_QUERY 등의 중간 상태를 받게 됩니다.
-                COMPLETED가 될 때까지 반복 조회(폴링)해야 합니다.
-                이 비동기 패턴을 MCP 서버 내부에서 처리해줄 것입니다.
+                전체 흐름을 보면: 먼저 Space를 생성하여 space_id를 받습니다.
+                그 다음 대화를 시작하고, 질문을 보내고, 결과를 폴링합니다.
+                Space 생성 시 serialized_space 필드가 핵심인데,
+                이것은 테이블 정보, 지시사항, 예제 질문을 protobuf v2 JSON 형식으로 담고 있습니다.
+                이 전체 흐름을 MCP 서버로 래핑할 것입니다.
             </aside>
         </section>
 
-        <!-- Slide 6: FastMCP로 Genie MCP 서버 구현 전략 -->
+        <!-- Slide 6: 구현 전략 — 3개 Tool -->
         <section>
-            <h2>FastMCP로 Genie MCP 구현 전략</h2>
-            <div class="columns">
-                <div>
-                    <h3>래핑(Wrapping) 패턴</h3>
-                    <ul>
-                        <li>기존 REST API를 MCP tool로 변환</li>
-                        <li>복잡한 3단계 호출을 하나의 tool로 단순화</li>
-                        <li>폴링 로직을 내부에서 처리</li>
-                        <li>에러 처리를 사용자 친화적으로 변환</li>
-                    </ul>
+            <h2>MCP 서버 구현 전략: 3개 Tool</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tool</th>
+                        <th>기능</th>
+                        <th>핵심 파라미터</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="fragment" data-fragment-index="1">
+                        <td><code>create_genie_space</code></td>
+                        <td>Space 생성</td>
+                        <td>title, tables, instructions</td>
+                    </tr>
+                    <tr class="fragment" data-fragment-index="1">
+                        <td><code>ask_genie</code></td>
+                        <td>새 대화 + 질의</td>
+                        <td>space_id, question</td>
+                    </tr>
+                    <tr class="fragment" data-fragment-index="1">
+                        <td><code>continue_conversation</code></td>
+                        <td>후속 질의</td>
+                        <td>space_id, conversation_id, question</td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="emphasis-box fragment" style="margin-top: 1em;">
+                <strong>설계 포인트:</strong> space_id를 파라미터로 받아 여러 Space를 유연하게 사용
+            </div>
+            <aside class="notes">
+                MCP 서버는 3개의 tool을 제공합니다.
+                create_genie_space는 새 Space를 생성합니다. 테이블 정보와 지시사항을 받아 serialized_space를 내부에서 구성합니다.
+                ask_genie는 새 대화를 시작하고 질의합니다. 대화 생성, 메시지 전송, 폴링을 모두 내부에서 처리합니다.
+                continue_conversation은 기존 대화에 후속 질문을 합니다.
+                핵심 설계 포인트는 space_id를 환경변수가 아닌 파라미터로 받는 것입니다.
+                이렇게 하면 여러 Space를 유연하게 사용할 수 있습니다.
+            </aside>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- Exercise 00: 사전 환경 체크리스트 -->
+        <!-- ============================================================ -->
+
+        <section>
+            <h2>Exercise 00: 사전 환경 체크리스트</h2>
+            <p style="font-size: 0.7em; color: var(--ev-text-muted);">실습 시작 전 환경 설정을 검증합니다</p>
+            <pre><code class="language-bash" data-trim>
+python exercise_00_checklist.py
+            </code></pre>
+            <table style="font-size: 0.75em; margin-top: 0.8em;">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>검증 항목</th>
+                        <th>방법</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>인증 정보 확인</td>
+                        <td><code>.env</code> → <code>databricks CLI</code> → 기본값에서 자동 해석</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>호스트 연결</td>
+                        <td><code>GET /api/2.0/clusters/spark-versions</code></td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>SQL Warehouse</td>
+                        <td><code>SELECT 1</code> 실행 확인</td>
+                    </tr>
+                    <tr>
+                        <td>4</td>
+                        <td>데이터 스키마</td>
+                        <td><code>shared.fashion_recommendations</code> 테이블 확인</td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="emphasis-box" style="margin-top: 0.8em;">
+                모든 ✅ 확인 후 Exercise 01a로 진행하세요
+            </div>
+            <aside class="notes">
+                실습을 시작하기 전에 환경이 올바르게 설정되었는지 확인합니다.
+                exercise_00_checklist.py를 실행하면 4단계를 순차적으로 검증합니다.
+                첫째, 인증 정보를 확인합니다. .env 파일이 있으면 그것을 사용하고, 없으면 databricks CLI 설정에서 자동으로 가져옵니다.
+                WAREHOUSE_ID도 API로 자동 조회되므로, databricks CLI만 설정하면 별도 설정 없이 바로 실행 가능합니다.
+                둘째, Databricks 호스트에 연결할 수 있는지 경량 API 호출로 확인합니다.
+                셋째, SQL Warehouse가 작동하는지 SELECT 1로 확인합니다. 콜드스타트 시 시간이 걸릴 수 있습니다.
+                넷째, shared.fashion_recommendations 스키마에 transactions, customers 테이블이 있는지 확인합니다.
+                이전 단계가 실패하면 이후 단계는 자동으로 건너뜁니다. 모두 통과하면 Exercise 01a로 진행합니다.
+            </aside>
+        </section>
+
+        <!-- Exercise 00: 전체 코드 (exercise_00_checklist.py) -->
+        <section>
+            <h2>Exercise 00 전체 코드</h2>
+            <p style="font-size: 0.6em; color: var(--ev-text-muted);">exercise_00_checklist.py &mdash; 복사하여 바로 실행 가능</p>
+            <pre><code class="language-python" data-trim data-noescape style="font-size: 0.5em; line-height: 1.3;">
+"""
+Exercise 00: 사전 환경 체크리스트
+Genie MCP 실습 전 환경 설정이 올바른지 검증합니다.
+
+실행: python exercise_00_checklist.py
+"""
+
+import configparser
+import json
+import os
+import subprocess
+import sys
+
+import httpx
+from dotenv import load_dotenv
+
+load_dotenv()
+
+
+def resolve_databricks_config() -&gt; tuple[str, str, str]:
+    """Databricks 인증 정보를 해석합니다. (.env → databricks CLI → 기본값)"""
+    host = os.getenv("DATABRICKS_HOST", "").rstrip("/")
+    token = os.getenv("DATABRICKS_TOKEN", "")
+    warehouse_id = os.getenv("WAREHOUSE_ID", "")
+
+    # databricks CLI fallback
+    if not host or not token:
+        try:
+            cfg = configparser.ConfigParser()
+            cfg.read(os.path.expanduser("~/.databrickscfg"))
+            profile = cfg["DEFAULT"] if "DEFAULT" in cfg else {}
+            if not host:
+                host = profile.get("host", "").rstrip("/")
+            if not token and host:
+                result = subprocess.run(
+                    ["databricks", "auth", "token", "--host", host],
+                    capture_output=True,
+                    text=True,
+                    timeout=10,
+                )
+                if result.returncode == 0:
+                    token = json.loads(result.stdout).get("access_token", "")
+        except Exception:
+            pass
+
+    # 기본 호스트
+    if not host:
+        host = "https://e2-demo-field-eng.cloud.databricks.com"
+
+    # Warehouse 자동 조회
+    if not warehouse_id and host and token:
+        try:
+            resp = httpx.get(
+                f"{host}/api/2.0/sql/warehouses",
+                headers={"Authorization": f"Bearer {token}"},
+                timeout=10,
+            )
+            resp.raise_for_status()
+            warehouses = resp.json().get("warehouses", [])
+            for wh in warehouses:
+                if wh.get("state") == "RUNNING":
+                    warehouse_id = wh["id"]
+                    break
+            if not warehouse_id and warehouses:
+                warehouse_id = warehouses[0]["id"]
+        except Exception:
+            pass
+
+    return host, token, warehouse_id
+
+
+DATABRICKS_HOST, DATABRICKS_TOKEN, WAREHOUSE_ID = resolve_databricks_config()
+
+HTTP_TIMEOUT = 60.0
+WAIT_TIMEOUT = "30s"
+
+
+def mask_token(token: str) -&gt; str:
+    """토큰을 마스킹하여 표시합니다. (예: ****...abcd)"""
+    if len(token) &lt;= 4:
+        return "****"
+    return f"****...{token[-4:]}"
+
+
+# ── Step 1: 환경변수 확인 ──────────────────────────────────────────
+
+
+def check_auth_info() -&gt; tuple[bool, str]:
+    """DATABRICKS_HOST, DATABRICKS_TOKEN, WAREHOUSE_ID 존재를 확인합니다."""
+    missing = []
+    if not DATABRICKS_HOST:
+        missing.append("DATABRICKS_HOST")
+    if not DATABRICKS_TOKEN:
+        missing.append("DATABRICKS_TOKEN")
+    if not WAREHOUSE_ID:
+        missing.append("WAREHOUSE_ID")
+
+    if missing:
+        return False, (
+            f"누락: {', '.join(missing)}\n"
+            "   → .env 파일을 확인하거나, databricks CLI를 설정해주세요\n"
+            "     (databricks configure)"
+        )
+
+    # 인증 출처 판별
+    env_host = os.getenv("DATABRICKS_HOST", "")
+    env_token = os.getenv("DATABRICKS_TOKEN", "")
+    env_wh = os.getenv("WAREHOUSE_ID", "")
+
+    if env_host and env_token:
+        host_source = ".env"
+    elif DATABRICKS_HOST == "https://e2-demo-field-eng.cloud.databricks.com" and not env_host:
+        host_source = "기본값"
+    else:
+        host_source = "databricks CLI"
+
+    wh_source = ".env" if env_wh else "API 자동 조회"
+
+    lines = [
+        f"DATABRICKS_HOST  = {DATABRICKS_HOST}",
+        f"DATABRICKS_TOKEN = {mask_token(DATABRICKS_TOKEN)}",
+        f"WAREHOUSE_ID     = {WAREHOUSE_ID}",
+        f"인증 출처: HOST/TOKEN={host_source}, WAREHOUSE={wh_source}",
+    ]
+    return True, "\n     ".join(lines)
+
+
+# ── Step 2: Databricks 호스트 연결 ─────────────────────────────────
+
+
+def check_host_connection() -&gt; tuple[bool, str]:
+    """GET /api/2.0/clusters/spark-versions 로 호스트 연결을 확인합니다."""
+    headers = {
+        "Authorization": f"Bearer {DATABRICKS_TOKEN}",
+    }
+    try:
+        resp = httpx.get(
+            f"{DATABRICKS_HOST}/api/2.0/clusters/spark-versions",
+            headers=headers,
+            timeout=HTTP_TIMEOUT,
+        )
+        resp.raise_for_status()
+        return True, f"{DATABRICKS_HOST} 연결 성공"
+    except httpx.ConnectError:
+        return False, f"호스트에 연결할 수 없습니다: {DATABRICKS_HOST}\n   → URL을 확인해주세요"
+    except httpx.HTTPStatusError as e:
+        if e.response.status_code == 401:
+            return False, "인증 실패 (401) → DATABRICKS_TOKEN을 확인해주세요"
+        if e.response.status_code == 403:
+            return False, "권한 부족 (403) → 워크스페이스 접근 권한을 확인해주세요"
+        return False, f"HTTP 오류 {e.response.status_code}: {e.response.text[:200]}"
+    except httpx.TimeoutException:
+        return False, f"연결 시간 초과 ({HTTP_TIMEOUT}s) → 네트워크 상태를 확인해주세요"
+
+
+# ── Step 3: SQL Warehouse 접근 ─────────────────────────────────────
+
+
+def check_warehouse() -&gt; tuple[bool, str]:
+    """POST /api/2.0/sql/statements 로 SQL Warehouse 접근을 확인합니다."""
+    headers = {
+        "Authorization": f"Bearer {DATABRICKS_TOKEN}",
+        "Content-Type": "application/json",
+    }
+    try:
+        resp = httpx.post(
+            f"{DATABRICKS_HOST}/api/2.0/sql/statements",
+            headers=headers,
+            json={
+                "warehouse_id": WAREHOUSE_ID,
+                "statement": "SELECT 1",
+                "wait_timeout": WAIT_TIMEOUT,
+            },
+            timeout=HTTP_TIMEOUT,
+        )
+        resp.raise_for_status()
+        data = resp.json()
+        status = data.get("status", {}).get("state", "UNKNOWN")
+        if status == "SUCCEEDED":
+            return True, f"Warehouse {WAREHOUSE_ID} 정상 작동"
+        return False, f"쿼리 상태: {status} → Warehouse가 실행 중인지 확인해주세요"
+    except httpx.HTTPStatusError as e:
+        body = e.response.text[:300]
+        if "RESOURCE_DOES_NOT_EXIST" in body or "does not exist" in body.lower():
+            return False, f"Warehouse를 찾을 수 없습니다: {WAREHOUSE_ID}\n   → WAREHOUSE_ID를 확인해주세요"
+        return False, f"HTTP 오류 {e.response.status_code}: {body}"
+    except httpx.TimeoutException:
+        return False, f"쿼리 시간 초과 ({HTTP_TIMEOUT}s) → Warehouse 콜드스타트 중일 수 있습니다. 잠시 후 다시 시도해주세요"
+
+
+# ── Step 4: 데이터 스키마 확인 ─────────────────────────────────────
+
+
+def check_schema() -&gt; tuple[bool, str]:
+    """shared.fashion_recommendations 스키마에 필요한 테이블이 있는지 확인합니다."""
+    headers = {
+        "Authorization": f"Bearer {DATABRICKS_TOKEN}",
+        "Content-Type": "application/json",
+    }
+    required_tables = {"transactions", "customers"}
+
+    try:
+        resp = httpx.post(
+            f"{DATABRICKS_HOST}/api/2.0/sql/statements",
+            headers=headers,
+            json={
+                "warehouse_id": WAREHOUSE_ID,
+                "statement": "SHOW TABLES IN shared.fashion_recommendations",
+                "wait_timeout": WAIT_TIMEOUT,
+            },
+            timeout=HTTP_TIMEOUT,
+        )
+        resp.raise_for_status()
+        data = resp.json()
+        status = data.get("status", {}).get("state", "UNKNOWN")
+
+        if status != "SUCCEEDED":
+            return False, f"쿼리 상태: {status} → shared.fashion_recommendations 스키마 접근 권한을 확인해주세요"
+
+        # 결과에서 테이블명 추출
+        columns = [col["name"] for col in data.get("manifest", {}).get("schema", {}).get("columns", [])]
+        table_name_idx = columns.index("tableName") if "tableName" in columns else 0
+
+        found_tables = set()
+        for row in data.get("result", {}).get("data_array", []):
+            found_tables.add(row[table_name_idx])
+
+        missing = required_tables - found_tables
+        if missing:
+            return False, f"누락된 테이블: {', '.join(sorted(missing))}\n   → shared.fashion_recommendations 스키마에 데이터가 있는지 확인해주세요"
+
+        return True, f"테이블 확인 완료: {', '.join(sorted(required_tables))}"
+
+    except httpx.HTTPStatusError as e:
+        body = e.response.text[:300]
+        if "SCHEMA_NOT_FOUND" in body or "not found" in body.lower():
+            return False, "스키마를 찾을 수 없습니다: shared.fashion_recommendations\n   → 카탈로그/스키마 접근 권한을 확인해주세요"
+        return False, f"HTTP 오류 {e.response.status_code}: {body}"
+    except httpx.TimeoutException:
+        return False, f"쿼리 시간 초과 ({HTTP_TIMEOUT}s) → 잠시 후 다시 시도해주세요"
+
+
+# ── 메인 실행 ──────────────────────────────────────────────────────
+
+
+STEPS: list[tuple[str, callable]] = [
+    ("인증 정보 확인", check_auth_info),
+    ("Databricks 호스트 연결", check_host_connection),
+    ("SQL Warehouse 접근", check_warehouse),
+    ("데이터 스키마 확인", check_schema),
+]
+
+
+def main():
+    print("🔍 Exercise 00: Genie MCP 사전 환경 체크리스트")
+    print("=" * 60)
+
+    all_passed = True
+
+    for i, (label, check_fn) in enumerate(STEPS, 1):
+        print(f"\n  {i}️⃣  {label}...")
+
+        if not all_passed:
+            print(f"     ⏭️  건너뜀 (이전 단계 실패)")
+            continue
+
+        ok, message = check_fn()
+        if ok:
+            print(f"     ✅ {message}")
+        else:
+            print(f"     ❌ {message}")
+            all_passed = False
+
+    print("\n" + "=" * 60)
+    if all_passed:
+        print("✅ 모든 환경 설정이 정상입니다!")
+        print(f"   Warehouse ID: {WAREHOUSE_ID}")
+        print(f"\n💡 다음 단계: exercise_01a로 Genie Space를 생성하세요")
+        print(f"   python exercise_01a_create_space.py")
+    else:
+        print("❌ 환경 설정에 문제가 있습니다. 위 메시지를 확인해주세요.")
+        sys.exit(1)
+
+
+if __name__ == "__main__":
+    main()
+            </code></pre>
+            <aside class="notes">
+                Exercise 00의 전체 코드입니다. Copy 버튼으로 복사하여 바로 실행할 수 있습니다.
+                하이라이트된 구간을 확인해보세요:
+                첫 번째 — import와 load_dotenv (1-15행) — configparser, subprocess 등 인라인 인증에 필요한 모듈 포함
+                두 번째 — resolve_databricks_config (18-70행) — .env → CLI → 기본값 순서로 HOST/TOKEN/WAREHOUSE_ID 해석
+                세 번째 — 인증 해석 실행 (72-73행) — 3개 값을 한 번에 받아 모듈 수준 변수로 설정
+                네 번째 — mask_token과 check_auth_info (82-121행) — 토큰 마스킹 + 인증 출처(.env/CLI/기본값/API 자동 조회) 표시
+                다섯 번째 — check_host_connection (127-149행) — 경량 read-only 엔드포인트로 호스트 연결과 토큰 유효성을 동시에 검증
+                여섯 번째 — check_warehouse + check_schema (155-196행) — SELECT 1과 SHOW TABLES로 Warehouse/스키마 확인
+                일곱 번째 — main 함수 (202-258행) — cascading skip 패턴으로 이전 단계 실패 시 이후 단계를 건너뜀
+            </aside>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- Exercise 01a: Genie Space 생성 (Slides 7-11) -->
+        <!-- ============================================================ -->
+
+        <!-- Slide 7: serialized_space JSON 구조 -->
+        <section>
+            <h2>serialized_space JSON 구조</h2>
+            <p style="font-size: 0.7em; color: var(--ev-text-muted);">Space 생성 API에 전달하는 protobuf v2 JSON 형식의 목표 출력</p>
+            <pre><code class="language-json" data-trim data-noescape style="font-size: 0.8em; line-height: 1.4;">
+{
+  "version": 2,
+  "data_sources": {
+    "tables": [{"identifier": "catalog.schema.table"}]
+  },
+  "config": {
+    "sample_questions": [{"id": "...", "question": ["질문 텍스트"]}]
+  },
+  "instructions": {
+    "text_instructions": [
+      {"id": "...", "content": ["지시사항 텍스트"]}
+    ],
+    "example_question_sqls": [
+      {"id": "...", "question": ["질문"], "sql": ["SELECT ..."]}
+    ],
+    "join_specs": [ ... ],
+    "sql_snippets": { "expressions": [...], "measures": [...], "filters": [...] }
+  }
+}
+            </code></pre>
+            <div class="emphasis-box fragment" style="margin-top: 0.8em;">
+                이 구조를 코드로 생성합니다 &mdash; <code>build_serialized_space()</code>
+            </div>
+            <aside class="notes">
+                이것이 Genie Space 생성 API에 전달하는 serialized_space의 전체 JSON 구조입니다.
+                version 2는 protobuf v2 형식을 의미하며, Databricks 내부 프로토콜입니다.
+                data_sources에는 테이블 정보, config에는 예제 질문, instructions에는 지시사항과 예제 SQL을 담습니다.
+                join_specs와 sql_snippets는 선택 사항이지만 복잡한 데이터 모델에서 Genie의 SQL 품질을 향상시킵니다.
+                이제 이 구조를 생성하는 코드를 단계별로 살펴보겠습니다.
+            </aside>
+        </section>
+
+        <!-- Slide 7.5: JSON → Genie Space UI 매핑 -->
+        <section>
+            <h2>JSON → Genie Space UI 매핑</h2>
+            <p style="font-size: 0.7em; color: var(--ev-text-muted);">
+                serialized_space JSON의 각 필드가 Genie Space UI에 어떻게 반영되는지 확인
+            </p>
+            <div style="display: flex; gap: 1em; justify-content: center; align-items: flex-start; margin-top: 0.5em;">
+                <!-- Data 탭 -->
+                <div style="flex: 1; text-align: center;">
+                    <img src="images/genie_data.png" alt="Genie Data Tab" style="max-height: 350px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1);">
+                    <p style="font-size: 0.55em; color: var(--ev-accent); margin-top: 0.4em;">
+                        <code>data_sources.tables</code>
+                    </p>
                 </div>
-                <div>
-                    <h3>설계 포인트</h3>
-                    <ul>
-                        <li><code>ask_genie</code> &mdash; 핵심 질의 tool</li>
-                        <li><code>get_genie_space_info</code> &mdash; 연결 정보 확인</li>
-                        <li>환경변수로 인증 정보 관리</li>
-                        <li><code>dotenv</code>로 로컬 설정 로드</li>
-                    </ul>
+                <!-- Instructions 탭 -->
+                <div style="flex: 1; text-align: center;">
+                    <img src="images/genie_instructions.png" alt="Genie Instructions Tab" style="max-height: 350px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1);">
+                    <p style="font-size: 0.55em; color: var(--ev-accent); margin-top: 0.4em;">
+                        <code>instructions</code>
+                    </p>
+                </div>
+                <!-- Settings 탭 -->
+                <div style="flex: 1; text-align: center;">
+                    <img src="images/genie_settings.png" alt="Genie Settings Tab" style="max-height: 350px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1);">
+                    <p style="font-size: 0.55em; color: var(--ev-accent); margin-top: 0.4em;">
+                        <code>config</code> + title
+                    </p>
                 </div>
             </div>
             <aside class="notes">
-                MCP 서버 설계의 핵심은 '래핑 패턴'입니다.
-                사용자(Claude Code)는 단순히 ask_genie("매출 합계는?")만 호출하면 되고,
-                내부적으로는 대화 생성, 메시지 전송, 폴링까지 모두 처리됩니다.
-                이것이 MCP의 장점입니다 - 복잡한 API 호출을 간단한 tool 인터페이스로 추상화합니다.
-                두 개의 tool을 제공합니다: 핵심 질의 tool과 연결 정보 확인 tool입니다.
+                앞서 본 JSON 구조가 실제 Genie Space UI에 어떻게 반영되는지 시각적으로 확인해봅시다.
+                Data 탭에는 data_sources.tables에 정의한 테이블들이 표시됩니다.
+                Instructions 탭에는 text_instructions, example_question_sqls, join_specs, sql_snippets 등이 반영됩니다.
+                Settings 탭에는 config.sample_questions로 설정한 예제 질문들과 title, description이 표시됩니다.
+                이렇게 코드에서 정의한 JSON이 UI의 각 탭에 1:1로 매핑되므로, 코드만으로 Genie Space를 완전히 제어할 수 있습니다.
             </aside>
         </section>
 
-        <!-- Slide 7: 핵심 코드 - ask_genie tool 구현 -->
+        <!-- Slide 8: Step 1 — Space 설정 데이터 -->
         <section>
-            <h2>핵심 코드: ask_genie tool</h2>
-            <pre><code class="python" data-trim data-noescape>
-@mcp.tool()
-def ask_genie(question: str) -> str:
-    """Databricks Genie에 자연어로 데이터를 질의합니다.
-
-    Args:
-        question: 데이터에 대한 자연어 질문
-    """
-    # 1. 대화 생성
-    conversation_id = _create_conversation()
-
-    # 2. 메시지 전송 + 폴링
-    result = _send_and_poll(conversation_id, question)
-
-    if "error" in result:
-        return f"오류: {result['error']}"
-
-    # 3. 결과 추출
-    attachments = result.get("attachments", [])
-    text_parts = []
-    for attachment in attachments:
-        if "text" in attachment:
-            text_parts.append(attachment["text"]["content"])
-        if "query" in attachment:
-            text_parts.append(f"SQL: {attachment['query']['query']}")
-
-    return "\n".join(text_parts) if text_parts else str(result)
+            <h2>Step 1: Space 설정 데이터</h2>
+            <p style="font-size: 0.7em; color: var(--ev-text-muted);">테이블, 지시사항, 예제 질문/SQL, SQL 스니펫 정의</p>
+            <pre><code class="language-python" data-trim data-noescape style="font-size: 0.8em; line-height: 1.4;">
+tables = [
+    {"catalog": "jongseob_demo", "schema": "fashion_recommendations", "table": "transactions"},
+    {"catalog": "jongseob_demo", "schema": "fashion_recommendations", "table": "customers"},
+]
+instructions = [
+    "## Sales Channel Mapping\n- `sales_channel_id = 1` means **Online** ...",
+    # ...
+]
+sample_questions = [
+    "How does revenue compare between online and in-store sales by month?",
+    "What is the total online revenue for 2020?",
+    "What are the monthly sales trends?",
+    # ...
+]
+example_sqls = [
+    {
+        "question": "How does revenue compare between online and in-store sales by month?",
+        "sql": "SELECT year, month, CASE WHEN ... FROM ...transactions GROUP BY ...",
+    },
+    # ...
+]
+sql_snippets = {
+    "filters": [
+        {
+            "id": uuid4().hex,
+            "sql": "transactions.sales_channel_id = 1",
+            "display_name": "Online Sales Only",
+            "synonyms": ["online", "web sales"]
+        },
+        # ...
+    ],
+    "expressions": [
+        {
+            "id": uuid4().hex,
+            "alias": "transaction_month",
+            "sql": "transactions.month",
+            "display_name": "Transaction Month",
+            "synonyms": ["month", "sale month"]
+        },
+        # ...
+    ],
+    "measures": [
+        {
+            "id": uuid4().hex,
+            "alias": "total_revenue",
+            "sql": "CAST(SUM(transactions.price) AS DECIMAL(38,2))",
+            "display_name": "Total Revenue",
+            "synonyms": ["revenue", "total sales"]
+        },
+        # ...
+    ]
+}
             </code></pre>
             <aside class="notes">
-                이것이 핵심 tool 코드입니다.
-                @mcp.tool() 데코레이터로 MCP tool을 선언합니다.
-                docstring은 Claude Code가 이 tool의 용도를 이해하는 데 사용됩니다.
-                내부적으로 3단계 호출을 모두 처리합니다.
-                결과에서 text 응답과 SQL 쿼리를 추출하여 반환합니다.
-                에러 처리도 포함되어 있어 실패 시 적절한 메시지를 반환합니다.
+                먼저 Space에 넣을 설정 데이터를 정의합니다.
+                tables는 Genie가 질의할 테이블 목록입니다. fashion_recommendations 스키마의 transactions, customers 2개 테이블을 사용합니다.
+                instructions는 Genie에게 주는 지시사항입니다 — 컬럼 네이밍, 날짜 처리, 채널 매핑, 고객 세그먼트 가이드를 포함합니다.
+                sample_questions는 5개의 예제 질문, example_sqls는 3개의 질문-SQL 쌍입니다.
+                sql_snippets는 필터 5개, 표현식 3개, 측정값 4개를 포함합니다.
+                슬라이드에서는 요약 표시하지만, 전체 코드는 exercise_01a_create_space.py에 있습니다.
             </aside>
         </section>
 
-        <!-- Slide 8: 폴링 패턴 -->
+        <!-- Slide 9: Step 2 — build_serialized_space() -->
         <section>
-            <h2>폴링 패턴: 비동기 결과 대기</h2>
-            <pre><code class="python" data-trim data-noescape>
-def _send_and_poll(conversation_id: str, question: str,
-                   max_wait: int = 60) -> dict:
-    # 메시지 전송
+            <h2>Step 2: build_serialized_space()</h2>
+            <p style="font-size: 0.7em; color: var(--ev-text-muted);">설정 데이터를 protobuf v2 JSON으로 변환하는 함수</p>
+            <pre><code class="language-python" data-trim data-noescape style="font-size: 0.8em; line-height: 1.4;">
+def build_serialized_space(
+    tables: list[dict],
+    instructions: list[str],
+    sample_questions: list[str],
+    example_sqls: list[dict],
+    join_specs: list[dict] | None = None,
+    sql_snippets: dict | None = None,
+) -> str:
+    """Genie Space용 serialized_space(protobuf v2 JSON)를 생성합니다."""
+    inst_block: dict = {
+        "text_instructions": [
+            {"id": uuid4().hex, "content": [inst]} for inst in instructions
+        ],
+        "example_question_sqls": [
+            {
+                "id": uuid4().hex,
+                "question": [ex["question"]],
+                "sql": [ex["sql"]],
+            }
+            for ex in example_sqls
+        ],
+    }
+
+    if join_specs:
+        inst_block["join_specs"] = join_specs
+
+    if sql_snippets:
+        inst_block["sql_snippets"] = sql_snippets
+
+    proto = {
+        "version": 2,
+        "data_sources": {
+            "tables": [
+                {"identifier": f"{t['catalog']}.{t['schema']}.{t['table']}"}
+                for t in tables
+            ]
+        },
+        "config": {
+            "sample_questions": [
+                {"id": uuid4().hex, "question": [q]} for q in sample_questions
+            ]
+        },
+        "instructions": inst_block,
+    }
+    return json.dumps(proto)
+            </code></pre>
+            <aside class="notes">
+                build_serialized_space 함수는 앞에서 정의한 설정 데이터를 Genie API가 요구하는 protobuf v2 JSON 형식으로 변환합니다.
+                text_instructions와 example_question_sqls에는 각각 고유 UUID를 부여합니다.
+                join_specs와 sql_snippets는 선택 사항이므로 있을 때만 포함합니다.
+                최종적으로 json.dumps로 문자열로 변환하여 API에 전달할 준비를 합니다.
+            </aside>
+        </section>
+
+        <!-- Slide 10: Step 3 — Space 생성 API 함수 -->
+        <section>
+            <h2>Step 3: create_genie_space()</h2>
+            <p style="font-size: 0.7em; color: var(--ev-text-muted);">POST /api/2.0/genie/spaces로 Space를 생성하는 함수</p>
+            <pre><code class="language-python" data-trim data-noescape style="font-size: 0.8em; line-height: 1.4;">
+def create_genie_space(
+    title: str, description: str, warehouse_id: str, serialized_space: str,
+) -> dict:
+    """POST /api/2.0/genie/spaces로 Space를 생성합니다."""
+    resp = httpx.post(
+        f"{DATABRICKS_HOST}/api/2.0/genie/spaces",
+        headers=headers,
+        json={
+            "title": title, "description": description,
+            "warehouse_id": warehouse_id, "serialized_space": serialized_space,
+        },
+    )
+    resp.raise_for_status()
+    return resp.json()
+            </code></pre>
+            <div class="emphasis-box fragment" style="margin-top: 1em;">
+                <strong>핵심:</strong> <code>serialized_space</code>를 문자열로 전달 &mdash; JSON 안에 JSON 문자열
+            </div>
+            <aside class="notes">
+                create_genie_space 함수는 POST /genie/spaces 엔드포인트를 호출합니다.
+                title과 description은 Space의 메타정보이고,
+                warehouse_id는 쿼리 실행에 사용할 SQL Warehouse입니다.
+                serialized_space는 앞서 build_serialized_space로 생성한 JSON 문자열을 그대로 전달합니다.
+                주의할 점은 serialized_space가 JSON 안에 문자열로 들어간다는 것입니다 — JSON 안에 JSON 문자열입니다.
+                다음 슬라이드에서 main 함수의 실행 흐름을 보겠습니다.
+            </aside>
+        </section>
+
+        <!-- Slide 11: Exercise 01a 전체 코드 -->
+        <section>
+            <h2>Exercise 01a 전체 코드</h2>
+            <p style="font-size: 0.6em; color: var(--ev-text-muted);">exercise_01a_create_space.py &mdash; 복사하여 바로 실행 가능</p>
+            <pre><code class="language-python" style="font-size: 0.5em; line-height: 1.3;">
+"""
+Exercise 01a: Genie Space 생성
+Databricks Genie Space를 API로 생성합니다.
+
+실행: python exercise_01a_create_space.py
+"""
+
+import json
+import os
+from uuid import uuid4
+
+import httpx
+from dotenv import load_dotenv
+
+load_dotenv()
+
+DATABRICKS_HOST = os.getenv("DATABRICKS_HOST", "").rstrip("/")
+DATABRICKS_TOKEN = os.getenv("DATABRICKS_TOKEN", "")
+WAREHOUSE_ID = os.getenv("WAREHOUSE_ID", "")
+
+if not all([DATABRICKS_HOST, DATABRICKS_TOKEN, WAREHOUSE_ID]):
+    print("⚠️  .env 파일에 필요한 환경변수를 설정해주세요.")
+    print("   cp .env.example .env 후 값을 입력하세요.")
+    print("   필요: DATABRICKS_HOST, DATABRICKS_TOKEN, WAREHOUSE_ID")
+    exit(1)
+
+headers = {
+    "Authorization": f"Bearer {DATABRICKS_TOKEN}",
+    "Content-Type": "application/json",
+}
+
+
+def build_serialized_space(
+    tables: list[dict],
+    instructions: list[str],
+    sample_questions: list[str],
+    example_sqls: list[dict],
+    join_specs: list[dict] | None = None,
+    sql_snippets: dict | None = None,
+) -> str:
+    """Genie Space용 serialized_space(protobuf v2 JSON)를 생성합니다."""
+    # 💡 학습 포인트: Databricks 내부적으로 protobuf v2 JSON 형식을 사용합니다
+    inst_block: dict = {
+        "text_instructions": [
+            {"id": uuid4().hex, "content": [inst]} for inst in instructions
+        ],
+        "example_question_sqls": [
+            {
+                "id": uuid4().hex,
+                "question": [ex["question"]],
+                "sql": [ex["sql"]],
+            }
+            for ex in example_sqls
+        ],
+    }
+
+    # 💡 join_specs: 테이블 간 조인 관계를 명시하여 Genie가 정확한 JOIN SQL을 생성하도록 유도
+    if join_specs:
+        inst_block["join_specs"] = join_specs
+
+    # 💡 sql_snippets: 자주 쓰는 계산식/집계/필터를 미리 정의하여 일관된 SQL 생성 유도
+    if sql_snippets:
+        inst_block["sql_snippets"] = sql_snippets
+
+    proto = {
+        "version": 2,
+        "data_sources": {
+            "tables": [
+                {"identifier": f"{t['catalog']}.{t['schema']}.{t['table']}"}
+                for t in tables
+            ]
+        },
+        "config": {
+            "sample_questions": [
+                {"id": uuid4().hex, "question": [q]} for q in sample_questions
+            ]
+        },
+        "instructions": inst_block,
+    }
+    return json.dumps(proto)
+
+
+def create_genie_space(
+    title: str,
+    description: str,
+    warehouse_id: str,
+    serialized_space: str,
+) -> dict:
+    """POST /api/2.0/genie/spaces로 Space를 생성합니다."""
+    resp = httpx.post(
+        f"{DATABRICKS_HOST}/api/2.0/genie/spaces",
+        headers=headers,
+        json={
+            "title": title,
+            "description": description,
+            "warehouse_id": warehouse_id,
+            "serialized_space": serialized_space,
+        },
+    )
+    resp.raise_for_status()
+    return resp.json()
+
+
+def main():
+    print("🧞 Exercise 01a: Genie Space 생성")
+    print("=" * 60)
+
+    # 예제 설정 — Fashion Recommendations 데이터
+    tables = [
+        {"catalog": "jongseob_demo", "schema": "fashion_recommendations", "table": "transactions"},
+        {"catalog": "jongseob_demo", "schema": "fashion_recommendations", "table": "customers"},
+    ]
+    instructions = [
+        "## Column Naming Conventions\n"
+        "- The transaction date column is `t_dat` in the `transactions` table, not `date` or `transaction_date`.\n"
+        "- Customer identifier is `customer_id` in both `transactions` and `customers` tables.\n"
+        "- The `price` column in `transactions` represents per-unit price — each row is one unit sold.",
+        "## Date and Time Handling\n"
+        "- Use `t_dat` for date filtering in the `transactions` table (format: DATE).\n"
+        "- The `transactions` table has pre-extracted `year` and `month` integer columns — prefer these for year/month grouping over YEAR() and MONTH() functions.\n"
+        "- When users say 'last month' or 'this year', use CURRENT_DATE and DATE_SUB/DATE_TRUNC functions on `t_dat`.",
+        "## Sales Channel Mapping\n"
+        "- `sales_channel_id = 1` means **Online** sales.\n"
+        "- `sales_channel_id = 2` means **In-Store** (offline) sales.\n"
+        "- When users ask about 'online sales' or 'store sales', filter on `sales_channel_id` accordingly.",
+        "## Customer Segmentation\n"
+        "- `club_member_status` in the `customers` table indicates membership tier (ACTIVE, PRE-CREATE, LEFT CLUB, etc.).\n"
+        "- `fashion_news_frequency` indicates news subscription (Regularly, Monthly, None).\n"
+        "- Use `customers.age` for age-based segmentation.",
+    ]
+    sample_questions = [
+        "How does revenue compare between online and in-store sales by month?",
+        "What is the total online revenue for 2020?",
+        "What are the monthly sales trends?",
+        "Who are the top spending customers and what is their membership status?",
+        "How many transactions did each age group make?",
+    ]
+    example_sqls = [
+        {
+            "question": "How does revenue compare between online and in-store sales by month?",
+            "sql": "SELECT year, month, CASE WHEN sales_channel_id = 1 THEN 'Online' ELSE 'In-Store' END AS sales_channel, COUNT(*) AS num_transactions, CAST(SUM(price) AS DECIMAL(38,2)) AS total_revenue FROM jongseob_demo.fashion_recommendations.transactions GROUP BY year, month, sales_channel_id ORDER BY year, month, sales_channel_id",
+        },
+        {
+            "question": "What are the monthly sales trends?",
+            "sql": "SELECT year, month, COUNT(*) AS num_transactions, CAST(SUM(price) AS DECIMAL(38,2)) AS total_revenue, COUNT(DISTINCT customer_id) AS unique_customers FROM jongseob_demo.fashion_recommendations.transactions GROUP BY year, month ORDER BY year, month",
+        },
+        {
+            "question": "Who are the top spending customers and what is their membership status?",
+            "sql": "SELECT t.customer_id, c.club_member_status, c.age, COUNT(*) AS num_purchases, CAST(SUM(t.price) AS DECIMAL(38,2)) AS total_spent FROM jongseob_demo.fashion_recommendations.transactions t INNER JOIN jongseob_demo.fashion_recommendations.customers c ON t.customer_id = c.customer_id GROUP BY t.customer_id, c.club_member_status, c.age ORDER BY total_spent DESC LIMIT 20",
+        },
+    ]
+
+    # 💡 join_specs: transactions ↔ customers 조인 조건을 명시합니다
+    join_specs = [
+        {
+            "left": {"table": "jongseob_demo.fashion_recommendations.transactions", "column": "customer_id"},
+            "right": {"table": "jongseob_demo.fashion_recommendations.customers", "column": "customer_id"},
+            "sql": ["jongseob_demo.fashion_recommendations.transactions.customer_id = jongseob_demo.fashion_recommendations.customers.customer_id"],
+        }
+    ]
+
+    # 💡 sql_snippets: 자주 쓰는 계산식/집계/필터를 미리 정의합니다
+    sql_snippets = {
+        "filters": [
+            {
+                "id": uuid4().hex,
+                "sql": "transactions.sales_channel_id = 1",
+                "display_name": "Online Sales Only",
+                "synonyms": ["online", "web sales", "e-commerce"],
+            },
+            {
+                "id": uuid4().hex,
+                "sql": "customers.club_member_status = 'ACTIVE'",
+                "display_name": "Active Club Members",
+                "synonyms": ["active members", "club members", "active customers"],
+            },
+            {
+                "id": uuid4().hex,
+                "sql": "transactions.t_dat >= DATE_SUB(CURRENT_DATE(), 365)",
+                "display_name": "Last 12 Months",
+                "synonyms": ["last year", "past year", "recent year"],
+            },
+            {
+                "id": uuid4().hex,
+                "sql": "transactions.sales_channel_id = 2",
+                "display_name": "In-Store Sales Only",
+                "synonyms": ["in-store", "offline", "store sales", "brick and mortar"],
+            },
+            {
+                "id": uuid4().hex,
+                "sql": "transactions.t_dat >= DATE_SUB(CURRENT_DATE(), 30)",
+                "display_name": "Last 30 Days",
+                "synonyms": ["last month", "recent", "past month"],
+            },
+        ],
+        "expressions": [
+            {
+                "id": uuid4().hex,
+                "alias": "transaction_month",
+                "sql": "transactions.month",
+                "display_name": "Transaction Month",
+                "synonyms": ["month", "sale month"],
+            },
+            {
+                "id": uuid4().hex,
+                "alias": "sales_channel_name",
+                "sql": "CASE WHEN transactions.sales_channel_id = 1 THEN 'Online' ELSE 'In-Store' END",
+                "display_name": "Sales Channel Name",
+                "synonyms": ["channel", "sales channel"],
+            },
+            {
+                "id": uuid4().hex,
+                "alias": "transaction_year",
+                "sql": "transactions.year",
+                "display_name": "Transaction Year",
+                "synonyms": ["year", "sale year"],
+            },
+        ],
+        "measures": [
+            {
+                "id": uuid4().hex,
+                "alias": "transaction_count",
+                "sql": "COUNT(*)",
+                "display_name": "Transaction Count",
+                "synonyms": ["number of transactions", "sales count", "purchase count"],
+            },
+            {
+                "id": uuid4().hex,
+                "alias": "unique_customer_count",
+                "sql": "COUNT(DISTINCT transactions.customer_id)",
+                "display_name": "Unique Customers",
+                "synonyms": ["customer count", "distinct customers", "number of customers"],
+            },
+            {
+                "id": uuid4().hex,
+                "alias": "avg_price",
+                "sql": "CAST(AVG(transactions.price) AS DECIMAL(38,2))",
+                "display_name": "Average Price",
+                "synonyms": ["avg price", "mean price", "average transaction value"],
+            },
+            {
+                "id": uuid4().hex,
+                "alias": "total_revenue",
+                "sql": "CAST(SUM(transactions.price) AS DECIMAL(38,2))",
+                "display_name": "Total Revenue",
+                "synonyms": ["revenue", "total sales", "sales amount"],
+            },
+        ],
+    }
+
+    print("  1️⃣ serialized_space 생성 중...")
+    serialized = build_serialized_space(
+        tables=tables,
+        instructions=instructions,
+        sample_questions=sample_questions,
+        example_sqls=example_sqls,
+        join_specs=join_specs,
+        sql_snippets=sql_snippets,
+    )
+    print(f"  ✅ serialized_space 생성 완료 ({len(serialized)} bytes)")
+
+    print("  2️⃣ Genie Space 생성 API 호출 중...")
+    space = create_genie_space(
+        title="Fashion Recommendations Analytics 2",
+        description="A natural language analytics space for exploring fashion sales transactions and customer profiles.",
+        warehouse_id=WAREHOUSE_ID,
+        serialized_space=serialized,
+    )
+    space_id = space["space_id"]
+    print(f"  ✅ Space 생성 완료!")
+    print(f"     Space ID: {space_id}")
+
+    print(f"\n💡 Tip: exercise_01b에서 이 Space ID를 사용하세요:")
+    print(f"   python exercise_01b_query_space.py {space_id}")
+
+
+if __name__ == "__main__":
+    main()
+            </code></pre>
+            <aside class="notes">
+                Exercise 01a의 전체 코드입니다. Copy 버튼으로 복사하여 바로 실행할 수 있습니다.
+                하이라이트된 구간을 확인해보세요:
+                첫 번째 — import와 환경변수 설정 (1-14행)
+                두 번째 — build_serialized_space 함수 (34-97행)
+                세 번째 — create_genie_space 함수 (100-114행)
+                네 번째 — main 함수 (117-257행) — Fashion Recommendations 2개 테이블, 4개 instructions, 5개 예제 질문, 3개 예제 SQL, join_specs, sql_snippets 포함
+                .env 파일에 DATABRICKS_HOST, DATABRICKS_TOKEN, WAREHOUSE_ID를 설정한 후 실행하세요.
+                출력된 Space ID를 exercise_01b에서 사용합니다.
+            </aside>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- Exercise 01b: Genie Space 질의 (Slides 12-14) -->
+        <!-- ============================================================ -->
+
+        <!-- Slide 12: 질의 API 함수 -->
+        <section>
+            <h2>Exercise 01b: 질의 API 함수</h2>
+            <p style="font-size: 0.7em; color: var(--ev-text-muted);">create_conversation, send_message, poll_result, format_result</p>
+            <pre><code class="language-python" data-trim data-noescape style="font-size: 0.48em; line-height: 1.4;">
+def create_conversation(space_id: str) -> str:
+    """새 Genie 대화를 생성합니다."""
+    base_url = f"{DATABRICKS_HOST}/api/2.0/genie/spaces/{space_id}"
+    resp = httpx.post(f"{base_url}/conversations", headers=headers)
+    resp.raise_for_status()
+    return resp.json()["conversation_id"]
+
+
+def send_message(space_id: str, conversation_id: str, question: str) -> dict:
+    """Genie에 자연어 질문을 보냅니다."""
+    base_url = f"{DATABRICKS_HOST}/api/2.0/genie/spaces/{space_id}"
+    resp = httpx.post(
+        f"{base_url}/conversations/{conversation_id}/messages",
+        headers=headers, json={"content": question},
+    )
+    resp.raise_for_status()
+    return resp.json()
+
+
+def poll_result(
+    space_id: str, conversation_id: str, message_id: str, max_wait: int = 120,
+) -> dict:
+    """결과가 준비될 때까지 점진적 백오프로 폴링합니다."""
+    base_url = f"{DATABRICKS_HOST}/api/2.0/genie/spaces/{space_id}"
+    url = f"{base_url}/conversations/{conversation_id}/messages/{message_id}"
+
+    start = time.time()
+    interval = 1.0
+    while time.time() - start < max_wait:
+        resp = httpx.get(url, headers=headers)
+        resp.raise_for_status()
+        data = resp.json()
+        status = data.get("status", "")
+        if status == "COMPLETED":
+            return data
+        if status in ("FAILED", "CANCELLED"):
+            raise RuntimeError(f"Genie 질의 실패: {status}")
+        elapsed = time.time() - start
+        print(f"  ⏳ 상태: {status} ({elapsed:.0f}초 경과)")
+        time.sleep(interval)
+        interval = min(interval * 1.5, 5.0)
+
+    raise TimeoutError("Genie 응답 시간 초과")
+
+
+def format_result(data: dict) -> str:
+    """응답에서 텍스트/SQL 결과를 추출합니다."""
+    attachments = data.get("attachments", [])
+    parts = []
+    for att in attachments:
+        if "text" in att:
+            parts.append(att["text"].get("content", ""))
+        if "query" in att:
+            parts.append(f"SQL: {att['query'].get('query', '')}")
+    return "\n".join(parts) if parts else json.dumps(data, indent=2, ensure_ascii=False)
+            </code></pre>
+            <aside class="notes">
+                Exercise 01b의 4개 핵심 함수입니다.
+                create_conversation은 새 대화를 시작하고 conversation_id를 반환합니다.
+                send_message는 자연어 질문을 보내고 message_id를 반환합니다.
+                poll_result는 점진적 백오프로 결과를 폴링합니다 — 1초에서 시작하여 1.5배씩 늘려 최대 5초까지 증가합니다.
+                format_result는 응답에서 텍스트와 SQL을 추출하여 읽기 쉬운 형태로 변환합니다.
+                이 패턴은 빠른 쿼리는 즉시 결과를 받고, 느린 쿼리는 불필요한 API 호출을 줄입니다.
+            </aside>
+        </section>
+
+        <!-- Slide 13: Exercise 01b main() -->
+        <section>
+            <h2>Exercise 01b: main() — 질의 흐름</h2>
+            <p style="font-size: 0.7em; color: var(--ev-text-muted);">대화 생성 → 질문 전송 → 폴링 → 결과 출력</p>
+            <pre><code class="language-python" data-trim data-noescape style="font-size: 0.52em; line-height: 1.4;">
+SPACE_ID = sys.argv[1]  # exercise_01a에서 출력된 Space ID
+
+
+def main():
+    print("🔍 Exercise 01b: Genie Space 질의")
+    print("=" * 60)
+    print(f"  Space ID: {SPACE_ID}")
+
+    conversation_id = create_conversation(SPACE_ID)
+    print(f"     대화 ID: {conversation_id}")
+
+    question = "What is the total online revenue for 2020?"
+    print(f"  질문 전송: '{question}'")
+    result = send_message(SPACE_ID, conversation_id, question)
+    message_id = result["message_id"]
+
+    final = poll_result(SPACE_ID, conversation_id, message_id)
+    print(f"\n✅ 결과:")
+    print(f"   {format_result(final)}")
+
+
+if __name__ == "__main__":
+    main()
+            </code></pre>
+            <div class="emphasis-box fragment" style="margin-top: 0.8em;">
+                <strong>실행:</strong> <code>python exercise_01b_query_space.py &lt;SPACE_ID&gt;</code>
+            </div>
+            <aside class="notes">
+                Exercise 01b의 main 함수입니다. 질의에만 집중합니다.
+                exercise_01a에서 출력된 Space ID를 커맨드라인 인자로 받습니다.
+                대화를 생성하고, 질문을 보내고, 결과를 폴링하여 출력합니다.
+                이렇게 분리하면 이미 생성된 Space에 대해 여러 번 질의를 테스트할 수 있습니다.
+            </aside>
+        </section>
+
+        <!-- Slide 14: Exercise 01b 전체 코드 -->
+        <section>
+            <h2>Exercise 01b 전체 코드</h2>
+            <p style="font-size: 0.6em; color: var(--ev-text-muted);">exercise_01b_query_space.py &mdash; 복사하여 바로 실행 가능</p>
+            <pre><code class="language-python" data-trim data-noescape data-line-numbers="1-16|29-36|43-97|100-123" style="font-size: 0.40em; line-height: 1.3;">
+"""
+Exercise 01b: Genie Space 질의
+생성된 Genie Space에 자연어 질의를 수행합니다.
+
+사용법: python exercise_01b_query_space.py &lt;SPACE_ID&gt;
+"""
+
+import json
+import os
+import sys
+import time
+
+import httpx
+from dotenv import load_dotenv
+
+load_dotenv()
+
+DATABRICKS_HOST = os.getenv("DATABRICKS_HOST", "").rstrip("/")
+DATABRICKS_TOKEN = os.getenv("DATABRICKS_TOKEN", "")
+
+if not all([DATABRICKS_HOST, DATABRICKS_TOKEN]):
+    print("⚠️  .env 파일에 필요한 환경변수를 설정해주세요.")
+    print("   cp .env.example .env 후 값을 입력하세요.")
+    print("   필요: DATABRICKS_HOST, DATABRICKS_TOKEN")
+    exit(1)
+
+if len(sys.argv) < 2:
+    print("⚠️  사용법: python exercise_01b_query_space.py &lt;SPACE_ID&gt;")
+    print("   exercise_01a_create_space.py를 먼저 실행하여 Space ID를 얻으세요.")
+    exit(1)
+
+SPACE_ID = sys.argv[1]
+
+headers = {
+    "Authorization": f"Bearer {DATABRICKS_TOKEN}",
+    "Content-Type": "application/json",
+}
+
+
+def create_conversation(space_id: str) -> str:
+    """새 Genie 대화를 생성합니다."""
+    base_url = f"{DATABRICKS_HOST}/api/2.0/genie/spaces/{space_id}"
+    resp = httpx.post(f"{base_url}/conversations", headers=headers)
+    resp.raise_for_status()
+    return resp.json()["conversation_id"]
+
+
+def send_message(space_id: str, conversation_id: str, question: str) -> dict:
+    """Genie에 자연어 질문을 보냅니다."""
+    base_url = f"{DATABRICKS_HOST}/api/2.0/genie/spaces/{space_id}"
+    resp = httpx.post(
+        f"{base_url}/conversations/{conversation_id}/messages",
+        headers=headers,
+        json={"content": question},
+    )
+    resp.raise_for_status()
+    return resp.json()
+
+
+def poll_result(
+    space_id: str,
+    conversation_id: str,
+    message_id: str,
+    max_wait: int = 120,
+) -> dict:
+    """결과가 준비될 때까지 점진적 백오프로 폴링합니다."""
+    base_url = f"{DATABRICKS_HOST}/api/2.0/genie/spaces/{space_id}"
+    url = f"{base_url}/conversations/{conversation_id}/messages/{message_id}"
+
+    # 💡 학습 포인트: 점진적 백오프 — 초반엔 짧게, 오래 걸리면 간격을 늘림
+    start = time.time()
+    interval = 1.0
+    while time.time() - start < max_wait:
+        resp = httpx.get(url, headers=headers)
+        resp.raise_for_status()
+        data = resp.json()
+        status = data.get("status", "")
+
+        if status == "COMPLETED":
+            return data
+        if status in ("FAILED", "CANCELLED"):
+            raise RuntimeError(f"Genie 질의 실패: {status}")
+
+        elapsed = time.time() - start
+        print(f"  ⏳ 상태: {status} ({elapsed:.0f}초 경과)")
+        time.sleep(interval)
+        interval = min(interval * 1.5, 5.0)  # 최대 5초까지 증가
+
+    raise TimeoutError("Genie 응답 시간 초과")
+
+
+def format_result(data: dict) -> str:
+    """응답에서 텍스트/SQL 결과를 추출합니다."""
+    attachments = data.get("attachments", [])
+    parts = []
+    for att in attachments:
+        if "text" in att:
+            parts.append(att["text"].get("content", ""))
+        if "query" in att:
+            parts.append(f"SQL: {att['query'].get('query', '')}")
+    return "\n".join(parts) if parts else json.dumps(data, indent=2, ensure_ascii=False)
+
+
+def main():
+    print("🔍 Exercise 01b: Genie Space 질의")
+    print("=" * 60)
+    print(f"  Space ID: {SPACE_ID}")
+
+    print("\n  1️⃣ 대화 생성 중...")
+    conversation_id = create_conversation(SPACE_ID)
+    print(f"     대화 ID: {conversation_id}")
+
+    question = "What is the total online revenue for 2020?"
+    print(f"  2️⃣ 질문 전송: '{question}'")
+    result = send_message(SPACE_ID, conversation_id, question)
+    message_id = result["message_id"]
+    print(f"     메시지 ID: {message_id}")
+
+    print("  3️⃣ 결과 대기 중...")
+    final = poll_result(SPACE_ID, conversation_id, message_id)
+    print(f"\n✅ 결과:")
+    print(f"   {format_result(final)}")
+
+    print(f"\n💡 Tip: 생성된 Space ID를 exercise_02에서 활용할 수 있습니다.")
+    print(f"   Space ID: {SPACE_ID}")
+
+
+if __name__ == "__main__":
+    main()
+            </code></pre>
+            <aside class="notes">
+                Exercise 01b의 전체 코드입니다. Copy 버튼으로 복사하여 바로 실행할 수 있습니다.
+                하이라이트된 구간을 확인해보세요:
+                첫 번째 — import와 환경변수 설정 (1-16행)
+                두 번째 — Space ID 입력 처리 (29-36행)
+                세 번째 — 질의 API 함수 4개 (43-97행) — create_conversation, send_message, poll_result, format_result
+                네 번째 — main 함수 (100-123행) — 대화 생성, 질문 전송, 폴링, 결과 출력
+                exercise_01a에서 출력된 Space ID를 인자로 전달하여 실행합니다.
+            </aside>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- Exercise 02: MCP 서버 (Slides 15-17) -->
+        <!-- ============================================================ -->
+
+        <!-- Slide 15: MCP 서버 기본 구조 -->
+        <section>
+            <h2>MCP 서버 기본 구조</h2>
+            <p style="font-size: 0.7em; color: var(--ev-text-muted);">FastMCP import, 인스턴스 생성, 헬퍼 함수 2개</p>
+            <pre><code class="language-python" data-trim data-noescape style="font-size: 0.48em; line-height: 1.4;">
+import json
+import os
+import time
+from uuid import uuid4
+
+import httpx
+from dotenv import load_dotenv
+from fastmcp import FastMCP
+
+load_dotenv()
+
+DATABRICKS_HOST = os.getenv("DATABRICKS_HOST", "").rstrip("/")
+DATABRICKS_TOKEN = os.getenv("DATABRICKS_TOKEN", "")
+WAREHOUSE_ID = os.getenv("WAREHOUSE_ID", "")
+
+if not all([DATABRICKS_HOST, DATABRICKS_TOKEN, WAREHOUSE_ID]):
+    print("⚠️  .env 파일에 필요한 환경변수를 설정해주세요.")
+    exit(1)
+
+mcp = FastMCP("Genie MCP")
+
+headers = {
+    "Authorization": f"Bearer {DATABRICKS_TOKEN}",
+    "Content-Type": "application/json",
+}
+
+
+def _build_serialized_space(
+    tables: list[dict], instructions: list[str], sample_questions: list[str],
+    example_sqls: list[dict], join_specs: list[dict] | None = None,
+    sql_snippets: dict | None = None,
+) -> str:
+    """protobuf v2 JSON 형식의 serialized_space를 생성합니다."""
+    inst_block: dict = {
+        "text_instructions": [
+            {"id": uuid4().hex, "content": [inst]} for inst in instructions
+        ],
+        "example_question_sqls": [
+            {"id": uuid4().hex, "question": [ex["question"]], "sql": [ex["sql"]]}
+            for ex in example_sqls
+        ],
+    }
+    if join_specs:
+        inst_block["join_specs"] = join_specs
+    if sql_snippets:
+        inst_block["sql_snippets"] = sql_snippets
+
+    proto = {
+        "version": 2,
+        "data_sources": {
+            "tables": [
+                {"identifier": f"{t['catalog']}.{t['schema']}.{t['table']}"}
+                for t in tables
+            ]
+        },
+        "config": {
+            "sample_questions": [
+                {"id": uuid4().hex, "question": [q]} for q in sample_questions
+            ]
+        },
+        "instructions": inst_block,
+    }
+    return json.dumps(proto)
+
+
+def _send_and_poll(space_id: str, conversation_id: str, question: str) -> dict:
+    """메시지를 전송하고 점진적 백오프로 결과를 폴링합니다."""
+    base_url = f"{DATABRICKS_HOST}/api/2.0/genie/spaces/{space_id}"
+    resp = httpx.post(
+        f"{base_url}/conversations/{conversation_id}/messages",
+        headers=headers, json={"content": question},
+    )
+    resp.raise_for_status()
+    message_id = resp.json()["message_id"]
+
+    url = f"{base_url}/conversations/{conversation_id}/messages/{message_id}"
+    start = time.time()
+    interval = 1.0
+    max_wait = 120
+
+    while time.time() - start < max_wait:
+        resp = httpx.get(url, headers=headers)
+        resp.raise_for_status()
+        data = resp.json()
+        status = data.get("status", "")
+        if status == "COMPLETED":
+            return data
+        if status in ("FAILED", "CANCELLED"):
+            return {"error": f"질의 실패: {status}"}
+        time.sleep(interval)
+        interval = min(interval * 1.5, 5.0)
+
+    return {"error": "응답 시간 초과 (120초)"}
+            </code></pre>
+            <aside class="notes">
+                Exercise 02의 MCP 서버 코드입니다.
+                Exercise 01과 동일한 import와 환경변수 설정이지만, FastMCP를 추가로 import합니다.
+                mcp = FastMCP("Genie MCP")로 MCP 서버 인스턴스를 생성합니다.
+                _build_serialized_space와 _send_and_poll은 내부 헬퍼 함수로,
+                Exercise 01의 함수를 MCP 서버용으로 정리한 것입니다.
+                다음 슬라이드에서 이 헬퍼를 사용하는 3개의 MCP tool을 보겠습니다.
+            </aside>
+        </section>
+
+        <!-- Slide 16: MCP Tools — 3개 tool 정의 -->
+        <section>
+            <h2>MCP Tools: 3개 tool 정의</h2>
+            <p style="font-size: 0.7em; color: var(--ev-text-muted);"><code>@mcp.tool()</code> 데코레이터로 create_genie_space, ask_genie, continue_conversation</p>
+            <pre><code class="language-python" data-trim data-noescape style="font-size: 0.48em; line-height: 1.4;">
+@mcp.tool()
+def create_genie_space(
+    title: str, description: str, warehouse_id: str, tables: list[dict],
+    instructions: list[str] | None = None, sample_questions: list[str] | None = None,
+    example_sqls: list[dict] | None = None, join_specs: list[dict] | None = None,
+    sql_snippets: dict | None = None,
+) -> str:
+    """Databricks Genie Space를 생성합니다."""
+    serialized = _build_serialized_space(
+        tables=tables, instructions=instructions or [],
+        sample_questions=sample_questions or [], example_sqls=example_sqls or [],
+        join_specs=join_specs, sql_snippets=sql_snippets,
+    )
+    resp = httpx.post(
+        f"{DATABRICKS_HOST}/api/2.0/genie/spaces", headers=headers,
+        json={
+            "title": title, "description": description,
+            "warehouse_id": warehouse_id, "serialized_space": serialized,
+        },
+    )
+    resp.raise_for_status()
+    data = resp.json()
+    space_id = data.get("space_id", "unknown")
+    return f"Space 생성 완료\nSpace ID: {space_id}\nTitle: {title}"
+
+
+@mcp.tool()
+def ask_genie(space_id: str, question: str) -> str:
+    """Databricks Genie에 자연어로 데이터를 질의합니다. 새 대화를 시작합니다."""
+    base_url = f"{DATABRICKS_HOST}/api/2.0/genie/spaces/{space_id}"
+    resp = httpx.post(f"{base_url}/conversations", headers=headers)
+    resp.raise_for_status()
+    conversation_id = resp.json()["conversation_id"]
+
+    result = _send_and_poll(space_id, conversation_id, question)
+    response = _format_response(result)
+    return f"{response}\n\n(conversation_id: {conversation_id})"
+
+
+@mcp.tool()
+def continue_conversation(
+    space_id: str, conversation_id: str, question: str,
+) -> str:
+    """기존 Genie 대화에 후속 질문을 합니다."""
+    result = _send_and_poll(space_id, conversation_id, question)
+    return _format_response(result)
+
+
+if __name__ == "__main__":
+    mcp.run()
+            </code></pre>
+            <aside class="notes">
+                3개의 MCP tool입니다.
+                create_genie_space — 테이블, 지시사항 등을 받아 내부에서 serialized_space를 구성하고 Space를 생성합니다.
+                ask_genie — 새 대화를 시작하고 질의합니다. 대화 생성, 메시지 전송, 폴링을 모두 내부에서 처리합니다.
+                continue_conversation — 기존 대화에 후속 질문을 합니다. conversation_id를 받아 같은 대화에 이어갑니다.
+                @mcp.tool() 데코레이터만 붙이면 FastMCP가 자동으로 tool을 등록합니다.
+                마지막 mcp.run()으로 서버가 시작됩니다.
+            </aside>
+        </section>
+
+        <!-- Slide 17: Exercise 02 전체 코드 -->
+        <section>
+            <h2>Exercise 02 전체 코드</h2>
+            <p style="font-size: 0.6em; color: var(--ev-text-muted);">exercise_02_genie_mcp_server.py &mdash; 복사하여 바로 실행 가능</p>
+            <pre><code class="language-python" data-trim data-noescape data-line-numbers="1-28|41-85|88-116|139-191|194-232" style="font-size: 0.38em; line-height: 1.3;">
+"""
+Exercise 02: Genie MCP 서버
+Databricks Genie를 MCP 서버로 래핑하여 Claude Code에서 사용할 수 있게 합니다.
+Space 생성, 질의, 후속 질의 3개 tool을 제공합니다.
+
+실행: python exercise_02_genie_mcp_server.py
+"""
+
+import json
+import os
+import time
+from uuid import uuid4
+
+import httpx
+from dotenv import load_dotenv
+from fastmcp import FastMCP
+
+load_dotenv()
+
+DATABRICKS_HOST = os.getenv("DATABRICKS_HOST", "").rstrip("/")
+DATABRICKS_TOKEN = os.getenv("DATABRICKS_TOKEN", "")
+WAREHOUSE_ID = os.getenv("WAREHOUSE_ID", "")
+
+if not all([DATABRICKS_HOST, DATABRICKS_TOKEN, WAREHOUSE_ID]):
+    print("⚠️  .env 파일에 필요한 환경변수를 설정해주세요.")
+    exit(1)
+
+mcp = FastMCP("Genie MCP")
+
+headers = {
+    "Authorization": f"Bearer {DATABRICKS_TOKEN}",
+    "Content-Type": "application/json",
+}
+
+
+# ============================================================
+# 내부 헬퍼 함수
+# ============================================================
+
+
+def _build_serialized_space(
+    tables: list[dict],
+    instructions: list[str],
+    sample_questions: list[str],
+    example_sqls: list[dict],
+    join_specs: list[dict] | None = None,
+    sql_snippets: dict | None = None,
+) -> str:
+    """protobuf v2 JSON 형식의 serialized_space를 생성합니다."""
+    inst_block: dict = {
+        "text_instructions": [
+            {"id": uuid4().hex, "content": [inst]} for inst in instructions
+        ],
+        "example_question_sqls": [
+            {
+                "id": uuid4().hex,
+                "question": [ex["question"]],
+                "sql": [ex["sql"]],
+            }
+            for ex in example_sqls
+        ],
+    }
+
+    if join_specs:
+        inst_block["join_specs"] = join_specs
+
+    if sql_snippets:
+        inst_block["sql_snippets"] = sql_snippets
+
+    proto = {
+        "version": 2,
+        "data_sources": {
+            "tables": [
+                {"identifier": f"{t['catalog']}.{t['schema']}.{t['table']}"}
+                for t in tables
+            ]
+        },
+        "config": {
+            "sample_questions": [
+                {"id": uuid4().hex, "question": [q]} for q in sample_questions
+            ]
+        },
+        "instructions": inst_block,
+    }
+    return json.dumps(proto)
+
+
+def _send_and_poll(space_id: str, conversation_id: str, question: str) -> dict:
+    """메시지를 전송하고 점진적 백오프로 결과를 폴링합니다."""
+    base_url = f"{DATABRICKS_HOST}/api/2.0/genie/spaces/{space_id}"
     resp = httpx.post(
         f"{base_url}/conversations/{conversation_id}/messages",
         headers=headers,
@@ -260,114 +1657,213 @@ def _send_and_poll(conversation_id: str, question: str,
     resp.raise_for_status()
     message_id = resp.json()["message_id"]
 
-    # 폴링: 2초 간격으로 결과 확인
     url = f"{base_url}/conversations/{conversation_id}/messages/{message_id}"
-    for _ in range(max_wait // 2):
+    start = time.time()
+    interval = 1.0
+    max_wait = 120
+
+    while time.time() - start < max_wait:
         resp = httpx.get(url, headers=headers)
+        resp.raise_for_status()
         data = resp.json()
         status = data.get("status", "")
         if status == "COMPLETED":
             return data
         if status in ("FAILED", "CANCELLED"):
             return {"error": f"질의 실패: {status}"}
-        time.sleep(2)
-    return {"error": "응답 시간 초과"}
+        time.sleep(interval)
+        interval = min(interval * 1.5, 5.0)
+
+    return {"error": "응답 시간 초과 (120초)"}
+
+
+def _format_response(result: dict) -> str:
+    """Genie 응답에서 텍스트/SQL 결과를 추출합니다."""
+    if "error" in result:
+        return f"오류: {result['error']}"
+
+    attachments = result.get("attachments", [])
+    parts = []
+    for att in attachments:
+        if "text" in att:
+            parts.append(att["text"].get("content", ""))
+        if "query" in att:
+            parts.append(f"SQL: {att['query'].get('query', '')}")
+    return "\n".join(parts) if parts else json.dumps(result, indent=2, ensure_ascii=False)
+
+
+# ============================================================
+# MCP Tools
+# ============================================================
+
+
+@mcp.tool()
+def create_genie_space(
+    title: str,
+    description: str,
+    warehouse_id: str,
+    tables: list[dict],
+    instructions: list[str] | None = None,
+    sample_questions: list[str] | None = None,
+    example_sqls: list[dict] | None = None,
+    join_specs: list[dict] | None = None,
+    sql_snippets: dict | None = None,
+) -> str:
+    """Databricks Genie Space를 생성합니다.
+
+    Args:
+        title: Space 제목
+        description: Space 설명
+        warehouse_id: SQL Warehouse ID
+        tables: 포함할 테이블 목록 [{"catalog": "...", "schema": "...", "table": "..."}]
+        instructions: 텍스트 지시사항 (예: ["한국어로 답변해주세요"])
+        sample_questions: 예제 질문 (예: ["총 매출은?"])
+        example_sqls: 예제 SQL [{"question": "...", "sql": "..."}]
+        join_specs: 테이블 간 조인 조건 리스트
+        sql_snippets: SQL 스니펫 (expressions, measures, filters)
+
+    Returns:
+        생성된 Space 정보 (space_id 포함)
+    """
+    serialized = _build_serialized_space(
+        tables=tables,
+        instructions=instructions or [],
+        sample_questions=sample_questions or [],
+        example_sqls=example_sqls or [],
+        join_specs=join_specs,
+        sql_snippets=sql_snippets,
+    )
+
+    resp = httpx.post(
+        f"{DATABRICKS_HOST}/api/2.0/genie/spaces",
+        headers=headers,
+        json={
+            "title": title,
+            "description": description,
+            "warehouse_id": warehouse_id,
+            "serialized_space": serialized,
+        },
+    )
+    resp.raise_for_status()
+    data = resp.json()
+    space_id = data.get("space_id", "unknown")
+    return f"Space 생성 완료\nSpace ID: {space_id}\nTitle: {title}"
+
+
+@mcp.tool()
+def ask_genie(space_id: str, question: str) -> str:
+    """Databricks Genie에 자연어로 데이터를 질의합니다. 새 대화를 시작합니다.
+
+    Args:
+        space_id: Genie Space ID
+        question: 데이터에 대한 자연어 질문 (예: '이번 달 매출은?')
+
+    Returns:
+        Genie의 응답 결과 (텍스트 + SQL)
+    """
+    base_url = f"{DATABRICKS_HOST}/api/2.0/genie/spaces/{space_id}"
+    resp = httpx.post(f"{base_url}/conversations", headers=headers)
+    resp.raise_for_status()
+    conversation_id = resp.json()["conversation_id"]
+
+    result = _send_and_poll(space_id, conversation_id, question)
+    response = _format_response(result)
+    return f"{response}\n\n(conversation_id: {conversation_id})"
+
+
+@mcp.tool()
+def continue_conversation(
+    space_id: str,
+    conversation_id: str,
+    question: str,
+) -> str:
+    """기존 Genie 대화에 후속 질문을 합니다.
+
+    Args:
+        space_id: Genie Space ID
+        conversation_id: 기존 대화 ID (ask_genie 결과에서 확인)
+        question: 후속 질문 (예: '월별로 나눠서 보여줘')
+
+    Returns:
+        Genie의 응답 결과
+    """
+    result = _send_and_poll(space_id, conversation_id, question)
+    return _format_response(result)
+
+
+if __name__ == "__main__":
+    mcp.run()
             </code></pre>
             <aside class="notes">
-                폴링 패턴은 비동기 API에서 자주 사용되는 패턴입니다.
-                메시지를 보낸 뒤 message_id를 받고, 이를 이용해 주기적으로 상태를 확인합니다.
-                2초 간격으로 최대 60초까지 대기하며, 상태가 COMPLETED가 되면 결과를 반환합니다.
-                FAILED나 CANCELLED 상태면 에러를 반환하고, 시간이 초과되면 타임아웃 에러를 반환합니다.
-                이 로직이 MCP 서버 내부에 캡슐화되어 있으므로 사용자는 단순히 질문만 하면 됩니다.
+                Exercise 02의 전체 코드입니다. Copy 버튼으로 복사하여 바로 실행할 수 있습니다.
+                하이라이트된 구간을 확인해보세요:
+                첫 번째 — import, 환경변수, FastMCP 인스턴스 생성 (1-28행)
+                두 번째 — _build_serialized_space 헬퍼 (41-85행)
+                세 번째 — _send_and_poll 헬퍼 (88-116행)
+                네 번째 — create_genie_space tool (139-191행)
+                다섯 번째 — ask_genie + continue_conversation tool (194-232행)
+                Exercise 01과 로직은 동일하지만 @mcp.tool() 데코레이터로 MCP 서버가 됩니다.
             </aside>
         </section>
 
-        <!-- Slide 9: Claude Code에서 Genie MCP 활용 시나리오 -->
+        <!-- ============================================================ -->
+        <!-- 마무리 (Slides 18-19) -->
+        <!-- ============================================================ -->
+
+        <!-- Slide 18: Claude Code 연결 + 실습 안내 -->
         <section>
-            <h2>Claude Code에서 활용 시나리오</h2>
+            <h2>Claude Code 연결 + 실습 안내</h2>
             <h3>settings.local.json 설정</h3>
-            <pre><code class="json" data-trim>
+            <pre><code class="language-json" data-trim data-noescape>
 {
   "mcpServers": {
     "genie": {
       "command": "python",
       "args": ["exercise_02_genie_mcp_server.py"],
-      "cwd": "./sections/05-genie-mcp/code"
+      "cwd": "./sections/05-genie-mcp"
     }
   }
 }
             </code></pre>
-            <h3 style="margin-top: 1em;">대화 예시</h3>
-            <div class="emphasis-box" style="font-size: 0.85em;">
-                <p><strong>사용자:</strong> "이번 달 매출 데이터를 분석해서 보고서를 작성해줘"</p>
-                <p><strong>Claude:</strong> Genie MCP의 <code>ask_genie</code> tool을 사용하여 매출 데이터를 조회하고, 분석 보고서를 생성합니다.</p>
+            <h3 style="margin-top: 0.8em;">대화 예시</h3>
+            <div class="emphasis-box" style="font-size: 0.75em;">
+                <p><strong>사용자:</strong> "Fashion Recommendations 데이터로 Genie Space를 만들어줘"</p>
+                <p><strong>Claude:</strong> <code>create_genie_space</code> tool로 Space를 생성합니다.</p>
+                <p style="margin-top: 0.5em;"><strong>사용자:</strong> "매출 Top 10 상품을 알려줘"</p>
+                <p><strong>Claude:</strong> <code>ask_genie</code> tool로 질의합니다.</p>
+                <p style="margin-top: 0.5em;"><strong>사용자:</strong> "온라인/오프라인별로 나눠서 보여줘"</p>
+                <p><strong>Claude:</strong> <code>continue_conversation</code> tool로 후속 질의합니다.</p>
+            </div>
+            <div class="emphasis-box fragment" style="margin-top: 0.8em;">
+                <strong>실습:</strong> <code>databricks configure</code> 설정 → Exercise 00 체크리스트 → 01a → 01b → Exercise 02를 Claude Code에 연결
             </div>
             <aside class="notes">
-                실제로 Claude Code에서 사용하려면 settings.local.json에 MCP 서버를 등록합니다.
-                command는 python, args에 서버 파일 경로를 지정합니다.
-                등록 후 Claude Code에서 데이터 질문을 하면 자동으로 ask_genie tool이 호출됩니다.
-                Claude Code가 Genie의 응답을 받아 분석, 요약, 보고서 작성까지 해줄 수 있습니다.
-                기존에는 Databricks 웹 UI에서 수동으로 해야 했던 작업을 자동화할 수 있는 것입니다.
+                Claude Code에서 사용하려면 settings.local.json에 MCP 서버를 등록합니다.
+                등록 후 Claude Code에서 Space 생성을 요청하면 create_genie_space tool이 호출됩니다.
+                생성된 Space에 질문하면 ask_genie tool이, 후속 질문은 continue_conversation tool이 호출됩니다.
+                실습은 네 단계입니다: 먼저 .env 파일을 설정하고 Exercise 00으로 환경을 검증합니다. 그 다음 Exercise 01a로 Space를 생성합니다.
+                그 다음 Exercise 01b로 생성한 Space에 질의합니다.
+                마지막으로 Exercise 02를 Claude Code에 연결하여 자연어로 Space 생성과 질의를 수행합니다.
             </aside>
         </section>
 
-        <!-- Slide 10: 실습 안내 -->
-        <section>
-            <h2>실습 안내</h2>
-            <div class="columns">
-                <div>
-                    <h3>Exercise 01</h3>
-                    <p>Genie API 직접 호출</p>
-                    <ul>
-                        <li><code>.env</code> 설정</li>
-                        <li>대화 생성 API 호출</li>
-                        <li>메시지 전송 및 폴링</li>
-                        <li>결과 확인</li>
-                    </ul>
-                    <pre><code class="bash" data-trim>
-python exercise_01_genie_api.py
-                    </code></pre>
-                </div>
-                <div>
-                    <h3>Exercise 02</h3>
-                    <p>Genie MCP 서버 구현</p>
-                    <ul>
-                        <li>FastMCP 서버 코드 분석</li>
-                        <li>MCP 서버 실행</li>
-                        <li>Claude Code에 연결</li>
-                        <li>자연어 질의 테스트</li>
-                    </ul>
-                    <pre><code class="bash" data-trim>
-python exercise_02_genie_mcp_server.py
-                    </code></pre>
-                </div>
-            </div>
-            <aside class="notes">
-                두 가지 실습을 진행합니다.
-                Exercise 01은 Genie API를 직접 호출하는 스크립트입니다.
-                API의 3단계 호출을 직접 체험하며 동작 원리를 이해합니다.
-                Exercise 02는 이 API를 FastMCP로 래핑한 MCP 서버입니다.
-                서버를 실행하고 Claude Code에 연결하여 실제로 자연어 질의를 해봅니다.
-                먼저 .env.example을 복사하여 .env 파일을 만들고 환경변수를 설정하세요.
-            </aside>
-        </section>
-
-        <!-- Slide 11: 정리 & Q&A -->
+        <!-- Slide 19: 정리 & Q&A -->
         <section>
             <h2>정리 & Q&A</h2>
             <ul>
-                <li><strong>Genie API</strong>: 대화 생성 &rarr; 메시지 전송 &rarr; 폴링으로 결과 조회</li>
-                <li><strong>래핑 패턴</strong>: 복잡한 REST API를 단순한 MCP tool로 추상화</li>
-                <li><strong>폴링 패턴</strong>: 비동기 API의 결과를 동기적으로 대기</li>
-                <li><strong>Claude Code 연동</strong>: <code>settings.local.json</code>에 MCP 서버 등록</li>
+                <li><strong>Space 생성 API</strong>: serialized_space(protobuf v2)로 테이블/지시사항 정의</li>
+                <li><strong>질의 API</strong>: 대화 생성 &rarr; 메시지 전송 &rarr; 점진적 백오프 폴링</li>
+                <li><strong>3개 Tool MCP</strong>: create_genie_space + ask_genie + continue_conversation</li>
+                <li><strong>Claude Code 연동</strong>: Space 생성부터 질의까지 자연어로 수행</li>
             </ul>
             <div class="emphasis-box" style="margin-top: 1.5em;">
                 <strong>다음 섹션:</strong> Skills Workflow &mdash; MCP 서버들을 Skill로 조합하여 워크플로우 구성
             </div>
             <aside class="notes">
                 이번 섹션의 핵심을 정리합니다.
-                Genie API의 3단계 구조를 이해하고, 이를 MCP 서버로 래핑하는 패턴을 배웠습니다.
-                폴링 패턴은 비동기 API를 다룰 때 핵심적인 기법입니다.
+                Genie Space를 API로 직접 생성하는 방법과 serialized_space의 protobuf v2 형식을 배웠습니다.
+                질의 API의 3단계 구조와 점진적 백오프 폴링 패턴을 이해했습니다.
+                이를 3개의 MCP tool로 래핑하여 Claude Code에서 전체 워크플로우를 자연어로 수행할 수 있게 했습니다.
                 이 패턴은 Genie뿐 아니라 다른 Databricks API나 외부 서비스를 MCP로 만들 때도 동일하게 적용됩니다.
                 질문이 있으시면 자유롭게 해주세요.
             </aside>

@@ -7,8 +7,5 @@ objectives:
   - "app.yaml 설정 파일 작성법 학습"
   - "databricks CLI를 사용한 앱 배포 실습"
 slides: "index.html"
-code_files:
-  - "exercise_01_prepare_deploy.py"
-  - "app.yaml"
 prerequisites:
   - "08-build-ui"

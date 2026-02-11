@@ -8,8 +8,5 @@ objectives:
   - "Server/Client 프리미티브와 Discovery 패턴 이해"
   - "FastMCP로 간단한 MCP 서버를 직접 만들기"
 slides: "index.html"
-code_files:
-  - "exercise_01_hello_mcp.py"
-  - "exercise_02_calculator_mcp.py"
 prerequisites:
   - "02-claude-code-features"
