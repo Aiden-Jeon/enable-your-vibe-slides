@@ -12,13 +12,6 @@
     { number: '09', dir: '09-deploy-to-databricks', title: 'Deploy to Databricks', subtitle: 'Databricks 배포', type: 'hands-on' }
   ];
 
-  var badgeMap = {
-    'lecture': { cls: 'badge-lecture', label: '강의' },
-    'lecture+demo': { cls: 'badge-demo', label: '강의+데모' },
-    'lecture+hands-on': { cls: 'badge-handson', label: '강의+실습' },
-    'hands-on': { cls: 'badge-handson', label: '실습' }
-  };
-
   function detectCurrentSection() {
     var path = window.location.pathname;
     for (var i = 0; i < sections.length; i++) {
@@ -36,7 +29,6 @@
       var li = document.createElement('li');
       if (s.dir === current) li.className = 'current';
 
-      var badge = badgeMap[s.type] || badgeMap['lecture'];
       li.innerHTML =
         '<a href="../../sections/' + s.dir + '/index.html">' +
           '<span class="section-num">' + s.number + '</span>' +
@@ -44,7 +36,6 @@
             '<span class="section-title">' + s.title + '</span>' +
             '<span class="section-subtitle">' + s.subtitle + '</span>' +
           '</span>' +
-          '<span class="section-badge ' + badge.cls + '">' + badge.label + '</span>' +
         '</a>';
 
       list.appendChild(li);

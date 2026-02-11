@@ -42,11 +42,11 @@
         <section>
             <h2>학습 목표</h2>
             <ul>
-                <li class="fragment">Genie Space 생성 API와 serialized_space 형식을 이해한다</li>
-                <li class="fragment">FastMCP로 Space 생성 + 질의 MCP 서버를 구현한다</li>
-                <li class="fragment">Claude Code에서 Genie MCP를 연결하여 Space 생성 및 데이터 질의</li>
+                <li class="fragment" data-fragment-index="0">Genie Space 생성 API와 serialized_space 형식을 이해한다</li>
+                <li class="fragment" data-fragment-index="0">FastMCP로 Space 생성 + 질의 MCP 서버를 구현한다</li>
+                <li class="fragment" data-fragment-index="0">Claude Code에서 Genie MCP를 연결하여 Space 생성 및 데이터 질의</li>
             </ul>
-            <div class="emphasis-box fragment" style="margin-top: 1.5em;">
+            <div class="emphasis-box fragment" data-fragment-index="0" style="margin-top: 1.5em;">
                 <strong>핵심:</strong> Space 생성부터 질의까지 — Genie의 전체 라이프사이클을 API로 제어합니다
             </div>
             <aside class="notes">
@@ -277,7 +277,7 @@ python exercise_00_checklist.py
         <!-- Exercise 00: 전체 코드 (exercise_00_checklist.py) -->
         <section>
             <h2>Exercise 00 전체 코드</h2>
-            <p style="font-size: 0.6em; color: var(--ev-text-muted);">exercise_00_checklist.py &mdash; 복사하여 바로 실행 가능</p>
+            <p style="font-size: 0.6em; color: var(--ev-text-muted);">exercise_00_checklist.py &mdash; 유틸리티 스크립트</p>
             <pre><code class="language-python" data-trim data-noescape style="font-size: 0.5em; line-height: 1.3;">
 """
 Exercise 00: 사전 환경 체크리스트
@@ -567,7 +567,7 @@ if __name__ == "__main__":
     main()
             </code></pre>
             <aside class="notes">
-                Exercise 00의 전체 코드입니다. Copy 버튼으로 복사하여 바로 실행할 수 있습니다.
+                Exercise 00의 전체 코드입니다. 환경 검증용 유틸리티로 그대로 실행합니다.
                 하이라이트된 구간을 확인해보세요:
                 첫 번째 — import와 load_dotenv (1-15행) — configparser, subprocess 등 인라인 인증에 필요한 모듈 포함
                 두 번째 — resolve_databricks_config (18-70행) — .env → CLI → 기본값 순서로 HOST/TOKEN/WAREHOUSE_ID 해석
@@ -818,299 +818,67 @@ def create_genie_space(
             </aside>
         </section>
 
-        <!-- Slide 11: Exercise 01a 전체 코드 -->
+        <!-- Slide 11: Exercise 01a 실습 가이드 -->
         <section>
-            <h2>Exercise 01a 전체 코드</h2>
-            <p style="font-size: 0.6em; color: var(--ev-text-muted);">exercise_01a_create_space.py &mdash; 복사하여 바로 실행 가능</p>
-            <pre><code class="language-python" style="font-size: 0.5em; line-height: 1.3;">
-"""
-Exercise 01a: Genie Space 생성
-Databricks Genie Space를 API로 생성합니다.
-
-실행: python exercise_01a_create_space.py
-"""
-
-import json
-import os
-from uuid import uuid4
-
-import httpx
-from dotenv import load_dotenv
-
-load_dotenv()
-
-DATABRICKS_HOST = os.getenv("DATABRICKS_HOST", "").rstrip("/")
-DATABRICKS_TOKEN = os.getenv("DATABRICKS_TOKEN", "")
-WAREHOUSE_ID = os.getenv("WAREHOUSE_ID", "")
-
-if not all([DATABRICKS_HOST, DATABRICKS_TOKEN, WAREHOUSE_ID]):
-    print("⚠️  .env 파일에 필요한 환경변수를 설정해주세요.")
-    print("   cp .env.example .env 후 값을 입력하세요.")
-    print("   필요: DATABRICKS_HOST, DATABRICKS_TOKEN, WAREHOUSE_ID")
-    exit(1)
-
-headers = {
-    "Authorization": f"Bearer {DATABRICKS_TOKEN}",
-    "Content-Type": "application/json",
-}
-
-
-def build_serialized_space(
-    tables: list[dict],
-    instructions: list[str],
-    sample_questions: list[str],
-    example_sqls: list[dict],
-    join_specs: list[dict] | None = None,
-    sql_snippets: dict | None = None,
-) -> str:
-    """Genie Space용 serialized_space(protobuf v2 JSON)를 생성합니다."""
-    # 💡 학습 포인트: Databricks 내부적으로 protobuf v2 JSON 형식을 사용합니다
-    inst_block: dict = {
-        "text_instructions": [
-            {"id": uuid4().hex, "content": [inst]} for inst in instructions
-        ],
-        "example_question_sqls": [
-            {
-                "id": uuid4().hex,
-                "question": [ex["question"]],
-                "sql": [ex["sql"]],
-            }
-            for ex in example_sqls
-        ],
-    }
-
-    # 💡 join_specs: 테이블 간 조인 관계를 명시하여 Genie가 정확한 JOIN SQL을 생성하도록 유도
-    if join_specs:
-        inst_block["join_specs"] = join_specs
-
-    # 💡 sql_snippets: 자주 쓰는 계산식/집계/필터를 미리 정의하여 일관된 SQL 생성 유도
-    if sql_snippets:
-        inst_block["sql_snippets"] = sql_snippets
-
-    proto = {
-        "version": 2,
-        "data_sources": {
-            "tables": [
-                {"identifier": f"{t['catalog']}.{t['schema']}.{t['table']}"}
-                for t in tables
-            ]
-        },
-        "config": {
-            "sample_questions": [
-                {"id": uuid4().hex, "question": [q]} for q in sample_questions
-            ]
-        },
-        "instructions": inst_block,
-    }
-    return json.dumps(proto)
-
-
-def create_genie_space(
-    title: str,
-    description: str,
-    warehouse_id: str,
-    serialized_space: str,
-) -> dict:
-    """POST /api/2.0/genie/spaces로 Space를 생성합니다."""
-    resp = httpx.post(
-        f"{DATABRICKS_HOST}/api/2.0/genie/spaces",
-        headers=headers,
-        json={
-            "title": title,
-            "description": description,
-            "warehouse_id": warehouse_id,
-            "serialized_space": serialized_space,
-        },
-    )
-    resp.raise_for_status()
-    return resp.json()
-
-
-def main():
-    print("🧞 Exercise 01a: Genie Space 생성")
-    print("=" * 60)
-
-    # 예제 설정 — Fashion Recommendations 데이터
-    tables = [
-        {"catalog": "jongseob_demo", "schema": "fashion_recommendations", "table": "transactions"},
-        {"catalog": "jongseob_demo", "schema": "fashion_recommendations", "table": "customers"},
-    ]
-    instructions = [
-        "## Column Naming Conventions\n"
-        "- The transaction date column is `t_dat` in the `transactions` table, not `date` or `transaction_date`.\n"
-        "- Customer identifier is `customer_id` in both `transactions` and `customers` tables.\n"
-        "- The `price` column in `transactions` represents per-unit price — each row is one unit sold.",
-        "## Date and Time Handling\n"
-        "- Use `t_dat` for date filtering in the `transactions` table (format: DATE).\n"
-        "- The `transactions` table has pre-extracted `year` and `month` integer columns — prefer these for year/month grouping over YEAR() and MONTH() functions.\n"
-        "- When users say 'last month' or 'this year', use CURRENT_DATE and DATE_SUB/DATE_TRUNC functions on `t_dat`.",
-        "## Sales Channel Mapping\n"
-        "- `sales_channel_id = 1` means **Online** sales.\n"
-        "- `sales_channel_id = 2` means **In-Store** (offline) sales.\n"
-        "- When users ask about 'online sales' or 'store sales', filter on `sales_channel_id` accordingly.",
-        "## Customer Segmentation\n"
-        "- `club_member_status` in the `customers` table indicates membership tier (ACTIVE, PRE-CREATE, LEFT CLUB, etc.).\n"
-        "- `fashion_news_frequency` indicates news subscription (Regularly, Monthly, None).\n"
-        "- Use `customers.age` for age-based segmentation.",
-    ]
-    sample_questions = [
-        "How does revenue compare between online and in-store sales by month?",
-        "What is the total online revenue for 2020?",
-        "What are the monthly sales trends?",
-        "Who are the top spending customers and what is their membership status?",
-        "How many transactions did each age group make?",
-    ]
-    example_sqls = [
-        {
-            "question": "How does revenue compare between online and in-store sales by month?",
-            "sql": "SELECT year, month, CASE WHEN sales_channel_id = 1 THEN 'Online' ELSE 'In-Store' END AS sales_channel, COUNT(*) AS num_transactions, CAST(SUM(price) AS DECIMAL(38,2)) AS total_revenue FROM jongseob_demo.fashion_recommendations.transactions GROUP BY year, month, sales_channel_id ORDER BY year, month, sales_channel_id",
-        },
-        {
-            "question": "What are the monthly sales trends?",
-            "sql": "SELECT year, month, COUNT(*) AS num_transactions, CAST(SUM(price) AS DECIMAL(38,2)) AS total_revenue, COUNT(DISTINCT customer_id) AS unique_customers FROM jongseob_demo.fashion_recommendations.transactions GROUP BY year, month ORDER BY year, month",
-        },
-        {
-            "question": "Who are the top spending customers and what is their membership status?",
-            "sql": "SELECT t.customer_id, c.club_member_status, c.age, COUNT(*) AS num_purchases, CAST(SUM(t.price) AS DECIMAL(38,2)) AS total_spent FROM jongseob_demo.fashion_recommendations.transactions t INNER JOIN jongseob_demo.fashion_recommendations.customers c ON t.customer_id = c.customer_id GROUP BY t.customer_id, c.club_member_status, c.age ORDER BY total_spent DESC LIMIT 20",
-        },
-    ]
-
-    # 💡 join_specs: transactions ↔ customers 조인 조건을 명시합니다
-    join_specs = [
-        {
-            "left": {"table": "jongseob_demo.fashion_recommendations.transactions", "column": "customer_id"},
-            "right": {"table": "jongseob_demo.fashion_recommendations.customers", "column": "customer_id"},
-            "sql": ["jongseob_demo.fashion_recommendations.transactions.customer_id = jongseob_demo.fashion_recommendations.customers.customer_id"],
-        }
-    ]
-
-    # 💡 sql_snippets: 자주 쓰는 계산식/집계/필터를 미리 정의합니다
-    sql_snippets = {
-        "filters": [
-            {
-                "id": uuid4().hex,
-                "sql": "transactions.sales_channel_id = 1",
-                "display_name": "Online Sales Only",
-                "synonyms": ["online", "web sales", "e-commerce"],
-            },
-            {
-                "id": uuid4().hex,
-                "sql": "customers.club_member_status = 'ACTIVE'",
-                "display_name": "Active Club Members",
-                "synonyms": ["active members", "club members", "active customers"],
-            },
-            {
-                "id": uuid4().hex,
-                "sql": "transactions.t_dat >= DATE_SUB(CURRENT_DATE(), 365)",
-                "display_name": "Last 12 Months",
-                "synonyms": ["last year", "past year", "recent year"],
-            },
-            {
-                "id": uuid4().hex,
-                "sql": "transactions.sales_channel_id = 2",
-                "display_name": "In-Store Sales Only",
-                "synonyms": ["in-store", "offline", "store sales", "brick and mortar"],
-            },
-            {
-                "id": uuid4().hex,
-                "sql": "transactions.t_dat >= DATE_SUB(CURRENT_DATE(), 30)",
-                "display_name": "Last 30 Days",
-                "synonyms": ["last month", "recent", "past month"],
-            },
-        ],
-        "expressions": [
-            {
-                "id": uuid4().hex,
-                "alias": "transaction_month",
-                "sql": "transactions.month",
-                "display_name": "Transaction Month",
-                "synonyms": ["month", "sale month"],
-            },
-            {
-                "id": uuid4().hex,
-                "alias": "sales_channel_name",
-                "sql": "CASE WHEN transactions.sales_channel_id = 1 THEN 'Online' ELSE 'In-Store' END",
-                "display_name": "Sales Channel Name",
-                "synonyms": ["channel", "sales channel"],
-            },
-            {
-                "id": uuid4().hex,
-                "alias": "transaction_year",
-                "sql": "transactions.year",
-                "display_name": "Transaction Year",
-                "synonyms": ["year", "sale year"],
-            },
-        ],
-        "measures": [
-            {
-                "id": uuid4().hex,
-                "alias": "transaction_count",
-                "sql": "COUNT(*)",
-                "display_name": "Transaction Count",
-                "synonyms": ["number of transactions", "sales count", "purchase count"],
-            },
-            {
-                "id": uuid4().hex,
-                "alias": "unique_customer_count",
-                "sql": "COUNT(DISTINCT transactions.customer_id)",
-                "display_name": "Unique Customers",
-                "synonyms": ["customer count", "distinct customers", "number of customers"],
-            },
-            {
-                "id": uuid4().hex,
-                "alias": "avg_price",
-                "sql": "CAST(AVG(transactions.price) AS DECIMAL(38,2))",
-                "display_name": "Average Price",
-                "synonyms": ["avg price", "mean price", "average transaction value"],
-            },
-            {
-                "id": uuid4().hex,
-                "alias": "total_revenue",
-                "sql": "CAST(SUM(transactions.price) AS DECIMAL(38,2))",
-                "display_name": "Total Revenue",
-                "synonyms": ["revenue", "total sales", "sales amount"],
-            },
-        ],
-    }
-
-    print("  1️⃣ serialized_space 생성 중...")
-    serialized = build_serialized_space(
-        tables=tables,
-        instructions=instructions,
-        sample_questions=sample_questions,
-        example_sqls=example_sqls,
-        join_specs=join_specs,
-        sql_snippets=sql_snippets,
-    )
-    print(f"  ✅ serialized_space 생성 완료 ({len(serialized)} bytes)")
-
-    print("  2️⃣ Genie Space 생성 API 호출 중...")
-    space = create_genie_space(
-        title="Fashion Recommendations Analytics 2",
-        description="A natural language analytics space for exploring fashion sales transactions and customer profiles.",
-        warehouse_id=WAREHOUSE_ID,
-        serialized_space=serialized,
-    )
-    space_id = space["space_id"]
-    print(f"  ✅ Space 생성 완료!")
-    print(f"     Space ID: {space_id}")
-
-    print(f"\n💡 Tip: exercise_01b에서 이 Space ID를 사용하세요:")
-    print(f"   python exercise_01b_query_space.py {space_id}")
-
-
-if __name__ == "__main__":
-    main()
-            </code></pre>
+            <h2>Exercise 01a: Claude Code로 구현하기</h2>
+            <p style="font-size: 0.7em; color: var(--ev-text-muted);">exercise_01a_create_space.py &mdash; TODO 기반 스켈레톤 파일</p>
+            <div style="text-align: left; margin: 0.8em auto; max-width: 90%;">
+                <h3 style="font-size: 0.85em;">API 흐름 요약</h3>
+                <table style="font-size: 0.7em; margin-top: 0.5em;">
+                    <thead>
+                        <tr>
+                            <th>단계</th>
+                            <th>함수</th>
+                            <th>역할</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td><code>build_serialized_space()</code></td>
+                            <td>테이블/지시사항/예제를 protobuf v2 JSON으로 변환</td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td><code>create_genie_space()</code></td>
+                            <td><code>POST /api/2.0/genie/spaces</code> 호출</td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td><code>main()</code></td>
+                            <td>설정 데이터 정의 + 함수 호출 + 결과 출력</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div style="text-align: left; margin: 0.8em auto; max-width: 90%;">
+                <h3 style="font-size: 0.85em;">실습 단계</h3>
+                <ol style="font-size: 0.7em;">
+                    <li class="fragment">스켈레톤 파일의 TODO 확인: <code>exercise_01a_create_space.py</code></li>
+                    <li class="fragment">Claude Code에게 구현 요청:
+                        <pre style="margin: 0.3em 0;"><code class="language-text" data-trim>
+> exercise_01a_create_space.py의 TODO를 구현해줘
+                        </code></pre>
+                    </li>
+                    <li class="fragment">실행 및 테스트:
+                        <pre style="margin: 0.3em 0;"><code class="language-bash" data-trim>
+python exercise_01a_create_space.py
+                        </code></pre>
+                    </li>
+                </ol>
+            </div>
+            <div class="emphasis-box fragment" style="margin-top: 0.5em;">
+                출력된 <code>Space ID</code>를 exercise_01b에서 사용합니다
+            </div>
             <aside class="notes">
-                Exercise 01a의 전체 코드입니다. Copy 버튼으로 복사하여 바로 실행할 수 있습니다.
-                하이라이트된 구간을 확인해보세요:
-                첫 번째 — import와 환경변수 설정 (1-14행)
-                두 번째 — build_serialized_space 함수 (34-97행)
-                세 번째 — create_genie_space 함수 (100-114행)
-                네 번째 — main 함수 (117-257행) — Fashion Recommendations 2개 테이블, 4개 instructions, 5개 예제 질문, 3개 예제 SQL, join_specs, sql_snippets 포함
-                .env 파일에 DATABRICKS_HOST, DATABRICKS_TOKEN, WAREHOUSE_ID를 설정한 후 실행하세요.
-                출력된 Space ID를 exercise_01b에서 사용합니다.
+                Exercise 01a는 Genie Space를 API로 생성하는 실습입니다.
+                스켈레톤 파일에 TODO 주석이 포함되어 있습니다.
+                참가자는 Claude Code에게 TODO 구현을 요청하면 됩니다.
+                핵심 흐름은 세 단계입니다:
+                첫째, build_serialized_space로 테이블/지시사항/예제를 protobuf v2 JSON으로 변환합니다.
+                둘째, create_genie_space로 POST /genie/spaces API를 호출합니다.
+                셋째, main에서 Fashion Recommendations 데이터 설정을 정의하고 함수를 호출합니다.
+                실행 후 출력된 Space ID를 exercise_01b에서 사용합니다.
             </aside>
         </section>
 
@@ -1229,149 +997,53 @@ if __name__ == "__main__":
             </aside>
         </section>
 
-        <!-- Slide 14: Exercise 01b 전체 코드 -->
+        <!-- Slide 14: Exercise 01b 실습 가이드 -->
         <section>
-            <h2>Exercise 01b 전체 코드</h2>
-            <p style="font-size: 0.6em; color: var(--ev-text-muted);">exercise_01b_query_space.py &mdash; 복사하여 바로 실행 가능</p>
-            <pre><code class="language-python" data-trim data-noescape data-line-numbers="1-16|29-36|43-97|100-123" style="font-size: 0.40em; line-height: 1.3;">
-"""
-Exercise 01b: Genie Space 질의
-생성된 Genie Space에 자연어 질의를 수행합니다.
-
-사용법: python exercise_01b_query_space.py &lt;SPACE_ID&gt;
-"""
-
-import json
-import os
-import sys
-import time
-
-import httpx
-from dotenv import load_dotenv
-
-load_dotenv()
-
-DATABRICKS_HOST = os.getenv("DATABRICKS_HOST", "").rstrip("/")
-DATABRICKS_TOKEN = os.getenv("DATABRICKS_TOKEN", "")
-
-if not all([DATABRICKS_HOST, DATABRICKS_TOKEN]):
-    print("⚠️  .env 파일에 필요한 환경변수를 설정해주세요.")
-    print("   cp .env.example .env 후 값을 입력하세요.")
-    print("   필요: DATABRICKS_HOST, DATABRICKS_TOKEN")
-    exit(1)
-
-if len(sys.argv) < 2:
-    print("⚠️  사용법: python exercise_01b_query_space.py &lt;SPACE_ID&gt;")
-    print("   exercise_01a_create_space.py를 먼저 실행하여 Space ID를 얻으세요.")
-    exit(1)
-
-SPACE_ID = sys.argv[1]
-
-headers = {
-    "Authorization": f"Bearer {DATABRICKS_TOKEN}",
-    "Content-Type": "application/json",
-}
-
-
-def create_conversation(space_id: str) -> str:
-    """새 Genie 대화를 생성합니다."""
-    base_url = f"{DATABRICKS_HOST}/api/2.0/genie/spaces/{space_id}"
-    resp = httpx.post(f"{base_url}/conversations", headers=headers)
-    resp.raise_for_status()
-    return resp.json()["conversation_id"]
-
-
-def send_message(space_id: str, conversation_id: str, question: str) -> dict:
-    """Genie에 자연어 질문을 보냅니다."""
-    base_url = f"{DATABRICKS_HOST}/api/2.0/genie/spaces/{space_id}"
-    resp = httpx.post(
-        f"{base_url}/conversations/{conversation_id}/messages",
-        headers=headers,
-        json={"content": question},
-    )
-    resp.raise_for_status()
-    return resp.json()
-
-
-def poll_result(
-    space_id: str,
-    conversation_id: str,
-    message_id: str,
-    max_wait: int = 120,
-) -> dict:
-    """결과가 준비될 때까지 점진적 백오프로 폴링합니다."""
-    base_url = f"{DATABRICKS_HOST}/api/2.0/genie/spaces/{space_id}"
-    url = f"{base_url}/conversations/{conversation_id}/messages/{message_id}"
-
-    # 💡 학습 포인트: 점진적 백오프 — 초반엔 짧게, 오래 걸리면 간격을 늘림
-    start = time.time()
-    interval = 1.0
-    while time.time() - start < max_wait:
-        resp = httpx.get(url, headers=headers)
-        resp.raise_for_status()
-        data = resp.json()
-        status = data.get("status", "")
-
-        if status == "COMPLETED":
-            return data
-        if status in ("FAILED", "CANCELLED"):
-            raise RuntimeError(f"Genie 질의 실패: {status}")
-
-        elapsed = time.time() - start
-        print(f"  ⏳ 상태: {status} ({elapsed:.0f}초 경과)")
-        time.sleep(interval)
-        interval = min(interval * 1.5, 5.0)  # 최대 5초까지 증가
-
-    raise TimeoutError("Genie 응답 시간 초과")
-
-
-def format_result(data: dict) -> str:
-    """응답에서 텍스트/SQL 결과를 추출합니다."""
-    attachments = data.get("attachments", [])
-    parts = []
-    for att in attachments:
-        if "text" in att:
-            parts.append(att["text"].get("content", ""))
-        if "query" in att:
-            parts.append(f"SQL: {att['query'].get('query', '')}")
-    return "\n".join(parts) if parts else json.dumps(data, indent=2, ensure_ascii=False)
-
-
-def main():
-    print("🔍 Exercise 01b: Genie Space 질의")
-    print("=" * 60)
-    print(f"  Space ID: {SPACE_ID}")
-
-    print("\n  1️⃣ 대화 생성 중...")
-    conversation_id = create_conversation(SPACE_ID)
-    print(f"     대화 ID: {conversation_id}")
-
-    question = "What is the total online revenue for 2020?"
-    print(f"  2️⃣ 질문 전송: '{question}'")
-    result = send_message(SPACE_ID, conversation_id, question)
-    message_id = result["message_id"]
-    print(f"     메시지 ID: {message_id}")
-
-    print("  3️⃣ 결과 대기 중...")
-    final = poll_result(SPACE_ID, conversation_id, message_id)
-    print(f"\n✅ 결과:")
-    print(f"   {format_result(final)}")
-
-    print(f"\n💡 Tip: 생성된 Space ID를 exercise_02에서 활용할 수 있습니다.")
-    print(f"   Space ID: {SPACE_ID}")
-
-
-if __name__ == "__main__":
-    main()
-            </code></pre>
+            <h2>Exercise 01b: Claude Code로 구현하기</h2>
+            <p style="font-size: 0.7em; color: var(--ev-text-muted);">exercise_01b_query_space.py &mdash; TODO 기반 스켈레톤 파일</p>
+            <div style="text-align: left; margin: 0.8em auto; max-width: 90%;">
+                <h3 style="font-size: 0.85em;">질의 3단계 흐름</h3>
+                <div class="diagram">
+<pre style="background: transparent; border: none; box-shadow: none; text-align: center; font-size: 0.75em;">
+create_conversation()     send_message()       poll_result()
+  대화 생성           →     질문 전송        →    결과 폴링
+  conversation_id           message_id           COMPLETED
+</pre>
+                </div>
+                <ul style="font-size: 0.65em; margin-top: 0.3em;">
+                    <li><code>create_conversation</code> &mdash; <code>POST /spaces/{id}/conversations</code></li>
+                    <li><code>send_message</code> &mdash; <code>POST /conversations/{id}/messages</code></li>
+                    <li><code>poll_result</code> &mdash; <code>GET /messages/{id}</code> (점진적 백오프)</li>
+                    <li><code>format_result</code> &mdash; 응답에서 텍스트/SQL 추출</li>
+                </ul>
+            </div>
+            <div style="text-align: left; margin: 0.8em auto; max-width: 90%;">
+                <h3 style="font-size: 0.85em;">실습 단계</h3>
+                <ol style="font-size: 0.7em;">
+                    <li class="fragment">스켈레톤 파일의 TODO 확인: <code>exercise_01b_query_space.py</code></li>
+                    <li class="fragment">Claude Code에게 구현 요청:
+                        <pre style="margin: 0.3em 0;"><code class="language-text" data-trim>
+> exercise_01b_query_space.py의 TODO를 구현해줘
+                        </code></pre>
+                    </li>
+                    <li class="fragment">실행 및 테스트:
+                        <pre style="margin: 0.3em 0;"><code class="language-bash" data-trim>
+python exercise_01b_query_space.py &lt;SPACE_ID&gt;
+                        </code></pre>
+                    </li>
+                </ol>
+            </div>
+            <div class="emphasis-box fragment" style="margin-top: 0.5em;">
+                exercise_01a에서 출력된 <code>Space ID</code>를 인자로 전달하세요
+            </div>
             <aside class="notes">
-                Exercise 01b의 전체 코드입니다. Copy 버튼으로 복사하여 바로 실행할 수 있습니다.
-                하이라이트된 구간을 확인해보세요:
-                첫 번째 — import와 환경변수 설정 (1-16행)
-                두 번째 — Space ID 입력 처리 (29-36행)
-                세 번째 — 질의 API 함수 4개 (43-97행) — create_conversation, send_message, poll_result, format_result
-                네 번째 — main 함수 (100-123행) — 대화 생성, 질문 전송, 폴링, 결과 출력
-                exercise_01a에서 출력된 Space ID를 인자로 전달하여 실행합니다.
+                Exercise 01b는 생성된 Genie Space에 자연어 질의를 수행하는 실습입니다.
+                질의 흐름은 3단계입니다: 대화 생성, 질문 전송, 결과 폴링.
+                스켈레톤 파일에 4개 함수의 TODO가 있습니다:
+                create_conversation, send_message, poll_result, format_result.
+                Claude Code에게 TODO 구현을 요청하면 됩니다.
+                poll_result에서는 점진적 백오프 패턴을 사용합니다 — 1초에서 시작하여 1.5배씩 늘려 최대 5초까지 증가합니다.
+                exercise_01a에서 출력된 Space ID를 커맨드라인 인자로 전달하여 실행합니다.
             </aside>
         </section>
 
@@ -1554,255 +1226,70 @@ if __name__ == "__main__":
             </aside>
         </section>
 
-        <!-- Slide 17: Exercise 02 전체 코드 -->
+        <!-- Slide 17: Exercise 02 실습 가이드 -->
         <section>
-            <h2>Exercise 02 전체 코드</h2>
-            <p style="font-size: 0.6em; color: var(--ev-text-muted);">exercise_02_genie_mcp_server.py &mdash; 복사하여 바로 실행 가능</p>
-            <pre><code class="language-python" data-trim data-noescape data-line-numbers="1-28|41-85|88-116|139-191|194-232" style="font-size: 0.38em; line-height: 1.3;">
-"""
-Exercise 02: Genie MCP 서버
-Databricks Genie를 MCP 서버로 래핑하여 Claude Code에서 사용할 수 있게 합니다.
-Space 생성, 질의, 후속 질의 3개 tool을 제공합니다.
-
-실행: python exercise_02_genie_mcp_server.py
-"""
-
-import json
-import os
-import time
-from uuid import uuid4
-
-import httpx
-from dotenv import load_dotenv
-from fastmcp import FastMCP
-
-load_dotenv()
-
-DATABRICKS_HOST = os.getenv("DATABRICKS_HOST", "").rstrip("/")
-DATABRICKS_TOKEN = os.getenv("DATABRICKS_TOKEN", "")
-WAREHOUSE_ID = os.getenv("WAREHOUSE_ID", "")
-
-if not all([DATABRICKS_HOST, DATABRICKS_TOKEN, WAREHOUSE_ID]):
-    print("⚠️  .env 파일에 필요한 환경변수를 설정해주세요.")
-    exit(1)
-
-mcp = FastMCP("Genie MCP")
-
-headers = {
-    "Authorization": f"Bearer {DATABRICKS_TOKEN}",
-    "Content-Type": "application/json",
-}
-
-
-# ============================================================
-# 내부 헬퍼 함수
-# ============================================================
-
-
-def _build_serialized_space(
-    tables: list[dict],
-    instructions: list[str],
-    sample_questions: list[str],
-    example_sqls: list[dict],
-    join_specs: list[dict] | None = None,
-    sql_snippets: dict | None = None,
-) -> str:
-    """protobuf v2 JSON 형식의 serialized_space를 생성합니다."""
-    inst_block: dict = {
-        "text_instructions": [
-            {"id": uuid4().hex, "content": [inst]} for inst in instructions
-        ],
-        "example_question_sqls": [
-            {
-                "id": uuid4().hex,
-                "question": [ex["question"]],
-                "sql": [ex["sql"]],
-            }
-            for ex in example_sqls
-        ],
-    }
-
-    if join_specs:
-        inst_block["join_specs"] = join_specs
-
-    if sql_snippets:
-        inst_block["sql_snippets"] = sql_snippets
-
-    proto = {
-        "version": 2,
-        "data_sources": {
-            "tables": [
-                {"identifier": f"{t['catalog']}.{t['schema']}.{t['table']}"}
-                for t in tables
-            ]
-        },
-        "config": {
-            "sample_questions": [
-                {"id": uuid4().hex, "question": [q]} for q in sample_questions
-            ]
-        },
-        "instructions": inst_block,
-    }
-    return json.dumps(proto)
-
-
-def _send_and_poll(space_id: str, conversation_id: str, question: str) -> dict:
-    """메시지를 전송하고 점진적 백오프로 결과를 폴링합니다."""
-    base_url = f"{DATABRICKS_HOST}/api/2.0/genie/spaces/{space_id}"
-    resp = httpx.post(
-        f"{base_url}/conversations/{conversation_id}/messages",
-        headers=headers,
-        json={"content": question},
-    )
-    resp.raise_for_status()
-    message_id = resp.json()["message_id"]
-
-    url = f"{base_url}/conversations/{conversation_id}/messages/{message_id}"
-    start = time.time()
-    interval = 1.0
-    max_wait = 120
-
-    while time.time() - start < max_wait:
-        resp = httpx.get(url, headers=headers)
-        resp.raise_for_status()
-        data = resp.json()
-        status = data.get("status", "")
-        if status == "COMPLETED":
-            return data
-        if status in ("FAILED", "CANCELLED"):
-            return {"error": f"질의 실패: {status}"}
-        time.sleep(interval)
-        interval = min(interval * 1.5, 5.0)
-
-    return {"error": "응답 시간 초과 (120초)"}
-
-
-def _format_response(result: dict) -> str:
-    """Genie 응답에서 텍스트/SQL 결과를 추출합니다."""
-    if "error" in result:
-        return f"오류: {result['error']}"
-
-    attachments = result.get("attachments", [])
-    parts = []
-    for att in attachments:
-        if "text" in att:
-            parts.append(att["text"].get("content", ""))
-        if "query" in att:
-            parts.append(f"SQL: {att['query'].get('query', '')}")
-    return "\n".join(parts) if parts else json.dumps(result, indent=2, ensure_ascii=False)
-
-
-# ============================================================
-# MCP Tools
-# ============================================================
-
-
-@mcp.tool()
-def create_genie_space(
-    title: str,
-    description: str,
-    warehouse_id: str,
-    tables: list[dict],
-    instructions: list[str] | None = None,
-    sample_questions: list[str] | None = None,
-    example_sqls: list[dict] | None = None,
-    join_specs: list[dict] | None = None,
-    sql_snippets: dict | None = None,
-) -> str:
-    """Databricks Genie Space를 생성합니다.
-
-    Args:
-        title: Space 제목
-        description: Space 설명
-        warehouse_id: SQL Warehouse ID
-        tables: 포함할 테이블 목록 [{"catalog": "...", "schema": "...", "table": "..."}]
-        instructions: 텍스트 지시사항 (예: ["한국어로 답변해주세요"])
-        sample_questions: 예제 질문 (예: ["총 매출은?"])
-        example_sqls: 예제 SQL [{"question": "...", "sql": "..."}]
-        join_specs: 테이블 간 조인 조건 리스트
-        sql_snippets: SQL 스니펫 (expressions, measures, filters)
-
-    Returns:
-        생성된 Space 정보 (space_id 포함)
-    """
-    serialized = _build_serialized_space(
-        tables=tables,
-        instructions=instructions or [],
-        sample_questions=sample_questions or [],
-        example_sqls=example_sqls or [],
-        join_specs=join_specs,
-        sql_snippets=sql_snippets,
-    )
-
-    resp = httpx.post(
-        f"{DATABRICKS_HOST}/api/2.0/genie/spaces",
-        headers=headers,
-        json={
-            "title": title,
-            "description": description,
-            "warehouse_id": warehouse_id,
-            "serialized_space": serialized,
-        },
-    )
-    resp.raise_for_status()
-    data = resp.json()
-    space_id = data.get("space_id", "unknown")
-    return f"Space 생성 완료\nSpace ID: {space_id}\nTitle: {title}"
-
-
-@mcp.tool()
-def ask_genie(space_id: str, question: str) -> str:
-    """Databricks Genie에 자연어로 데이터를 질의합니다. 새 대화를 시작합니다.
-
-    Args:
-        space_id: Genie Space ID
-        question: 데이터에 대한 자연어 질문 (예: '이번 달 매출은?')
-
-    Returns:
-        Genie의 응답 결과 (텍스트 + SQL)
-    """
-    base_url = f"{DATABRICKS_HOST}/api/2.0/genie/spaces/{space_id}"
-    resp = httpx.post(f"{base_url}/conversations", headers=headers)
-    resp.raise_for_status()
-    conversation_id = resp.json()["conversation_id"]
-
-    result = _send_and_poll(space_id, conversation_id, question)
-    response = _format_response(result)
-    return f"{response}\n\n(conversation_id: {conversation_id})"
-
-
-@mcp.tool()
-def continue_conversation(
-    space_id: str,
-    conversation_id: str,
-    question: str,
-) -> str:
-    """기존 Genie 대화에 후속 질문을 합니다.
-
-    Args:
-        space_id: Genie Space ID
-        conversation_id: 기존 대화 ID (ask_genie 결과에서 확인)
-        question: 후속 질문 (예: '월별로 나눠서 보여줘')
-
-    Returns:
-        Genie의 응답 결과
-    """
-    result = _send_and_poll(space_id, conversation_id, question)
-    return _format_response(result)
-
-
-if __name__ == "__main__":
-    mcp.run()
-            </code></pre>
+            <h2>Exercise 02: Claude Code로 구현하기</h2>
+            <p style="font-size: 0.7em; color: var(--ev-text-muted);">exercise_02_genie_mcp_server.py &mdash; TODO 기반 스켈레톤 파일</p>
+            <div style="text-align: left; margin: 0.8em auto; max-width: 90%;">
+                <h3 style="font-size: 0.85em;">MCP Tool 명세</h3>
+                <table style="font-size: 0.65em; margin-top: 0.5em;">
+                    <thead>
+                        <tr>
+                            <th>Tool</th>
+                            <th>주요 파라미터</th>
+                            <th>내부 로직</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>create_genie_space</code></td>
+                            <td>title, tables, instructions, ...</td>
+                            <td><code>_build_serialized_space</code> + <code>POST /genie/spaces</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>ask_genie</code></td>
+                            <td>space_id, question</td>
+                            <td>대화 생성 + <code>_send_and_poll</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>continue_conversation</code></td>
+                            <td>space_id, conversation_id, question</td>
+                            <td><code>_send_and_poll</code> (기존 대화 이어가기)</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <p style="font-size: 0.6em; color: var(--ev-text-muted); margin-top: 0.3em;">
+                    헬퍼: <code>_build_serialized_space()</code>, <code>_send_and_poll()</code>, <code>_format_response()</code>
+                </p>
+            </div>
+            <div style="text-align: left; margin: 0.8em auto; max-width: 90%;">
+                <h3 style="font-size: 0.85em;">실습 단계</h3>
+                <ol style="font-size: 0.7em;">
+                    <li class="fragment">스켈레톤 파일의 TODO 확인: <code>exercise_02_genie_mcp_server.py</code></li>
+                    <li class="fragment">Claude Code에게 구현 요청:
+                        <pre style="margin: 0.3em 0;"><code class="language-text" data-trim>
+> exercise_02_genie_mcp_server.py의 TODO를 구현해줘
+                        </code></pre>
+                    </li>
+                    <li class="fragment">실행 및 테스트:
+                        <pre style="margin: 0.3em 0;"><code class="language-bash" data-trim>
+python exercise_02_genie_mcp_server.py
+                        </code></pre>
+                    </li>
+                </ol>
+            </div>
+            <div class="emphasis-box fragment" style="margin-top: 0.5em;">
+                Exercise 01의 로직을 <code>@mcp.tool()</code> 데코레이터로 래핑 &mdash; 핵심은 동일합니다
+            </div>
             <aside class="notes">
-                Exercise 02의 전체 코드입니다. Copy 버튼으로 복사하여 바로 실행할 수 있습니다.
-                하이라이트된 구간을 확인해보세요:
-                첫 번째 — import, 환경변수, FastMCP 인스턴스 생성 (1-28행)
-                두 번째 — _build_serialized_space 헬퍼 (41-85행)
-                세 번째 — _send_and_poll 헬퍼 (88-116행)
-                네 번째 — create_genie_space tool (139-191행)
-                다섯 번째 — ask_genie + continue_conversation tool (194-232행)
-                Exercise 01과 로직은 동일하지만 @mcp.tool() 데코레이터로 MCP 서버가 됩니다.
+                Exercise 02는 Exercise 01의 API 로직을 MCP 서버로 래핑하는 실습입니다.
+                스켈레톤 파일에 3개 MCP tool과 3개 헬퍼 함수의 TODO가 있습니다.
+                Claude Code에게 TODO 구현을 요청하면 됩니다.
+                핵심 포인트: Exercise 01과 API 호출 로직은 동일하지만, @mcp.tool() 데코레이터로 MCP 서버가 됩니다.
+                create_genie_space는 _build_serialized_space로 JSON을 구성하고 Space를 생성합니다.
+                ask_genie는 대화 생성과 _send_and_poll을 조합합니다.
+                continue_conversation은 기존 대화에 이어갑니다.
+                실행하면 MCP 서버가 시작되어 Claude Code에서 연결할 수 있습니다.
             </aside>
         </section>
 
@@ -1835,15 +1322,17 @@ if __name__ == "__main__":
                 <p><strong>Claude:</strong> <code>continue_conversation</code> tool로 후속 질의합니다.</p>
             </div>
             <div class="emphasis-box fragment" style="margin-top: 0.8em;">
-                <strong>실습:</strong> <code>databricks configure</code> 설정 → Exercise 00 체크리스트 → 01a → 01b → Exercise 02를 Claude Code에 연결
+                <strong>실습 워크플로우:</strong> Exercise 00 체크리스트 → Claude Code로 01a TODO 구현 → 01b TODO 구현 → 02 TODO 구현 → Claude Code에 MCP 연결
             </div>
             <aside class="notes">
                 Claude Code에서 사용하려면 settings.local.json에 MCP 서버를 등록합니다.
                 등록 후 Claude Code에서 Space 생성을 요청하면 create_genie_space tool이 호출됩니다.
                 생성된 Space에 질문하면 ask_genie tool이, 후속 질문은 continue_conversation tool이 호출됩니다.
-                실습은 네 단계입니다: 먼저 .env 파일을 설정하고 Exercise 00으로 환경을 검증합니다. 그 다음 Exercise 01a로 Space를 생성합니다.
-                그 다음 Exercise 01b로 생성한 Space에 질의합니다.
-                마지막으로 Exercise 02를 Claude Code에 연결하여 자연어로 Space 생성과 질의를 수행합니다.
+                실습 워크플로우는 다음과 같습니다:
+                먼저 Exercise 00으로 환경을 검증합니다.
+                그 다음 각 Exercise의 스켈레톤 파일에서 TODO를 확인하고, Claude Code에게 구현을 요청합니다.
+                Exercise 01a로 Space를 생성하고, 01b로 질의를 테스트합니다.
+                마지막으로 Exercise 02의 MCP 서버를 Claude Code에 연결하여 자연어로 전체 워크플로우를 수행합니다.
             </aside>
         </section>
 

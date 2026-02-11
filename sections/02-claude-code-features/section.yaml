@@ -1,12 +1,15 @@
 number: "02"
 title: "Claude Code Features: Claude Code 사용법"
-duration_minutes: 20
-type: "lecture+demo"
+duration_minutes: 25
+type: "lecture+hands-on"
 objectives:
   - "Claude Code CLI의 설치와 기본 사용법 숙지"
   - "CLAUDE.md를 활용한 프로젝트 컨텍스트 관리법 이해"
   - "주요 명령어와 실용 팁 학습"
+  - "Claude Code로 Python 함수와 테스트를 직접 만들어보기"
 slides: "index.html"
-code_files: []
+code_files:
+  - "02-claude-code-features/exercise_01_fibonacci.py"
+  - "02-claude-code-features/exercise_02_fibonacci_test.py"
 prerequisites:
   - "01-ai-foundation"

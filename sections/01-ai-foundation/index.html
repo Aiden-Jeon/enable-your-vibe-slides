@@ -71,8 +71,11 @@
             margin-left: 0.5em;
         }
         .reveal .comparison-highlight {
-            color: var(--ev-accent);
-            font-weight: bold;
+            color: #e94560 !important;
+            font-weight: bold !important;
+            background: rgba(233, 69, 96, 0.15);
+            padding: 0.2em 0.5em;
+            border-radius: 4px;
         }
         .reveal .subtitle {
             color: var(--ev-accent-light);
@@ -150,16 +153,16 @@
             <section>
                 <h2>학습 목표</h2>
                 <ol class="objective-list">
-                    <li class="fragment fade-up">
+                    <li class="fragment fade-up" data-fragment-index="0">
                         <strong>AI Fluency</strong> 개념과 <strong>4D Framework</strong>를 이해한다
                     </li>
-                    <li class="fragment fade-up">
+                    <li class="fragment fade-up" data-fragment-index="0">
                         <strong>Vibe Coding</strong> 패러다임과 AI 코딩 도구의 발전 과정을 이해한다
                     </li>
-                    <li class="fragment fade-up">
+                    <li class="fragment fade-up" data-fragment-index="0">
                         <strong>에이전틱 코딩</strong> 개념과 <strong>Claude AI</strong>의 특징을 파악한다
                     </li>
-                    <li class="fragment fade-up">
+                    <li class="fragment fade-up" data-fragment-index="0">
                         핸즈온 세션의 <strong>전체 로드맵</strong>을 파악하고, 각 섹션의 목표를 안다
                     </li>
                 </ol>
@@ -312,7 +315,7 @@
             <section>
                 <h2>Delegation 실습 <span class="badge">실습</span></h2>
                 <p style="font-size: 0.85em; margin-bottom: 0.8em;">
-                    <strong>databricks console</strong> &rarr; Playground &rarr; <strong>Sonnet 4.5</strong> 선택
+                    <strong>databricks console</strong> &rarr; Playground &rarr; <strong>Claude Sonnet 4.5</strong> 선택
                 </p>
                 <div style="text-align: left;">
                     <p style="font-size: 0.8em; color: var(--ev-accent-light); margin-bottom: 0.3em;">프롬프트 템플릿:</p>
@@ -538,21 +541,21 @@ Process:
                         </tr>
                     </thead>
                     <tbody>
-                        <tr class="fragment fade-up">
+                        <tr class="fragment fade-up" data-fragment-index="0">
                             <td><strong>Copilot</strong></td>
                             <td>자동 완성</td>
                             <td>에디터 내 인라인 제안, Tab으로 수락</td>
                             <td>부분 위임, 수동 분별</td>
                         </tr>
-                        <tr class="fragment fade-up">
+                        <tr class="fragment fade-up" data-fragment-index="0">
                             <td><strong>Cursor</strong></td>
                             <td>채팅 + 편집</td>
                             <td>멀티 파일 편집, Composer 모드</td>
                             <td>대화형 기술, 반자동 분별</td>
                         </tr>
-                        <tr class="fragment fade-up">
+                        <tr class="fragment fade-up" data-fragment-index="0">
                             <td><strong>Claude Code</strong></td>
-                            <td class="comparison-highlight">에이전틱</td>
+                            <td><span class="fragment highlight-red" data-fragment-index="1">에이전틱</span></td>
                             <td>터미널 기반, 자율적 도구 사용, MCP 확장</td>
                             <td>전면 위임, 체계적 책임</td>
                         </tr>
@@ -612,107 +615,22 @@ Process:
                 </aside>
             </section>
 
-            <!-- Slide 15: 오늘의 핸즈온 로드맵 -->
-            <section>
-                <h2>오늘의 핸즈온 로드맵</h2>
-                <table class="roadmap-table" style="font-size: 0.65em;">
-                    <thead>
-                        <tr>
-                            <th>섹션</th>
-                            <th>주제</th>
-                            <th>시간</th>
-                            <th>유형</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr class="current-section">
-                            <td>01</td>
-                            <td>AI Foundation: AI Fluency &amp; Vibe Coding 기초</td>
-                            <td>15분</td>
-                            <td>강의</td>
-                        </tr>
-                        <tr class="fragment fade-up">
-                            <td>02</td>
-                            <td>Claude Code Features: 핵심 기능 실습</td>
-                            <td>20분</td>
-                            <td>실습</td>
-                        </tr>
-                        <tr class="fragment fade-up">
-                            <td>03</td>
-                            <td>MCP Architecture: 도구 연동 아키텍처</td>
-                            <td>20분</td>
-                            <td>강의+실습</td>
-                        </tr>
-                        <tr class="fragment fade-up">
-                            <td>04</td>
-                            <td>Skills Ecosystem: 스킬 생태계</td>
-                            <td>15분</td>
-                            <td>강의+실습</td>
-                        </tr>
-                        <tr class="fragment fade-up">
-                            <td>05</td>
-                            <td>Genie MCP: AI 에이전트 연동</td>
-                            <td>20분</td>
-                            <td>실습</td>
-                        </tr>
-                        <tr class="fragment fade-up">
-                            <td>06</td>
-                            <td>Skills Workflow: 워크플로우 자동화</td>
-                            <td>20분</td>
-                            <td>실습</td>
-                        </tr>
-                        <tr class="fragment fade-up">
-                            <td>07</td>
-                            <td>AI Dev Kit: 개발 키트 활용</td>
-                            <td>20분</td>
-                            <td>실습</td>
-                        </tr>
-                        <tr class="fragment fade-up">
-                            <td>08</td>
-                            <td>Build UI: 인터페이스 구축</td>
-                            <td>25분</td>
-                            <td>실습</td>
-                        </tr>
-                        <tr class="fragment fade-up">
-                            <td>09</td>
-                            <td>Deploy to Databricks: 배포</td>
-                            <td>25분</td>
-                            <td>실습</td>
-                        </tr>
-                    </tbody>
-                </table>
-                <p class="fragment fade-up" style="font-size: 0.75em; color: var(--ev-text-muted); margin-top: 0.8em; text-align: center;">
-                    총 약 3시간 &mdash; 기초부터 배포까지 전체 개발 워크플로우를 경험합니다
-                </p>
-                <aside class="notes">
-                    오늘 핸즈온의 전체 로드맵입니다. 총 9개 섹션으로 구성되어 있습니다.
-                    지금 진행 중인 섹션 1은 AI Fluency와 Vibe Coding의 기초 개념을 다루고 있고,
-                    섹션 2부터 본격적인 실습이 시작됩니다.
-                    섹션 2에서 Claude Code의 기본 사용법을 익히고,
-                    섹션 3에서 MCP라는 도구 연동 프로토콜을 배웁니다.
-                    섹션 4-6에서 스킬과 워크플로우를 다루고,
-                    섹션 7-8에서 실제 애플리케이션을 구축한 뒤,
-                    마지막 섹션 9에서 Databricks에 배포까지 해봅니다.
-                    각 섹션은 15-25분 정도로, 집중력을 유지할 수 있는 적절한 길이입니다.
-                </aside>
-            </section>
-
-            <!-- Slide 16: 정리 & Q&A -->
+            <!-- Slide 15: 정리 & Q&A -->
             <section>
                 <h2>정리 &amp; Q&amp;A</h2>
                 <div class="emphasis-box">
                     <h3>핵심 정리</h3>
                     <ul style="font-size: 0.9em;">
-                        <li class="fragment fade-up">
+                        <li class="fragment fade-up" data-fragment-index="0">
                             <strong>AI Fluency</strong> &mdash; 4D Framework(위임, 기술, 분별, 책임)으로 AI 협업을 체계적으로
                         </li>
-                        <li class="fragment fade-up">
+                        <li class="fragment fade-up" data-fragment-index="0">
                             <strong>Vibe Coding</strong> &mdash; AI에게 의도를 전달하여 코드를 생성하는 새로운 개발 패러다임
                         </li>
-                        <li class="fragment fade-up">
+                        <li class="fragment fade-up" data-fragment-index="0">
                             <strong>에이전틱 코딩</strong> &mdash; AI가 도구를 사용하여 자율적으로 계획, 실행, 검증
                         </li>
-                        <li class="fragment fade-up">
+                        <li class="fragment fade-up" data-fragment-index="0">
                             <strong>Claude Code</strong> &mdash; 긴 컨텍스트, MCP 확장, 안전한 에이전틱 코딩 도구
                         </li>
                     </ul>

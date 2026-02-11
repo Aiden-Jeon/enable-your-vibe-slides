@@ -192,22 +192,22 @@
             <section>
                 <h2>학습 목표</h2>
                 <ol class="objective-list">
-                    <li class="fragment fade-up">
-                        <strong>Skill 설계 원칙</strong>을 이해하고 SKILL.md를 작성할 수 있다
+                    <li class="fragment fade-up" data-fragment-index="0">
+                        <strong>Skill 설계 원칙</strong>을 이해하고 Claude Code를 활용하여 SKILL.md를 작성할 수 있다
                     </li>
-                    <li class="fragment fade-up">
+                    <li class="fragment fade-up" data-fragment-index="0">
                         <strong>레퍼런스 파일</strong>을 활용하여 일관된 품질의 코드를 생성할 수 있다
                     </li>
-                    <li class="fragment fade-up">
+                    <li class="fragment fade-up" data-fragment-index="0">
                         <strong>Skill 체이닝</strong> 패턴으로 복잡한 워크플로우를 구성할 수 있다
                     </li>
-                    <li class="fragment fade-up">
+                    <li class="fragment fade-up" data-fragment-index="0">
                         직접 <strong>Custom Skill</strong>을 만들어 팀에서 활용할 수 있다
                     </li>
                 </ol>
                 <aside class="notes">
                     이번 세션이 끝나면 참가자들은 네 가지 역량을 갖추게 됩니다.
-                    첫째, Skill을 어떻게 설계하는지 원칙을 이해하고 SKILL.md 파일을 직접 작성할 수 있습니다.
+                    첫째, Skill을 어떻게 설계하는지 원칙을 이해하고 Claude Code를 활용하여 SKILL.md 파일을 작성할 수 있습니다.
                     둘째, 레퍼런스 파일을 활용해서 AI가 항상 팀 컨벤션에 맞는 코드를 생성하게 할 수 있습니다.
                     셋째, 여러 Skill을 연결하는 체이닝 패턴을 이해합니다.
                     넷째, 실습을 통해 실제로 Custom Skill을 만들어봅니다.
@@ -501,23 +501,44 @@
                         <div class="exercise-box fragment fade-up">
                             <h4>Exercise 1: 간단한 Skill (10분)</h4>
                             <ol style="font-size: 0.8em;">
-                                <li><code>exercise_01_simple_skill/</code> 디렉토리를 확인합니다</li>
-                                <li>SKILL.md의 구조를 분석합니다</li>
-                                <li>Claude Code에서 <code>/data-summary</code>를 실행해봅니다</li>
-                                <li>결과물을 확인하고 SKILL.md를 수정해봅니다</li>
+                                <li><code>exercise_01_simple_skill/SKILL.md</code> 템플릿을 확인합니다 (TODO 항목 확인)</li>
+                                <li>Claude Code에게 SKILL.md 작성을 요청합니다</li>
+                                <li>Claude Code에서 <code>/data-summary</code>를 실행하여 테스트합니다</li>
                             </ol>
+                            <p style="font-size: 0.75em; color: var(--ev-text-muted); margin-top: 0.5em;">
+                                <code style="color: var(--ev-accent-light);">&gt; exercise_01_simple_skill/SKILL.md에 data-summary 스킬을 작성해줘</code>
+                            </p>
                         </div>
                         <div class="exercise-box fragment fade-up">
                             <h4>Exercise 2: 레퍼런스 있는 Skill (15분)</h4>
                             <ol style="font-size: 0.8em;">
-                                <li><code>exercise_02_skill_with_refs/</code> 디렉토리를 확인합니다</li>
-                                <li>SKILL.md와 <code>references/</code>의 관계를 파악합니다</li>
-                                <li><code>/api-endpoint</code>를 실행하여 생성된 코드를 확인합니다</li>
-                                <li>컨벤션 파일을 수정하고 다시 실행하여 차이를 비교합니다</li>
+                                <li><code>exercise_02_skill_with_refs/SKILL.md</code> 템플릿과 <code>references/</code>를 확인합니다</li>
+                                <li>Claude Code에게 레퍼런스를 반영한 SKILL.md 작성을 요청합니다</li>
+                                <li><code>/api-endpoint</code>를 실행하여 생성된 코드를 테스트합니다</li>
                             </ol>
+                            <p style="font-size: 0.75em; color: var(--ev-text-muted); margin-top: 0.5em;">
+                                <code style="color: var(--ev-accent-light);">&gt; exercise_02_skill_with_refs/SKILL.md에 api-endpoint 스킬을 작성해줘</code>
+                            </p>
                         </div>
                     </div>
                     <div class="fragment fade-up">
+                        <h3>워크플로우</h3>
+                        <div class="flow-chain" style="margin: 0.6em 0;">
+                            <div class="chain-step">
+                                <span class="step-label">Step 1</span>
+                                <span class="step-name">템플릿 확인</span>
+                            </div>
+                            <span class="chain-arrow">&rarr;</span>
+                            <div class="chain-step">
+                                <span class="step-label">Step 2</span>
+                                <span class="step-name">Claude Code에게<br>작성 요청</span>
+                            </div>
+                            <span class="chain-arrow">&rarr;</span>
+                            <div class="chain-step">
+                                <span class="step-label">Step 3</span>
+                                <span class="step-name">실행하여 테스트</span>
+                            </div>
+                        </div>
                         <h3>체크리스트</h3>
                         <ul style="font-size: 0.8em;">
                             <li>SKILL.md에 사용법이 명확히 정의되어 있는가?</li>
@@ -535,12 +556,14 @@
                 </div>
                 <aside class="notes">
                     이제 실습 시간입니다. 두 가지 Exercise를 진행합니다.
-                    Exercise 1은 간단한 Skill 만들기입니다. data-summary 스킬의 SKILL.md를 분석하고 직접 실행해봅니다.
-                    약 10분 정도 소요됩니다.
-                    Exercise 2는 레퍼런스 파일이 있는 Skill입니다. api-endpoint 스킬에서 레퍼런스 파일이 어떻게 활용되는지 확인하고,
-                    컨벤션 파일을 수정했을 때 결과가 어떻게 달라지는지 비교합니다. 약 15분 정도 소요됩니다.
-                    체크리스트를 활용하여 자신이 만든 Skill이 올바르게 구성되었는지 확인해보세요.
-                    시간이 남는 분들은 도전 과제로 자신의 업무에 맞는 Skill을 새로 설계해보시기 바랍니다.
+                    워크플로우는 동일합니다: 먼저 SKILL.md 템플릿의 TODO 항목을 확인하고, Claude Code에게 작성을 요청한 뒤, 실제로 실행하여 테스트합니다.
+                    Exercise 1은 간단한 Skill 만들기입니다. exercise_01_simple_skill 디렉토리의 SKILL.md 템플릿을 확인하고,
+                    Claude Code에게 "exercise_01_simple_skill/SKILL.md에 data-summary 스킬을 작성해줘"라고 요청합니다.
+                    Claude Code가 작성한 SKILL.md를 확인한 뒤, /data-summary 명령으로 직접 실행해봅니다. 약 10분 정도 소요됩니다.
+                    Exercise 2는 레퍼런스 파일이 있는 Skill입니다. exercise_02_skill_with_refs 디렉토리의 템플릿과 references 디렉토리를 먼저 확인하고,
+                    Claude Code에게 "exercise_02_skill_with_refs/SKILL.md에 api-endpoint 스킬을 작성해줘"라고 요청합니다.
+                    레퍼런스 파일이 SKILL.md에 어떻게 반영되었는지 확인하고, /api-endpoint 명령으로 실행하여 테스트합니다. 약 15분 정도 소요됩니다.
+                    체크리스트를 활용하여 Claude Code가 작성한 Skill이 올바르게 구성되었는지 검토해보세요.
                 </aside>
             </section>
 

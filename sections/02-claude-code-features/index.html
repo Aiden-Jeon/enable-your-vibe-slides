@@ -29,7 +29,7 @@
             <h1>Claude Code Features</h1>
             <p>Claude Code 사용법</p>
             <p style="margin-top: 2em; font-size: 0.7em; color: var(--ev-text-muted);">
-                Section 02 &middot; Lecture + Demo &middot; 20분
+                Section 02 &middot; Lecture + Hands-on &middot; 25분
             </p>
             <aside class="notes">
                 이번 섹션에서는 Claude Code의 설치부터 핵심 기능, 실용 팁까지 전반적인 사용법을 다룹니다.
@@ -41,10 +41,10 @@
         <section>
             <h2>학습 목표</h2>
             <ul>
-                <li class="fragment">Claude Code CLI의 <strong>설치와 기본 사용법</strong>을 숙지한다</li>
-                <li class="fragment"><code>CLAUDE.md</code>를 활용한 <strong>프로젝트 컨텍스트 관리법</strong>을 이해한다</li>
-                <li class="fragment">주요 명령어와 <strong>실용 팁</strong>을 학습한다</li>
-                <li class="fragment">실제 데모를 통해 Claude Code의 <strong>워크플로우</strong>를 체험한다</li>
+                <li class="fragment" data-fragment-index="0">Claude Code CLI의 <strong>설치와 기본 사용법</strong>을 숙지한다</li>
+                <li class="fragment" data-fragment-index="0"><code>CLAUDE.md</code>를 활용한 <strong>프로젝트 컨텍스트 관리법</strong>을 이해한다</li>
+                <li class="fragment" data-fragment-index="0">주요 명령어와 <strong>실용 팁</strong>을 학습한다</li>
+                <li class="fragment" data-fragment-index="0">Claude Code로 Python 함수와 테스트를 <strong>직접 만들어본다</strong></li>
             </ul>
             <aside class="notes">
                 학습 목표를 하나씩 짚어봅니다.
@@ -166,10 +166,14 @@ claude</code></pre>
         <section>
             <h2>Endpoint 설정 (3/3)</h2>
             <h3>Step 3. 프로젝트 레벨 설정</h3>
-            <p>프로젝트 루트의 <code>.claude/</code> 디렉토리에서 권한을 관리합니다.</p>
-            <pre><code class="language-bash">.claude
-└── settings.local.json
-</code></pre>
+            <p>프로젝트 루트의 <code>.claude/</code> 디렉토리에 설정 파일을 생성합니다.</p>
+
+            <h3>클립보드에서 바로 설정하기</h3>
+            <pre><code class="language-bash"># 프로젝트 루트에서 실행
+mkdir -p .claude && pbpaste > .claude/settings.local.json
+
+# 설정 확인
+cat .claude/settings.local.json</code></pre>
 
             <h3>settings.local.json 예시</h3>
             <pre><code class="language-json">{
@@ -184,17 +188,18 @@ claude</code></pre>
 }</code></pre>
 
             <div class="emphasis-box" style="margin-top: 0.5em;">
-                <strong>Tip:</strong> <code>settings.local.json</code>은 개인 설정 파일로, <code>.gitignore</code>에 추가하여 개인별로 관리하는 것을 권장합니다.
+                <strong>Tip:</strong> 클립보드에 복사한 JSON을 위 명령어로 바로 적용할 수 있습니다. <code>settings.local.json</code>은 개인 설정 파일이므로 <code>.gitignore</code>에 추가하세요.
             </div>
             <aside class="notes">
-                마지막으로 프로젝트 레벨에서 permissions을 설정합니다.
-                프로젝트 루트에 .claude 디렉토리를 만들고, settings.local.json 파일로 권한을 관리합니다.
-                permissions의 allow 배열에 Claude Code가 사용할 수 있는 도구와 명령어를 정의합니다.
+                수강생들은 사전에 제공받은 settings.local.json JSON을 클립보드에 복사해둔 상태입니다.
+                프로젝트 루트에서 mkdir -p .claude && pbpaste 명령어를 실행하면,
+                클립보드 내용이 바로 .claude/settings.local.json 파일로 저장됩니다.
+                cat 명령어로 내용이 올바르게 들어갔는지 확인합니다.
                 이 파일은 개인 설정이므로 .gitignore에 추가하여 팀원마다 각자 관리하는 것이 좋습니다.
             </aside>
         </section>
 
-        <!-- Slide 6: 기본 사용법 -->
+        <!-- Slide 8: 기본 사용법 -->
         <section>
             <h2>기본 사용법</h2>
             <h3>대화형 모드</h3>
@@ -220,10 +225,9 @@ cat error.log | claude -p "이 에러의 원인을 분석해줘"</code></pre>
             </aside>
         </section>
 
-        <!-- Slide 6: 핵심 기능 - 코드 생성 & 리팩토링 -->
+        <!-- Slide 9: 핵심 기능 - 코드 생성 & 리팩토링 -->
         <section>
-            <h2>핵심 기능 (1/4)</h2>
-            <h3>코드 생성 & 리팩토링</h3>
+            <h2>코드 생성 & 리팩토링</h2>
             <div class="columns">
                 <div>
                     <p><strong>코드 생성</strong></p>
@@ -253,10 +257,9 @@ cat error.log | claude -p "이 에러의 원인을 분석해줘"</code></pre>
             </aside>
         </section>
 
-        <!-- Slide 7: 핵심 기능 - 파일 읽기/쓰기/편집 -->
+        <!-- Slide 10: 핵심 기능 - 파일 읽기/쓰기/편집 -->
         <section>
-            <h2>핵심 기능 (2/4)</h2>
-            <h3>파일 읽기 / 쓰기 / 편집</h3>
+            <h2>파일 읽기 / 쓰기 / 편집</h2>
             <pre><code class="language-text"># 파일 읽기 - 프로젝트 전체를 자동으로 탐색
 > "src/main.py 파일의 내용을 설명해줘"
 
@@ -267,8 +270,7 @@ cat error.log | claude -p "이 에러의 원인을 분석해줘"</code></pre>
 > "app.py의 23번째 줄에 있는 버그 수정해줘"
 
 # 다중 파일 편집
-> "모든 테스트 파일에서 deprecated된 assert 메서드를
-   새로운 방식으로 바꿔줘"</code></pre>
+> "모든 테스트 파일에서 deprecated된 assert 메서드를 새로운 방식으로 바꿔줘"</code></pre>
             <div class="emphasis-box">
                 <strong>안전장치:</strong> 파일 수정 전 항상 확인을 요청합니다.
                 <code>--allowedTools</code>로 권한을 세밀하게 제어할 수 있습니다.
@@ -281,10 +283,9 @@ cat error.log | claude -p "이 에러의 원인을 분석해줘"</code></pre>
             </aside>
         </section>
 
-        <!-- Slide 8: 핵심 기능 - 터미널 명령 실행 -->
+        <!-- Slide 11: 핵심 기능 - 터미널 명령 실행 -->
         <section>
-            <h2>핵심 기능 (3/4)</h2>
-            <h3>터미널 명령 실행</h3>
+            <h2>터미널 명령 실행</h2>
             <pre><code class="language-text"># 테스트 실행
 > "pytest 돌려보고 실패한 테스트 수정해줘"
 
@@ -292,25 +293,27 @@ cat error.log | claude -p "이 에러의 원인을 분석해줘"</code></pre>
 > "이 프로젝트에 필요한 패키지 설치해줘"
 
 # Git 작업
-> "변경사항 커밋하고 PR 만들어줘"
-
-# 빌드 & 배포
-> "Docker 이미지 빌드하고 로컬에서 테스트해줘"</code></pre>
+> "변경사항 커밋하고 PR 만들어줘"</code></pre>
+            <h3 style="margin-top: 0.8em;"><code>!</code> (Bash Mode)</h3>
+            <pre><code class="language-text"># 프롬프트에서 !로 시작하면 셸 명령 즉시 실행
+> ! git status
+> ! cat logs/error.log</code></pre>
             <div class="emphasis-box">
-                <strong>주의:</strong> 터미널 명령도 실행 전 확인을 거칩니다. 위험한 명령은 경고가 표시됩니다.
+                <code>!</code>로 셸 명령을 즉시 실행하고, 명령 출력이 대화 컨텍스트에 자동으로 추가됩니다.
             </div>
             <aside class="notes">
                 세 번째 핵심 기능은 터미널 명령 실행입니다.
                 테스트 실행, 패키지 설치, Git 작업 등을 자연어로 요청할 수 있습니다.
                 특히 "테스트 돌려보고 실패하면 수정해줘"처럼 조건부 작업도 가능합니다.
                 에이전틱하게 동작하기 때문에 테스트 실패 → 코드 수정 → 재실행 루프를 자동으로 수행합니다.
+                추가로, 느낌표(!)로 시작하면 Bash Mode로 진입하여 셸 명령을 바로 실행할 수 있습니다.
+                이때 명령의 출력이 대화 컨텍스트에 추가되어, 후속 요청에서 참조할 수 있습니다.
             </aside>
         </section>
 
-        <!-- Slide 9: 핵심 기능 - 웹 검색 -->
+        <!-- Slide 12: 핵심 기능 - 웹 검색 -->
         <section>
-            <h2>핵심 기능 (4/4)</h2>
-            <h3>웹 검색</h3>
+            <h2>웹 검색</h2>
             <pre><code class="language-text"># 최신 문서 참조
 > "FastAPI의 최신 미들웨어 설정 방법을 검색해서 적용해줘"
 
@@ -329,7 +332,47 @@ cat error.log | claude -p "이 에러의 원인을 분석해줘"</code></pre>
             </aside>
         </section>
 
-        <!-- Slide 10: CLAUDE.md - 프로젝트 컨텍스트 파일 -->
+        <!-- Slide 13: 핵심 기능 - 스크린샷 분석 -->
+        <section>
+            <h2>스크린샷 분석</h2>
+            <div class="columns">
+                <div>
+                    <h3>이미지를 컨텍스트로 활용</h3>
+                    <ul>
+                        <li>스크린샷을 <strong>클립보드에서 바로 붙여넣기</strong></li>
+                        <li>UI 디자인, 에러 화면, 다이어그램 등을 <strong>시각적으로 분석</strong></li>
+                        <li>이미지 파일 경로를 직접 참조 가능</li>
+                        <li>멀티모달 기능으로 <strong>텍스트+이미지</strong> 동시 이해</li>
+                    </ul>
+                </div>
+                <div>
+                    <pre><code class="language-text"># 스크린샷 붙여넣기 후 요청
+> [스크린샷 붙여넣기]
+  "이 UI를 HTML/CSS로 구현해줘"
+
+# 에러 화면 분석
+> [에러 스크린샷 붙여넣기]
+  "이 에러의 원인을 분석해줘"
+
+# 이미지 파일 직접 참조
+> "mockup.png를 보고 동일한
+   레이아웃으로 만들어줘"</code></pre>
+                </div>
+            </div>
+            <div class="emphasis-box" style="margin-top: 1em;">
+                터미널에서 <strong>Ctrl+V</strong>로 클립보드의 이미지를 바로 붙여넣을 수 있습니다.
+            </div>
+            <aside class="notes">
+                다섯 번째 핵심 기능은 스크린샷 분석입니다.
+                Claude Code는 멀티모달 모델을 사용하기 때문에 이미지를 직접 이해할 수 있습니다.
+                터미널에서 Ctrl+V로 클립보드의 스크린샷을 바로 붙여넣으면,
+                UI 디자인을 보고 코드를 작성하거나, 에러 화면을 분석하는 것이 가능합니다.
+                특히 디자인 목업을 캡처해서 "이대로 만들어줘"라고 요청하면 매우 강력합니다.
+                텍스트로 설명하기 어려운 내용을 이미지로 전달할 수 있어 커뮤니케이션이 훨씬 효율적입니다.
+            </aside>
+        </section>
+
+        <!-- Slide 14: CLAUDE.md - 프로젝트 컨텍스트 파일 -->
         <section>
             <h2>CLAUDE.md</h2>
             <h3>프로젝트 컨텍스트 파일</h3>
@@ -341,6 +384,7 @@ cat error.log | claude -p "이 에러의 원인을 분석해줘"</code></pre>
                         <li>Claude Code가 세션 시작 시 <strong>자동으로 읽음</strong></li>
                         <li>프로젝트의 규칙, 구조, 스타일 가이드 정의</li>
                         <li>팀원 간 AI 사용 <strong>일관성 보장</strong></li>
+                        <li><code>/init</code> 명령으로 <strong>자동 생성</strong> 가능</li>
                     </ul>
                 </div>
                 <div>
@@ -373,82 +417,57 @@ Python 3.11 기반 FastAPI 백엔드
             </aside>
         </section>
 
-        <!-- Slide 11: CLAUDE.md 작성 팁 -->
-        <section>
-            <h2>CLAUDE.md 작성 팁</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>항목</th>
-                        <th>설명</th>
-                        <th>예시</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>프로젝트 개요</td>
-                        <td>기술 스택, 목적</td>
-                        <td><code>Python 3.11 + FastAPI</code></td>
-                    </tr>
-                    <tr>
-                        <td>코딩 규칙</td>
-                        <td>포매터, 린터 설정</td>
-                        <td><code>Black, Ruff 사용</code></td>
-                    </tr>
-                    <tr>
-                        <td>디렉토리 구조</td>
-                        <td>주요 폴더 역할</td>
-                        <td><code>src/ - 소스, tests/ - 테스트</code></td>
-                    </tr>
-                    <tr>
-                        <td>빌드/실행 명령</td>
-                        <td>자주 쓰는 명령</td>
-                        <td><code>make dev, make test</code></td>
-                    </tr>
-                    <tr>
-                        <td>주의사항</td>
-                        <td>하지 말아야 할 것</td>
-                        <td><code>.env 커밋 금지</code></td>
-                    </tr>
-                </tbody>
-            </table>
-            <div class="emphasis-box" style="margin-top: 1em;">
-                <strong>핵심:</strong> 간결하고 명확하게. 새로 합류한 팀원에게 설명하듯 작성하세요.
-            </div>
-            <aside class="notes">
-                CLAUDE.md를 잘 작성하는 팁입니다.
-                핵심은 "새로 합류한 팀원에게 설명하듯 작성하라"는 것입니다.
-                너무 길면 오히려 효과가 떨어지니, 핵심 정보만 간결하게 담으세요.
-                프로젝트 개요, 코딩 규칙, 디렉토리 구조, 빌드 명령, 주의사항 이 5가지가 필수입니다.
-            </aside>
-        </section>
-
-        <!-- Slide 12: 컨텍스트 관리 -->
+        <!-- Slide 15: 컨텍스트 관리 -->
         <section>
             <h2>컨텍스트 관리</h2>
             <h3>파일 참조 방법</h3>
             <pre><code class="language-text"># 파일 경로를 직접 언급
-> "src/utils/helpers.py를 보고 비슷한 패턴으로 새 유틸 함수 만들어줘"
-
-# 디렉토리 전체 참조
-> "tests/ 폴더의 기존 테스트 패턴을 따라서 새 테스트 작성해줘"
-
-# 여러 파일 동시 참조
-> "models.py와 schemas.py를 참고해서 새로운 엔드포인트 추가해줘"</code></pre>
-            <h3>컨텍스트 우선순위</h3>
-            <pre class="diagram"><code>1. CLAUDE.md (자동 로드)
-2. 현재 대화의 이전 메시지
-3. 명시적으로 참조한 파일
-4. Claude가 자동 탐색한 파일</code></pre>
+> "src/utils/helpers.py를 보고 비슷한 패턴으로 새 유틸 함수 만들어줘"</code></pre>
+            <h3 style="margin-top: 0.8em;"><code>@</code> (파일 경로 자동완성)</h3>
+            <pre><code class="language-text"># @를 입력하면 파일 경로 자동완성 활성화
+> @src/utils/helpers.py 이 파일을 참고해서 새 유틸 만들어줘
+> @tests/ 기존 테스트 패턴을 따라서 새 테스트 작성해줘</code></pre>
+            <div class="emphasis-box">
+                <code>@</code>를 입력하면 파일 경로 자동완성이 활성화됩니다. 특정 파일을 빠르게 참조할 수 있습니다.
+            </div>
             <aside class="notes">
                 컨텍스트 관리는 Claude Code를 효과적으로 사용하는 핵심입니다.
                 파일 경로를 직접 언급하면 Claude Code가 해당 파일을 읽고 참조합니다.
-                컨텍스트는 우선순위가 있습니다: CLAUDE.md가 가장 높고, 그 다음이 대화 이력,
-                명시적으로 참조한 파일, 그리고 Claude가 자동으로 탐색한 파일 순입니다.
+                특히 @를 입력하면 파일 경로 자동완성이 활성화되어, 긴 경로를 직접 타이핑할 필요 없이 빠르게 파일을 참조할 수 있습니다.
             </aside>
         </section>
 
-        <!-- Slide 13: 실용 팁 - 주요 명령어 -->
+        <!-- Slide 16: 컨텍스트 우선순위 -->
+        <section>
+            <h2>컨텍스트 우선순위</h2>
+            <div style="max-width: 700px; margin: 0.8em auto 0;">
+                <div style="display: flex; align-items: center; padding: 0.6em 1em; margin-bottom: 0.4em; background: rgba(233, 69, 96, 0.25); border-left: 4px solid #e94560; border-radius: 6px;">
+                    <span style="font-size: 1.4em; font-weight: bold; margin-right: 0.6em; color: #e94560;">1</span>
+                    <span><strong>CLAUDE.md</strong> — 자동 로드되는 프로젝트 설정</span>
+                </div>
+                <div style="display: flex; align-items: center; padding: 0.6em 1em; margin-bottom: 0.4em; background: rgba(233, 69, 96, 0.18); border-left: 4px solid rgba(233, 69, 96, 0.7); border-radius: 6px;">
+                    <span style="font-size: 1.4em; font-weight: bold; margin-right: 0.6em; color: rgba(233, 69, 96, 0.85);">2</span>
+                    <span>현재 대화의 <strong>이전 메시지</strong></span>
+                </div>
+                <div style="display: flex; align-items: center; padding: 0.6em 1em; margin-bottom: 0.4em; background: rgba(233, 69, 96, 0.12); border-left: 4px solid rgba(233, 69, 96, 0.5); border-radius: 6px;">
+                    <span style="font-size: 1.4em; font-weight: bold; margin-right: 0.6em; color: rgba(233, 69, 96, 0.65);">3</span>
+                    <span><strong>명시적으로 참조</strong>한 파일 (<code>@</code>로 지정)</span>
+                </div>
+                <div style="display: flex; align-items: center; padding: 0.6em 1em; background: rgba(233, 69, 96, 0.07); border-left: 4px solid rgba(233, 69, 96, 0.3); border-radius: 6px;">
+                    <span style="font-size: 1.4em; font-weight: bold; margin-right: 0.6em; color: rgba(233, 69, 96, 0.45);">4</span>
+                    <span>Claude가 <strong>자동 탐색</strong>한 파일</span>
+                </div>
+            </div>
+            <aside class="notes">
+                컨텍스트에는 우선순위가 있습니다.
+                CLAUDE.md가 가장 높은 우선순위를 가지며 항상 자동으로 로드됩니다.
+                그 다음이 현재 대화의 이전 메시지, 명시적으로 참조한 파일(@로 지정 가능),
+                그리고 마지막으로 Claude가 자동으로 탐색한 파일 순입니다.
+                우선순위가 높을수록 Claude의 응답에 더 큰 영향을 미칩니다.
+            </aside>
+        </section>
+
+        <!-- Slide 17: 실용 팁 - 주요 명령어 -->
         <section>
             <h2>실용 팁</h2>
             <h3>주요 명령어</h3>
@@ -461,6 +480,11 @@ Python 3.11 기반 FastAPI 백엔드
                     </tr>
                 </thead>
                 <tbody>
+                    <tr>
+                        <td><code>/init</code></td>
+                        <td>CLAUDE.md 자동 생성</td>
+                        <td>프로젝트 컨텍스트 초기 설정 시</td>
+                    </tr>
                     <tr>
                         <td><code>/help</code></td>
                         <td>도움말 표시</td>
@@ -486,23 +510,36 @@ Python 3.11 기반 FastAPI 백엔드
                         <td>현재 작업 중단</td>
                         <td>잘못된 방향으로 갈 때</td>
                     </tr>
+                    <tr>
+                        <td><code>!</code></td>
+                        <td>Bash Mode (셸 명령 직접 실행)</td>
+                        <td>명령 출력을 컨텍스트에 추가할 때</td>
+                    </tr>
+                    <tr>
+                        <td><code>@</code></td>
+                        <td>파일 경로 자동완성</td>
+                        <td>특정 파일을 명시적으로 참조할 때</td>
+                    </tr>
                 </tbody>
             </table>
             <aside class="notes">
                 실용 팁으로 자주 쓰는 명령어를 정리했습니다.
+                /init은 프로젝트를 분석하여 CLAUDE.md 파일을 자동으로 생성해줍니다. 새 프로젝트 시작 시 가장 먼저 실행하면 좋습니다.
                 특히 /compact는 대화가 길어져서 컨텍스트 윈도우가 부족해질 때 매우 유용합니다.
                 대화를 요약해서 압축하므로 토큰을 절약할 수 있습니다.
                 Shift+Tab으로 Plan Mode에 진입하면, 코드를 바로 수정하지 않고 계획만 먼저 보여줍니다.
                 복잡한 작업 전에 반드시 Plan Mode를 활용하세요.
+                느낌표(!)는 Bash Mode로, 셸 명령을 바로 실행하고 그 출력을 대화 컨텍스트에 추가합니다.
+                골뱅이(@)는 파일 경로 자동완성으로, 긴 경로를 직접 타이핑할 필요 없이 파일을 빠르게 참조할 수 있습니다.
             </aside>
         </section>
 
-        <!-- Slide 14: 실용 팁 - 효과적인 프롬프트 -->
+        <!-- Slide 18: 실용 팁 - 효과적인 프롬프트 -->
         <section>
             <h2>실용 팁</h2>
             <h3>효과적인 프롬프트 작성법</h3>
-            <div class="columns">
-                <div>
+            <div class="columns" style="align-items: stretch;">
+                <div style="flex: 1; min-width: 0; max-width: 50%;">
                     <p style="color: var(--ev-accent);">나쁜 예시</p>
                     <pre><code class="language-text">> "코드 고쳐줘"
 
@@ -510,16 +547,11 @@ Python 3.11 기반 FastAPI 백엔드
 
 > "에러 나는데 해결해줘"</code></pre>
                 </div>
-                <div>
+                <div style="flex: 1; min-width: 0; max-width: 50%;">
                     <p style="color: #4ecca3;">좋은 예시</p>
-                    <pre><code class="language-text">> "get_user 함수에서 DB 연결이
-   실패할 때 retry 로직 추가해줘.
-   최대 3회, 간격은 exponential
-   backoff으로."
+                    <pre style="white-space: pre-wrap; word-break: break-word;"><code class="language-text" style="white-space: pre-wrap !important; word-break: break-word !important;">> "get_user 함수에서 DB 연결이 실패할 때 retry 로직 추가해줘. 최대 3회, 간격은 exponential backoff으로."
 
-> "src/api/routes.py의 /users
-   엔드포인트에 pagination 추가해줘.
-   page_size 기본값은 20으로."</code></pre>
+> "src/api/routes.py의 /users 엔드포인트에 pagination 추가해줘. page_size 기본값은 20으로."</code></pre>
                 </div>
             </div>
             <div class="emphasis-box" style="margin-top: 1em;">
@@ -533,43 +565,52 @@ Python 3.11 기반 FastAPI 백엔드
             </aside>
         </section>
 
-        <!-- Slide 15: 데모 시나리오 -->
+        <!-- Slide 19: 실습 안내 -->
         <section>
-            <h2>데모</h2>
-            <h3>Claude Code로 Python 함수 만들기</h3>
+            <h2>실습: Claude Code로 Python 함수 만들기</h2>
             <div class="emphasis-box">
-                <p><strong>시나리오:</strong> Claude Code를 사용해 간단한 Python 유틸리티 함수를 만들고 테스트까지 작성</p>
+                <p><strong>실습 목표:</strong><br> 스켈레톤 파일의 TODO를 Claude Code로 구현하고 테스트까지 통과시키기</p>
             </div>
-            <pre><code class="language-bash"># 1. 프로젝트 초기화
-mkdir demo-project && cd demo-project
+            <pre><code class="language-bash"># 1. 실습 디렉토리로 이동
+cd 02-claude-code-features/
 claude
 
-# 2. Claude Code에 요청
-> "fibonacci 수열을 반환하는 함수를 만들어줘.
-   입력: n (정수), 출력: n개의 fibonacci 수 리스트.
-   타입 힌트와 docstring 포함해줘."
+# 2. 스켈레톤 확인 후 Claude Code에 구현 요청
+> "exercise_01_fibonacci.py의 TODO를 구현해줘"
 
-# 3. 테스트 추가 요청
-> "방금 만든 함수에 대한 pytest 테스트를 작성해줘.
-   edge case도 포함해줘."
+# 3. 테스트 구현 요청
+> "exercise_02_fibonacci_test.py의 TODO를 구현해줘"
 
-# 4. 실행 및 확인
-> "테스트 돌려줘"</code></pre>
+# 4. 테스트 실행
+> "pytest로 테스트 돌려줘"</code></pre>
+            <div style="margin-top: 0.8em; display: flex; gap: 1em; justify-content: center;">
+                <div style="text-align: center; padding: 0.5em 1em; border: 1px solid rgba(233, 69, 96, 0.4); border-radius: 6px;">
+                    <strong>Step 1</strong><br><span style="font-size: 0.85em; color: var(--ev-text-muted);">스켈레톤 확인</span>
+                </div>
+                <div style="color: var(--ev-text-muted); align-self: center;">→</div>
+                <div style="text-align: center; padding: 0.5em 1em; border: 1px solid rgba(233, 69, 96, 0.4); border-radius: 6px;">
+                    <strong>Step 2</strong><br><span style="font-size: 0.85em; color: var(--ev-text-muted);">Claude Code 구현</span>
+                </div>
+                <div style="color: var(--ev-text-muted); align-self: center;">→</div>
+                <div style="text-align: center; padding: 0.5em 1em; border: 1px solid rgba(233, 69, 96, 0.4); border-radius: 6px;">
+                    <strong>Step 3</strong><br><span style="font-size: 0.85em; color: var(--ev-text-muted);">테스트 통과</span>
+                </div>
+            </div>
             <aside class="notes">
-                이제 실제 데모를 진행합니다.
-                간단한 프로젝트를 만들고, Claude Code에 fibonacci 함수를 요청합니다.
-                그 다음 테스트도 작성하게 하고, 실행까지 시켜봅니다.
-                이 전체 과정이 자연어로만 이루어진다는 점에 주목해주세요.
-                실제로 라이브 데모를 진행하면서 보여드리겠습니다.
+                이제 직접 실습을 진행합니다.
+                exercise 레포의 02-claude-code-features 디렉토리로 이동해주세요.
+                exercise_01_fibonacci.py에는 함수 시그니처와 docstring이 준비되어 있고, TODO 부분만 구현하면 됩니다.
+                Claude Code에게 TODO 구현을 요청하고, 테스트까지 통과시키는 것이 목표입니다.
+                다른 실습 섹션과 동일한 방식으로 진행합니다.
             </aside>
         </section>
 
-        <!-- Slide 16: 데모 - 예상 결과 -->
+        <!-- Slide 20: 실습 결과 -->
         <section>
-            <h2>데모 결과 (예시)</h2>
+            <h2>실습 결과 (예시)</h2>
             <div class="columns">
                 <div>
-                    <p><strong>생성된 코드</strong></p>
+                    <p><strong>구현된 코드</strong></p>
                     <pre><code class="language-python">def fibonacci(n: int) -> list[int]:
     """Generate fibonacci sequence.
 
@@ -598,9 +639,11 @@ claude
     return fib</code></pre>
                 </div>
                 <div>
-                    <p><strong>생성된 테스트</strong></p>
+                    <p><strong>구현된 테스트</strong></p>
                     <pre><code class="language-python">import pytest
-from fibonacci import fibonacci
+from exercise_01_fibonacci import (
+    fibonacci,
+)
 
 
 def test_fibonacci_basic():
@@ -625,14 +668,14 @@ def test_fibonacci_large():
                 </div>
             </div>
             <aside class="notes">
-                이것이 Claude Code가 생성한 코드와 테스트의 예시입니다.
+                이것이 Claude Code가 스켈레톤의 TODO를 구현한 결과 예시입니다.
                 코드에 타입 힌트, Google 스타일 docstring, 에러 처리가 포함되어 있고,
                 테스트에는 기본 케이스뿐 아니라 edge case(0, 1, 음수)도 포함되어 있습니다.
-                이 모든 것이 자연어 한두 문장으로 생성되었습니다.
+                스켈레톤의 함수 시그니처와 TODO 주석만으로 Claude Code가 올바른 구현을 생성했습니다.
             </aside>
         </section>
 
-        <!-- Slide 17: 정리 -->
+        <!-- Slide 21: 정리 -->
         <section>
             <h2>정리</h2>
             <div class="columns">
@@ -641,9 +684,9 @@ def test_fibonacci_large():
                     <ul>
                         <li><strong>Claude Code</strong> = CLI 기반 에이전틱 코딩 도구</li>
                         <li><code>npm install -g @anthropic-ai/claude-code</code>로 설치</li>
-                        <li>4가지 핵심 기능: 코드 생성, 파일 조작, 터미널 실행, 웹 검색</li>
+                        <li>5가지 핵심 기능: 코드 생성, 파일 조작, 터미널 실행, 웹 검색, 스크린샷 분석</li>
                         <li><code>CLAUDE.md</code>로 프로젝트 컨텍스트 관리</li>
-                        <li><code>/compact</code>, <code>Shift+Tab</code> 등 실용 팁 활용</li>
+                        <li><code>/init</code>, <code>!</code>, <code>@</code>, <code>/compact</code>, <code>Shift+Tab</code> 등 실용 팁 활용</li>
                     </ul>
                 </div>
                 <div>
@@ -662,7 +705,7 @@ def test_fibonacci_large():
             </aside>
         </section>
 
-        <!-- Slide 18: Q&A -->
+        <!-- Slide 22: Q&A -->
         <section>
             <h1>Q&A</h1>
             <p style="text-align: center; font-size: 1.2em; color: var(--ev-text-muted);">

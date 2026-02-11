@@ -399,30 +399,6 @@
     color: var(--ev-text-muted);
 }
 
-.sidebar-sections .section-badge {
-    font-size: 0.6rem;
-    padding: 0.15em 0.5em;
-    border-radius: 3px;
-    text-transform: uppercase;
-    font-weight: 600;
-    letter-spacing: 0.05em;
-    white-space: nowrap;
-}
-
-.sidebar-sections .badge-lecture {
-    background: #0f3460;
-    color: var(--ev-text);
-}
-
-.sidebar-sections .badge-demo {
-    background: #1a3a5c;
-    color: #6cb4ee;
-}
-
-.sidebar-sections .badge-handson {
-    background: #2a1a2e;
-    color: var(--ev-accent-light);
-}
 
 .sidebar-overlay {
     position: fixed;
