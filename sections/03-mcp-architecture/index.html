@@ -65,9 +65,9 @@
                 <p>AI 모델이 외부 도구 및 데이터 소스와 소통하는 <strong>표준 프로토콜</strong></p>
             </div>
             <ul style="margin-top: 1em;">
-                <li class="fragment">Anthropic이 2024년 11월 공개한 <strong>오픈 프로토콜</strong></li>
-                <li class="fragment">AI 모델과 외부 세계 사이의 <strong>"USB-C"</strong> 같은 존재</li>
-                <li class="fragment">어떤 AI 모델이든, 어떤 도구든 <strong>하나의 규격</strong>으로 연결</li>
+                <li class="fragment" data-fragment-index="0">Anthropic이 2024년 11월 공개한 <strong>오픈 프로토콜</strong></li>
+                <li class="fragment" data-fragment-index="0">AI 모델과 외부 세계 사이의 <strong>"USB-C"</strong> 같은 존재</li>
+                <li class="fragment" data-fragment-index="0">어떤 AI 모델이든, 어떤 도구든 <strong>하나의 규격</strong>으로 연결</li>
             </ul>
             <aside class="notes">
                 MCP는 Model Context Protocol의 약자입니다.
@@ -223,11 +223,11 @@
                 <div>
                     <h3>Local Server (STDIO)</h3>
                     <ul style="font-size: 0.8em;">
-                        <li class="fragment">표준 입출력으로 통신</li>
-                        <li class="fragment">Host가 프로세스를 직접 관리</li>
-                        <li class="fragment">로컬 개발에 적합</li>
+                        <li class="fragment" data-fragment-index="0">표준 입출력으로 통신</li>
+                        <li class="fragment" data-fragment-index="0">Host가 프로세스를 직접 관리</li>
+                        <li class="fragment" data-fragment-index="0">로컬 개발에 적합</li>
                     </ul>
-                    <pre class="fragment"><code class="language-json" data-trim>{
+                    <pre class="fragment" data-fragment-index="1"><code class="language-json" data-trim>{
   "command": "uv",
   "args": [
     "run", "--with", "fastmcp",
@@ -238,11 +238,11 @@
                 <div>
                     <h3>Remote Server (Streamable HTTP)</h3>
                     <ul style="font-size: 0.8em;">
-                        <li class="fragment">HTTP 기반 통신</li>
-                        <li class="fragment">별도 서버로 독립 운영</li>
-                        <li class="fragment">팀 공유 / 프로덕션 배포</li>
+                        <li class="fragment" data-fragment-index="2">HTTP 기반 통신</li>
+                        <li class="fragment" data-fragment-index="2">별도 서버로 독립 운영</li>
+                        <li class="fragment" data-fragment-index="2">팀 공유 / 프로덕션 배포</li>
                     </ul>
-                    <pre class="fragment"><code class="language-json" data-trim>{
+                    <pre class="fragment" data-fragment-index="3"><code class="language-json" data-trim>{
   "url": "https://mcp.example.com/sse",
   "headers": {
     "Authorization": "Bearer token"
@@ -540,10 +540,10 @@
                 <div>
                     <h3>특징</h3>
                     <ul>
-                        <li class="fragment">데코레이터 기반의 직관적 API</li>
-                        <li class="fragment">타입 힌트에서 자동으로 스키마 생성</li>
-                        <li class="fragment">docstring이 도구 설명이 됨</li>
-                        <li class="fragment"><code>uv</code>로 의존성 없이 바로 실행</li>
+                        <li class="fragment" data-fragment-index="0">데코레이터 기반의 직관적 API</li>
+                        <li class="fragment" data-fragment-index="0">타입 힌트에서 자동으로 스키마 생성</li>
+                        <li class="fragment" data-fragment-index="0">docstring이 도구 설명이 됨</li>
+                        <li class="fragment" data-fragment-index="0"><code>uv</code>로 의존성 없이 바로 실행</li>
                     </ul>
                 </div>
                 <div class="fragment">
@@ -600,25 +600,25 @@ if __name__ == "__main__":
         <!-- Slide 17: Claude Code에서 MCP 서버 연결 -->
         <section>
             <h2>Claude Code에서 MCP 서버 연결</h2>
-            <p><code>.claude/settings.local.json</code> 파일에 설정을 추가합니다:</p>
+            <p><code>.mcp.json</code> 파일에 설정을 추가합니다:</p>
             <pre><code class="language-json" data-trim>{
   "mcpServers": {
     "hello-mcp": {
+      "type": "stdio",
       "command": "uv",
       "args": [
-        "run",
-        "--with", "fastmcp",
+        "run", "--with", "fastmcp",
         "fastmcp", "run",
-        "exercise_01_hello_mcp.py"
+        "03-mcp-architecture/exercise_01_hello_mcp.py"
       ]
     },
     "calculator": {
+      "type": "stdio",
       "command": "uv",
       "args": [
-        "run",
-        "--with", "fastmcp",
+        "run", "--with", "fastmcp",
         "fastmcp", "run",
-        "exercise_02_calculator_mcp.py"
+        "03-mcp-architecture/exercise_02_calculator_mcp.py"
       ]
     }
   }
@@ -628,9 +628,10 @@ if __name__ == "__main__":
             </p>
             <aside class="notes">
                 MCP 서버를 만들었으면 Claude Code에 연결해야 합니다.
-                프로젝트 루트의 .claude/settings.local.json 파일에 mcpServers 섹션을 추가합니다.
+                프로젝트 루트의 .mcp.json 파일에 mcpServers 섹션을 추가합니다.
+                중요한 점은 경로가 프로젝트 루트 기준이라는 것입니다.
+                03-mcp-architecture/ 디렉토리를 포함한 전체 경로를 지정해야 합니다.
                 command는 uv를 사용하고, args에서 --with fastmcp로 의존성을 지정합니다.
-                fastmcp run 명령으로 서버 파일을 실행합니다.
                 uv run --with 패턴을 사용하면 별도의 패키지 설치 없이
                 바로 FastMCP 서버를 실행할 수 있어서 매우 편리합니다.
                 설정 후 Claude Code를 재시작하면 도구를 사용할 수 있습니다.
@@ -650,26 +651,257 @@ if __name__ == "__main__":
             </div>
             <div style="margin-top: 1em;">
                 <h3>Claude Code 워크플로우</h3>
-                <pre><code class="language-bash" data-trim># 1. 코드 디렉토리로 이동
-cd 03-mcp-architecture/
-
-# 2. Claude Code 실행
+                <pre><code class="language-bash" data-trim># 1. 프로젝트 루트에서 Claude Code 실행
 claude
 
-# 3. TODO 구현 요청
-> exercise_01_hello_mcp.py의 TODO를 구현해줘
+# 2. @로 파일 컨텍스트 추가하여 구현 요청
+> @03-mcp-architecture/exercise_01_hello_mcp.py 의 TODO를 구현해줘
 
-# 4. MCP 서버 테스트 실행
-uv run --with fastmcp fastmcp run exercise_01_hello_mcp.py</code></pre>
+# 3. MCP 서버 테스트 실행
+uv run --with fastmcp fastmcp run \
+    03-mcp-architecture/exercise_01_hello_mcp.py</code></pre>
             </div>
             <aside class="notes">
                 이제 직접 실습해봅시다! 총 10분 정도 시간을 드립니다.
                 이번 실습은 Vibe Coding 방식으로 진행합니다.
-                먼저 exercise 파일을 열어 TODO 주석과 요구사항을 확인하세요.
-                그 다음 Claude Code에게 TODO 구현을 요청합니다.
-                Claude Code가 생성한 코드를 확인하고 MCP 서버를 실행하여 테스트합니다.
+                중요한 점은 프로젝트 루트에서 Claude Code를 실행하는 것입니다.
+                cd로 하위 디렉토리에 들어가면 프로젝트 루트의 CLAUDE.md나 .mcp.json 등
+                프로젝트 설정이 적용되지 않습니다.
+                대신 @를 사용해서 파일 컨텍스트를 직접 추가하면
+                프로젝트 설정이 유지되면서도 원하는 파일을 참조할 수 있습니다.
                 시간이 남으면 Exercise 02도 같은 방식으로 진행하세요.
                 막히는 부분이 있으면 언제든 질문해주세요!
+            </aside>
+        </section>
+
+        <!-- Slide: MCP 서버 등록하기 -->
+        <section>
+            <h2>MCP 서버 등록하기</h2>
+            <div style="display: flex; align-items: flex-start; gap: 1em;">
+                <div style="flex: 1;">
+                    <h3>① .mcp.json 생성</h3>
+                    <pre><code class="language-bash" data-trim># 프로젝트 루트에 설정 파일 생성
+cat > .mcp.json << 'EOF'
+{
+  "mcpServers": {
+    "hello-mcp": {
+      "type": "stdio",
+      "command": "uv",
+      "args": [
+        "run", "--with", "fastmcp",
+        "fastmcp", "run",
+        "03-mcp-architecture/exercise_01_hello_mcp.py"
+      ]
+    }
+  }
+}
+EOF</code></pre>
+                </div>
+                <div style="flex: 0.7;" class="fragment">
+                    <h3>② Claude Code 재시작</h3>
+                    <pre><code class="language-bash" data-trim># Claude Code 종료 후 다시 실행
+/exit
+claude</code></pre>
+                    <h3 style="margin-top: 1em;">③ 연결 확인</h3>
+                    <pre><code class="language-bash" data-trim>/mcp</code></pre>
+                    <p style="font-size: 0.8em; color: var(--ev-text-muted);">
+                        hello-mcp 서버가 목록에<br>표시되면 성공!
+                    </p>
+                </div>
+            </div>
+            <aside class="notes">
+                MCP 서버를 구현했으면 Claude Code에 등록하는 과정입니다.
+                먼저 프로젝트 루트의 .mcp.json 파일을 열어
+                mcpServers 섹션에 서버 정보를 추가합니다.
+                경로는 반드시 프로젝트 루트 기준으로 작성해야 합니다.
+                설정을 저장한 뒤 Claude Code를 재시작해야 새 서버가 로드됩니다.
+                /mcp 명령어를 실행하면 등록된 MCP 서버 목록과 연결 상태를 확인할 수 있습니다.
+                hello-mcp가 목록에 보이면 정상적으로 연결된 것입니다.
+            </aside>
+        </section>
+
+        <!-- Slide: MCP 서버 사용해보기 -->
+        <!-- Slide: MCP 서버 사용해보기 -->
+        <section>
+            <h2>MCP 서버 사용해보기</h2>
+            <div class="emphasis-box">
+                <p style="font-size: 1.1em;">등록된 MCP 서버에 자연어로 요청해보세요</p>
+            </div>
+            <div style="display: flex; gap: 1.5em; margin-top: 0.8em;">
+                <!-- 왼쪽: echo 도구 -->
+                <div style="flex: 1;">
+                    <pre style="font-size: 0.48em;"><code class="language-bash" data-trim>> echo 도구로 "Hello MCP!"를 보내줘</code></pre>
+                    <div class="fragment" data-fragment-index="0" style="background: var(--ev-code-bg); border: 1px solid #333; border-radius: 8px; padding: 0.6em 0.8em; margin-top: 0.3em; font-family: monospace; font-size: 0.38em; line-height: 1.6; text-align: left;">
+                        <div><span style="color: #a6e3a1;">⏺</span> <strong style="color: #cdd6f4;">hello-mcp - echo (MCP)</strong><span style="color: #9399b2;">(message: "Hello MCP!")</span></div>
+                        <div style="color: #585b70;">&nbsp;&nbsp;⎿&nbsp;&nbsp;{</div>
+                        <div style="color: #9399b2;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #89b4fa;">"result"</span>: <span style="color: #a6e3a1;">"Echo: Hello MCP!"</span></div>
+                        <div style="color: #585b70;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</div>
+                        <div style="margin-top: 0.5em;"><span style="color: #a6e3a1;">⏺</span> <span style="color: #cdd6f4;">hello-mcp MCP 서버의 echo 도구로 메시지를 보냈고,</span></div>
+                        <div><span style="color: #cdd6f4;">&nbsp;&nbsp;응답으로 <strong>"Echo: Hello MCP!"</strong>가 돌아왔습니다.</span></div>
+                    </div>
+                </div>
+                <!-- 오른쪽: greet 도구 -->
+                <div style="flex: 1;">
+                    <pre class="fragment" data-fragment-index="1" style="font-size: 0.48em;"><code class="language-bash" data-trim>> 내 이름은 홍길동이야, 인사해줘</code></pre>
+                    <div class="fragment" data-fragment-index="2" style="background: var(--ev-code-bg); border: 1px solid #333; border-radius: 8px; padding: 0.6em 0.8em; margin-top: 0.3em; font-family: monospace; font-size: 0.38em; line-height: 1.6; text-align: left;">
+                        <div><span style="color: #a6e3a1;">⏺</span> <strong style="color: #cdd6f4;">hello-mcp - greet (MCP)</strong><span style="color: #9399b2;">(name: "홍길동")</span></div>
+                        <div style="color: #585b70;">&nbsp;&nbsp;⎿&nbsp;&nbsp;{</div>
+                        <div style="color: #9399b2;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #89b4fa;">"result"</span>: <span style="color: #a6e3a1;">"안녕하세요, 홍길동님! 반갑습니다."</span></div>
+                        <div style="color: #585b70;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</div>
+                        <div style="margin-top: 0.5em;"><span style="color: #a6e3a1;">⏺</span> <span style="color: #cdd6f4;">hello-mcp MCP 서버의 greet 도구를 사용했습니다:</span></div>
+                        <div><span style="color: #cdd6f4;">&nbsp;&nbsp;"안녕하세요, 홍길동님! 반갑습니다." 🎉</span></div>
+                    </div>
+                </div>
+            </div>
+            <div class="fragment" data-fragment-index="3" style="margin-top: 0.8em; text-align: center;">
+                <p style="font-size: 0.9em;">
+                    <strong>Discovery</strong> → <strong>도구 선택</strong> → <strong>실행</strong> — 자연어만으로 MCP 도구가 호출됩니다!
+                </p>
+            </div>
+            <aside class="notes">
+                등록된 hello-mcp 서버를 실제로 사용해봅시다.
+                자연어로 요청하면 AI가 자동으로 처리합니다.
+                왼쪽: "echo 도구로 Hello MCP를 보내줘"라고 하면
+                AI가 echo 도구를 발견(Discovery)하고 호출합니다.
+                오른쪽: "내 이름은 홍길동이야, 인사해줘"라고 하면
+                greet 도구를 찾아서 이름을 인자로 전달합니다.
+                사용자가 도구 이름이나 파라미터를 직접 지정하지 않았는데도
+                AI가 자동으로 적절한 도구를 찾아서 호출하는 것이
+                MCP의 Discovery 메커니즘이자 핵심 가치입니다.
+            </aside>
+        </section>
+
+        <!-- Slide: 실습 02 - Calculator MCP -->
+        <section>
+            <h2>실습 02: Calculator MCP</h2>
+            <div class="emphasis-box">
+                <h3>실습 순서 (10분)</h3>
+                <ol>
+                    <li><strong>스켈레톤 확인</strong>: exercise 파일의 TODO 주석 확인</li>
+                    <li><strong>Claude Code로 구현</strong>: TODO를 구현해달라고 요청</li>
+                    <li><strong>테스트</strong>: MCP 서버 실행 및 Claude Code 연결</li>
+                </ol>
+            </div>
+            <div style="margin-top: 1em;">
+                <h3>Claude Code 워크플로우</h3>
+                <pre><code class="language-bash" data-trim># 1. @로 파일 컨텍스트 추가하여 구현 요청
+> @03-mcp-architecture/exercise_02_calculator_mcp.py 의 TODO를 구현해줘
+
+# 2. MCP 서버 테스트 실행
+uv run --with fastmcp fastmcp run \
+    03-mcp-architecture/exercise_02_calculator_mcp.py</code></pre>
+            </div>
+            <div class="fragment" style="margin-top: 0.5em;">
+                <p style="font-size: 0.85em; color: var(--ev-text-muted);">
+                    요구사항: <code>add</code>, <code>subtract</code>, <code>multiply</code>, <code>divide</code> 4개 도구<br>
+                    <code>divide</code>는 0 나누기 에러 처리 필수!
+                </p>
+            </div>
+            <aside class="notes">
+                두 번째 실습으로 Calculator MCP 서버를 만들어봅시다.
+                exercise_02_calculator_mcp.py 파일에 TODO가 있으니
+                Claude Code에 구현을 요청하면 됩니다.
+                add, subtract, multiply, divide 4개 도구를 만들어야 하고,
+                divide의 경우 0으로 나누는 경우의 에러 처리가 필요합니다.
+                hello-mcp와 동일한 방식으로 진행하면 됩니다.
+            </aside>
+        </section>
+
+        <!-- Slide: Calculator MCP 등록하기 -->
+        <section>
+            <h2>Calculator MCP 등록하기</h2>
+            <div style="display: flex; align-items: flex-start; gap: 1em;">
+                <div style="flex: 1;">
+                    <h3>① .mcp.json 업데이트</h3>
+                    <pre><code class="language-bash" data-trim># calculator 서버 추가
+cat > .mcp.json << 'EOF'
+{
+  "mcpServers": {
+    "hello-mcp": {
+      "type": "stdio",
+      "command": "uv",
+      "args": [
+        "run", "--with", "fastmcp",
+        "fastmcp", "run",
+        "03-mcp-architecture/exercise_01_hello_mcp.py"
+      ]
+    },
+    "calculator": {
+      "type": "stdio",
+      "command": "uv",
+      "args": [
+        "run", "--with", "fastmcp",
+        "fastmcp", "run",
+        "03-mcp-architecture/exercise_02_calculator_mcp.py"
+      ]
+    }
+  }
+}
+EOF</code></pre>
+                </div>
+                <div style="flex: 0.7;" class="fragment">
+                    <h3>② Claude Code 재시작</h3>
+                    <pre><code class="language-bash" data-trim># Claude Code 종료 후 다시 실행
+/exit
+claude</code></pre>
+                    <h3 style="margin-top: 1em;">③ 연결 확인</h3>
+                    <pre><code class="language-bash" data-trim>/mcp</code></pre>
+                    <p style="font-size: 0.8em; color: var(--ev-text-muted);">
+                        hello-mcp + calculator<br>두 서버가 표시되면 성공!
+                    </p>
+                </div>
+            </div>
+            <aside class="notes">
+                Calculator MCP를 구현했으면 .mcp.json에 등록합니다.
+                기존 hello-mcp 설정 아래에 calculator 항목을 추가하면 됩니다.
+                exercise_02_calculator_mcp.py 경로를 정확하게 지정해주세요.
+                설정 저장 후 Claude Code를 재시작하고
+                /mcp로 확인하면 두 서버가 모두 보여야 합니다.
+            </aside>
+        </section>
+
+        <!-- Slide: Claude vs MCP 도구 비교 -->
+        <section>
+            <h2>Claude vs MCP 도구 비교</h2>
+            <p style="font-size: 0.9em; color: var(--ev-text-muted);">같은 질문, 다른 처리 방식</p>
+            <div style="display: flex; gap: 1.5em; margin-top: 1em;">
+                <div style="flex: 1; background: rgba(255,255,255,0.05); border-radius: 12px; padding: 1em;">
+                    <h3 style="color: var(--ev-text-muted);">Claude 자체 계산</h3>
+                    <pre><code class="language-bash" data-trim>> 3 + 5를 계산해줘</code></pre>
+                    <p style="font-size: 0.9em; margin-top: 0.5em;">
+                        💬 "3 + 5는 <strong>8</strong>입니다"
+                    </p>
+                    <p style="font-size: 0.75em; color: var(--ev-text-muted);">
+                        모델이 직접 답변 생성
+                    </p>
+                </div>
+                <div style="flex: 1; background: rgba(233, 69, 96, 0.1); border: 1px solid var(--ev-accent); border-radius: 12px; padding: 1em;" class="fragment">
+                    <h3 style="color: var(--ev-accent);">MCP 도구 사용</h3>
+                    <pre><code class="language-bash" data-trim>> 3 + 5를 계산해줘</code></pre>
+                    <p style="font-size: 0.9em; margin-top: 0.5em;">
+                        🔧 <code>calculator.add(3, 5)</code> → <strong>8</strong>
+                    </p>
+                    <p style="font-size: 0.75em; color: var(--ev-text-muted);">
+                        외부 도구가 실행하고 결과 반환
+                    </p>
+                </div>
+            </div>
+            <div class="fragment emphasis-box" style="margin-top: 1em;">
+                <p style="font-size: 0.9em;">
+                    MCP 도구의 차별점: <strong>외부 시스템 연동</strong> · <strong>정확한 로직 실행</strong> · <strong>감사 추적(Audit Trail)</strong>
+                </p>
+            </div>
+            <aside class="notes">
+                여기서 중요한 질문을 해봅시다.
+                "3 + 5를 계산해줘"라고 하면 Claude는 MCP 없이도 답할 수 있습니다.
+                왼쪽처럼 모델이 직접 "8입니다"라고 답하죠.
+                하지만 오른쪽처럼 MCP 도구를 통하면 calculator의 add 함수가 실제로 실행됩니다.
+                단순 계산에서는 차이가 없어 보이지만,
+                실제 업무에서는 이 차이가 매우 중요합니다.
+                MCP 도구를 사용하면 외부 데이터베이스 조회, API 호출 등
+                모델이 직접 할 수 없는 작업을 수행할 수 있고,
+                누가 언제 어떤 도구를 호출했는지 감사 추적이 가능합니다.
+                즉, MCP는 AI를 실제 업무 시스템과 안전하게 연결하는 다리입니다.
             </aside>
         </section>
 

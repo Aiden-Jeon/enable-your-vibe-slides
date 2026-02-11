@@ -4,12 +4,11 @@
     { number: '01', dir: '01-ai-foundation', title: 'AI Foundation', subtitle: 'Claude AI 기초', type: 'lecture' },
     { number: '02', dir: '02-claude-code-features', title: 'Claude Code Features', subtitle: 'Claude Code 사용법', type: 'lecture+demo' },
     { number: '03', dir: '03-mcp-architecture', title: 'MCP Architecture', subtitle: 'MCP 아키텍처', type: 'lecture+hands-on' },
-    { number: '04', dir: '04-skills-ecosystem', title: 'Skills Ecosystem', subtitle: 'Skills 생태계', type: 'lecture' },
-    { number: '05', dir: '05-genie-mcp', title: 'Genie MCP', subtitle: 'Genie MCP 서버 만들기', type: 'hands-on' },
-    { number: '06', dir: '06-skills-workflow', title: 'Skills Workflow', subtitle: 'Skills로 워크플로우 구조화', type: 'hands-on' },
-    { number: '07', dir: '07-ai-dev-kit', title: 'AI Dev Kit', subtitle: 'Databricks AI Dev Kit', type: 'lecture+demo' },
-    { number: '08', dir: '08-build-ui', title: 'Build UI', subtitle: 'UI 만들기', type: 'hands-on' },
-    { number: '09', dir: '09-deploy-to-databricks', title: 'Deploy to Databricks', subtitle: 'Databricks 배포', type: 'hands-on' }
+    { number: '04', dir: '04-genie-mcp', title: 'Genie MCP', subtitle: 'Genie MCP 서버 만들기', type: 'hands-on' },
+    { number: '05', dir: '05-skills', title: 'Skills', subtitle: '개념에서 실전까지', type: 'lecture+hands-on' },
+    { number: '06', dir: '06-ai-dev-kit', title: 'AI Dev Kit', subtitle: 'Databricks AI Dev Kit', type: 'lecture+demo' },
+    { number: '07', dir: '07-build-ui', title: 'Build UI', subtitle: 'UI 만들기', type: 'hands-on' },
+    { number: '08', dir: '08-deploy-to-databricks', title: 'Deploy to Databricks', subtitle: 'Databricks 배포', type: 'hands-on' }
   ];
 
   function detectCurrentSection() {

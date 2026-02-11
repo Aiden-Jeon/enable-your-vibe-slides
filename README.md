@@ -27,36 +27,35 @@
 
 ## 커리큘럼 (총 190분)
 
-### Part 1: 기초 다지기 (75분)
+### Part 1: 기초 다지기 (70분)
 
 | # | 섹션 | 시간 | 유형 | 설명 |
 |---|------|------|------|------|
 | 01 | [AI Foundation](sections/01-ai-foundation/) | 15분 | 강의 | Vibe Coding 개념, Claude AI 차별점, 에이전틱 코딩 |
 | 02 | [Claude Code Features](sections/02-claude-code-features/) | 20분 | 강의+데모 | CLI 사용법, CLAUDE.md, 핵심 기능 4가지 |
 | 03 | [MCP Architecture](sections/03-mcp-architecture/) | 25분 | 강의+실습 | MCP 프로토콜, FastMCP로 첫 MCP 서버 만들기 |
-| 04 | [Skills Ecosystem](sections/04-skills-ecosystem/) | 15분 | 강의 | Skills, Agents, Hooks 생태계 이해 |
 
-### Part 2: 실전 구현 (115분)
+### Part 2: 실전 구현 (120분)
 
 | # | 섹션 | 시간 | 유형 | 설명 |
 |---|------|------|------|------|
-| 05 | [Genie MCP](sections/05-genie-mcp/) | 30분 | 실습 | Databricks Genie API → MCP 서버 구현 |
-| 06 | [Skills Workflow](sections/06-skills-workflow/) | 25분 | 실습 | Custom Skill 작성, 레퍼런스 활용 |
-| 07 | [AI Dev Kit](sections/07-ai-dev-kit/) | 15분 | 강의+데모 | ChatAgent, MLflow Tracing, 배포 파이프라인 |
-| 08 | [Build UI](sections/08-build-ui/) | 30분 | 실습 | FastAPI + 채팅 UI 구현 |
-| 09 | [Deploy to Databricks](sections/09-deploy-to-databricks/) | 15분 | 실습 | Databricks Apps 배포 |
+| 04 | [Genie MCP](sections/04-genie-mcp/) | 30분 | 실습 | Databricks Genie API → MCP 서버 구현 |
+| 05 | [Skills](sections/05-skills/) | 30분 | 강의+실습 | Skills/Agents 개념, Custom Skill 작성, 레퍼런스 활용 |
+| 06 | [AI Dev Kit](sections/06-ai-dev-kit/) | 15분 | 강의+데모 | ChatAgent, MLflow Tracing, 배포 파이프라인 |
+| 07 | [Build UI](sections/07-build-ui/) | 30분 | 실습 | FastAPI + 채팅 UI 구현 |
+| 08 | [Deploy to Databricks](sections/08-deploy-to-databricks/) | 15분 | 실습 | Databricks Apps 배포 |
 
 ### 학습 경로
 
 ```
 Part 1: 기초                          Part 2: 실전
 ┌──────────────┐                     ┌──────────────────┐
-│ 01 AI 기초    │──→ 02 Claude Code ──→ 03 MCP 아키텍처 ──→ 05 Genie MCP ──→ 08 UI 만들기 ──→ 09 배포
+│ 01 AI 기초    │──→ 02 Claude Code ──→ 03 MCP 아키텍처 ──→ 04 Genie MCP ──→ 07 UI 만들기 ──→ 08 배포
 └──────────────┘                     └────────┬─────────┘
                                               │
-                                              └──→ 04 Skills ──→ 06 Skills 실습
+                                              └──→ 05 Skills
                                               │
-                                              └──→ 07 AI Dev Kit
+                                              └──→ 06 AI Dev Kit
 ```
 
 ## 슬라이드 보기
@@ -81,7 +80,7 @@ open sections/01-ai-foundation/index.html
 uv run --with pyyaml shared/scripts/validate-section.py
 
 # 특정 섹션만 검증
-uv run --with pyyaml shared/scripts/validate-section.py sections/05-genie-mcp
+uv run --with pyyaml shared/scripts/validate-section.py sections/04-genie-mcp
 ```
 
 ## 프로젝트 구조
@@ -93,12 +92,11 @@ enable-your-vibe/
 │   ├── 01-ai-foundation/      # 강의: Claude AI 기초
 │   ├── 02-claude-code-features/ # 강의+데모: Claude Code 사용법
 │   ├── 03-mcp-architecture/   # 강의+실습: MCP 아키텍처
-│   ├── 04-skills-ecosystem/   # 강의: Skills 생태계
-│   ├── 05-genie-mcp/          # 실습: Genie MCP 서버
-│   ├── 06-skills-workflow/    # 실습: Skills 워크플로우
-│   ├── 07-ai-dev-kit/         # 강의+데모: AI Dev Kit
-│   ├── 08-build-ui/           # 실습: UI 만들기
-│   └── 09-deploy-to-databricks/ # 실습: Databricks 배포
+│   ├── 04-genie-mcp/          # 실습: Genie MCP 서버
+│   ├── 05-skills/             # 강의+실습: Skills 개념에서 실전까지
+│   ├── 06-ai-dev-kit/         # 강의+데모: AI Dev Kit
+│   ├── 07-build-ui/           # 실습: UI 만들기
+│   └── 08-deploy-to-databricks/ # 실습: Databricks 배포
 ├── shared/
 │   ├── assets/theme.css       # 커스텀 reveal.js 테마
 │   └── scripts/

@@ -1,4 +1,4 @@
-number: "08"
+number: "07"
 title: "Build UI: UI 만들기"
 duration_minutes: 30
 type: "hands-on"
@@ -8,5 +8,5 @@ objectives:
   - "프론트엔드와 백엔드의 통합 패턴 학습"
 slides: "index.html"
 prerequisites:
-  - "05-genie-mcp"
-  - "07-ai-dev-kit"
+  - "04-genie-mcp"
+  - "06-ai-dev-kit"

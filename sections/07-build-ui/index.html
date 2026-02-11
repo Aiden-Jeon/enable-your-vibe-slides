@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>08 - Build UI - Enable Your Vibe</title>
+    <title>07 - Build UI - Enable Your Vibe</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reset.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/theme/black.css">
@@ -29,7 +29,7 @@
             <h1>Build UI</h1>
             <p>UI 만들기</p>
             <p style="margin-top: 2em; font-size: 0.7em; color: var(--ev-text-muted);">
-                Section 08 | Hands-on | 30분
+                Section 07 | Hands-on | 30분
             </p>
             <aside class="notes">
                 이번 섹션에서는 Genie API를 연동한 채팅 UI를 직접 만들어봅니다.
@@ -53,7 +53,7 @@
             <aside class="notes">
                 세 가지 학습 목표를 설명합니다.
                 첫째, FastAPI의 기본 구조를 익힙니다. 라우터, 정적 파일 서빙, 요청/응답 모델 등을 다룹니다.
-                둘째, Section 05에서 배운 Genie API를 웹 UI와 연동합니다.
+                둘째, Section 04에서 배운 Genie API를 웹 UI와 연동합니다.
                 셋째, 프론트엔드(HTML/CSS/JS)와 백엔드(FastAPI)가 어떻게 통신하는지 이해합니다.
                 핵심은 비개발자가 사용할 수 있는 인터페이스를 만드는 것입니다.
                 CLI나 코드가 아닌, 웹 브라우저에서 바로 데이터를 질의할 수 있게 됩니다.
@@ -243,11 +243,11 @@
                 <li><strong>Step 4:</strong> 결과 파싱 후 <code>ChatResponse</code>로 반환</li>
             </ul>
             <div class="emphasis-box fragment" style="margin-top: 0.8em; font-size: 0.9em;">
-                Section 05에서 배운 Genie API 패턴을 FastAPI 엔드포인트로 감싸는 것이 핵심
+                Section 04에서 배운 Genie API 패턴을 FastAPI 엔드포인트로 감싸는 것이 핵심
             </div>
             <aside class="notes">
                 백엔드의 핵심 로직을 흐름도로 정리합니다.
-                Section 05에서 배운 Genie API 호출 패턴과 동일합니다.
+                Section 04에서 배운 Genie API 호출 패턴과 동일합니다.
                 차이점은 이것을 FastAPI 엔드포인트로 감싸서 HTTP API로 노출한다는 것입니다.
                 conversation_id를 클라이언트에 반환하여 같은 대화를 이어갈 수 있게 합니다.
                 스켈레톤 파일에 TODO로 각 단계가 표시되어 있으니, Claude Code에게 구현을 요청하면 됩니다.

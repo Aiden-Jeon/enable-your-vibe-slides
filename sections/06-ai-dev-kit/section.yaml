@@ -1,4 +1,4 @@
-number: "07"
+number: "06"
 title: "AI Dev Kit: Databricks AI Dev Kit"
 duration_minutes: 15
 type: "lecture+demo"
@@ -9,4 +9,4 @@ objectives:
 slides: "index.html"
 code_files: []
 prerequisites:
-  - "05-genie-mcp"
+  - "04-genie-mcp"

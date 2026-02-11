@@ -9,7 +9,7 @@ Vibe Coding 핸즈온 세션(반나절, 3-4시간) 교육 자료 — 슬라이�
 
 ```
 enable-your-vibe/
-├── sections/                    # 9개 교육 섹션
+├── sections/                    # 8개 교육 섹션 (00-home + 01-08)
 │   └── XX-section-name/
 │       ├── index.html           # reveal.js 슬라이드
 │       └── section.yaml         # 섹션 메타데이터
@@ -28,12 +28,11 @@ enable-your-vibe/
 | 01 | ai-foundation | Claude AI 기초 | 강의 |
 | 02 | claude-code-features | Claude Code 사용법 | 강의+데모 |
 | 03 | mcp-architecture | MCP 아키텍처 | 강의+실습 |
-| 04 | skills-ecosystem | Skills 생태계 | 강의 |
-| 05 | genie-mcp | Genie MCP 서버 만들기 | 실습 |
-| 06 | skills-workflow | Skills로 워크플로우 구조화 | 실습 |
-| 07 | ai-dev-kit | Databricks AI Dev Kit | 강의+데모 |
-| 08 | build-ui | UI 만들기 | 실습 |
-| 09 | deploy-to-databricks | Databricks 배포 | 실습 |
+| 04 | genie-mcp | Genie MCP 서버 만들기 | 실습 |
+| 05 | skills | Skills: 개념에서 실전까지 | 강의+실습 |
+| 06 | ai-dev-kit | Databricks AI Dev Kit | 강의+데모 |
+| 07 | build-ui | UI 만들기 | 실습 |
+| 08 | deploy-to-databricks | Databricks 배포 | 실습 |
 
 ## 컨벤션
 

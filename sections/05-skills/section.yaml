@@ -1,0 +1,12 @@
+number: "05"
+title: "Skills: 개념에서 실전까지"
+duration_minutes: 30
+type: "lecture+hands-on"
+objectives:
+  - "Skills와 Agents 개념 이해 및 SKILL.md 구조 학습"
+  - "레퍼런스 파일을 활용한 품질 보장 방법 이해"
+  - "Skill 체이닝으로 워크플로우 구성"
+  - "직접 Custom Skill 만들기"
+slides: "index.html"
+prerequisites:
+  - "03-mcp-architecture"
