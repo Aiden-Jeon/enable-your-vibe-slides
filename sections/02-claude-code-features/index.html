@@ -132,8 +132,7 @@ claude</code></pre>
         <!-- Slide 5: Endpoint 설정 - Step 1 -->
         <section>
             <h2>Endpoint 설정 (1/3)</h2>
-            <h3>Step 1. Databricks에서 모델 선택</h3>
-            <p>Databricks Workspace에서 <strong>Coding Agent Integration</strong> 설정</p>
+            <h3>Step 1. Databricks Workspace에서 <strong>Coding Agent Integration</strong> 설정</h3>
             <img src="images/codig_agent_1.png" alt="Databricks Coding Agent Integration - 모델 선택" style="max-height: 420px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1);">
             <div class="emphasis-box" style="margin-top: 0.5em;">
                 <strong>Claude Code</strong>를 선택하고 사용할 모델(Sonnet, Opus 등)을 지정합니다.
@@ -149,7 +148,6 @@ claude</code></pre>
         <section>
             <h2>Endpoint 설정 (2/3)</h2>
             <h3>Step 2. settings.json 설정</h3>
-            <p><code>~/.claude/settings.json</code>에 Databricks endpoint 정보를 입력합니다.</p>
             <img src="images/codig_agent_2.png" alt="Claude Code settings.json 설정" style="max-height: 300px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1);">
             <div class="emphasis-box" style="margin-top: 0.5em;">
                 <strong>Generate API Key</strong> 버튼으로 토큰을 생성하고 설정에 반영합니다.
@@ -169,11 +167,8 @@ claude</code></pre>
             <p>프로젝트 루트의 <code>.claude/</code> 디렉토리에 설정 파일을 생성합니다.</p>
 
             <h3>클립보드에서 바로 설정하기</h3>
-            <pre><code class="language-bash"># 프로젝트 루트에서 실행
-mkdir -p .claude && pbpaste > .claude/settings.local.json
-
-# 설정 확인
-cat .claude/settings.local.json</code></pre>
+            <pre><code class="language-bash"># 설정 JSON을 클립보드에 복사한 후 실행
+bash setup-endpoint.sh</code></pre>
 
             <h3>settings.local.json 예시</h3>
             <pre><code class="language-json">{
@@ -188,14 +183,16 @@ cat .claude/settings.local.json</code></pre>
 }</code></pre>
 
             <div class="emphasis-box" style="margin-top: 0.5em;">
-                <strong>Tip:</strong> 클립보드에 복사한 JSON을 위 명령어로 바로 적용할 수 있습니다. <code>settings.local.json</code>은 개인 설정 파일이므로 <code>.gitignore</code>에 추가하세요.
+                <strong>Tip:</strong> 스크립트가 클립보드의 JSON 유효성을 검증하고 <code>.claude/settings.local.json</code> 파일을 자동으로 생성합니다. 기존 파일이 있으면 백업도 해줍니다.
             </div>
             <aside class="notes">
                 수강생들은 사전에 제공받은 settings.local.json JSON을 클립보드에 복사해둔 상태입니다.
-                프로젝트 루트에서 mkdir -p .claude && pbpaste 명령어를 실행하면,
-                클립보드 내용이 바로 .claude/settings.local.json 파일로 저장됩니다.
-                cat 명령어로 내용이 올바르게 들어갔는지 확인합니다.
-                이 파일은 개인 설정이므로 .gitignore에 추가하여 팀원마다 각자 관리하는 것이 좋습니다.
+                프로젝트 루트의 setup-endpoint.sh 스크립트를 실행하면 됩니다.
+                스크립트는 다음 순서로 동작합니다:
+                1) 클립보드에서 JSON을 읽고, 2) 유효한 JSON인지 검증하고,
+                3) .claude 디렉토리를 생성하고, 4) 기존 설정이 있으면 .bak으로 백업한 뒤,
+                5) .claude/settings.local.json 파일을 생성합니다.
+                수동으로 mkdir -p .claude && pbpaste 할 필요 없이 스크립트 하나로 안전하게 설정할 수 있습니다.
             </aside>
         </section>
 
