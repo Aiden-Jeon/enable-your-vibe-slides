@@ -102,22 +102,22 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr class="fragment">
+                    <tr class="fragment" data-fragment-index="0">
                         <td><strong>Space 생성</strong></td>
                         <td><code>POST</code></td>
                         <td><code>/api/2.0/genie/spaces</code></td>
                     </tr>
-                    <tr class="fragment">
+                    <tr class="fragment" data-fragment-index="0">
                         <td><strong>대화 생성</strong></td>
                         <td><code>POST</code></td>
                         <td><code>/api/2.0/genie/spaces/{id}/conversations</code></td>
                     </tr>
-                    <tr class="fragment">
+                    <tr class="fragment" data-fragment-index="0">
                         <td><strong>메시지 전송</strong></td>
                         <td><code>POST</code></td>
                         <td><code>.../conversations/{id}/messages</code></td>
                     </tr>
-                    <tr class="fragment">
+                    <tr class="fragment" data-fragment-index="0">
                         <td><strong>결과 조회</strong></td>
                         <td><code>GET</code></td>
                         <td><code>.../messages/{id}</code></td>
@@ -225,8 +225,9 @@ Client                               Genie API
         <section>
             <h2>Exercise 00: 사전 환경 체크리스트</h2>
             <p style="font-size: 0.7em; color: var(--ev-text-muted);">실습 시작 전 환경 설정을 검증합니다</p>
-            <pre><code class="language-bash" data-trim>
-python exercise_00_checklist.py
+            <pre><code class="language-bash" data-trim>databricks auth login --host https://e2-demo-field-eng.cloud.databricks.com -p e2-demo-field-eng
+            </code></pre>
+            <pre><code class="language-bash" data-trim>uv run python 04-genie-mcp/exercise_00_checklist.py
             </code></pre>
             <table style="font-size: 0.75em; margin-top: 0.8em;">
                 <thead>
@@ -271,311 +272,6 @@ python exercise_00_checklist.py
                 셋째, SQL Warehouse가 작동하는지 SELECT 1로 확인합니다. 콜드스타트 시 시간이 걸릴 수 있습니다.
                 넷째, shared.fashion_recommendations 스키마에 transactions, customers 테이블이 있는지 확인합니다.
                 이전 단계가 실패하면 이후 단계는 자동으로 건너뜁니다. 모두 통과하면 Exercise 01a로 진행합니다.
-            </aside>
-        </section>
-
-        <!-- Exercise 00: 전체 코드 (exercise_00_checklist.py) -->
-        <section>
-            <h2>Exercise 00 전체 코드</h2>
-            <p style="font-size: 0.6em; color: var(--ev-text-muted);">exercise_00_checklist.py &mdash; 유틸리티 스크립트</p>
-            <pre><code class="language-python" data-trim data-noescape style="font-size: 0.5em; line-height: 1.3;">
-"""
-Exercise 00: 사전 환경 체크리스트
-Genie MCP 실습 전 환경 설정이 올바른지 검증합니다.
-
-실행: python exercise_00_checklist.py
-"""
-
-import configparser
-import json
-import os
-import subprocess
-import sys
-
-import httpx
-from dotenv import load_dotenv
-
-load_dotenv()
-
-
-def resolve_databricks_config() -&gt; tuple[str, str, str]:
-    """Databricks 인증 정보를 해석합니다. (.env → databricks CLI → 기본값)"""
-    host = os.getenv("DATABRICKS_HOST", "").rstrip("/")
-    token = os.getenv("DATABRICKS_TOKEN", "")
-    warehouse_id = os.getenv("WAREHOUSE_ID", "")
-
-    # databricks CLI fallback
-    if not host or not token:
-        try:
-            cfg = configparser.ConfigParser()
-            cfg.read(os.path.expanduser("~/.databrickscfg"))
-            profile = cfg["DEFAULT"] if "DEFAULT" in cfg else {}
-            if not host:
-                host = profile.get("host", "").rstrip("/")
-            if not token and host:
-                result = subprocess.run(
-                    ["databricks", "auth", "token", "--host", host],
-                    capture_output=True,
-                    text=True,
-                    timeout=10,
-                )
-                if result.returncode == 0:
-                    token = json.loads(result.stdout).get("access_token", "")
-        except Exception:
-            pass
-
-    # 기본 호스트
-    if not host:
-        host = "https://e2-demo-field-eng.cloud.databricks.com"
-
-    # Warehouse 자동 조회
-    if not warehouse_id and host and token:
-        try:
-            resp = httpx.get(
-                f"{host}/api/2.0/sql/warehouses",
-                headers={"Authorization": f"Bearer {token}"},
-                timeout=10,
-            )
-            resp.raise_for_status()
-            warehouses = resp.json().get("warehouses", [])
-            for wh in warehouses:
-                if wh.get("state") == "RUNNING":
-                    warehouse_id = wh["id"]
-                    break
-            if not warehouse_id and warehouses:
-                warehouse_id = warehouses[0]["id"]
-        except Exception:
-            pass
-
-    return host, token, warehouse_id
-
-
-DATABRICKS_HOST, DATABRICKS_TOKEN, WAREHOUSE_ID = resolve_databricks_config()
-
-HTTP_TIMEOUT = 60.0
-WAIT_TIMEOUT = "30s"
-
-
-def mask_token(token: str) -&gt; str:
-    """토큰을 마스킹하여 표시합니다. (예: ****...abcd)"""
-    if len(token) &lt;= 4:
-        return "****"
-    return f"****...{token[-4:]}"
-
-
-# ── Step 1: 환경변수 확인 ──────────────────────────────────────────
-
-
-def check_auth_info() -&gt; tuple[bool, str]:
-    """DATABRICKS_HOST, DATABRICKS_TOKEN, WAREHOUSE_ID 존재를 확인합니다."""
-    missing = []
-    if not DATABRICKS_HOST:
-        missing.append("DATABRICKS_HOST")
-    if not DATABRICKS_TOKEN:
-        missing.append("DATABRICKS_TOKEN")
-    if not WAREHOUSE_ID:
-        missing.append("WAREHOUSE_ID")
-
-    if missing:
-        return False, (
-            f"누락: {', '.join(missing)}\n"
-            "   → .env 파일을 확인하거나, databricks CLI를 설정해주세요\n"
-            "     (databricks configure)"
-        )
-
-    # 인증 출처 판별
-    env_host = os.getenv("DATABRICKS_HOST", "")
-    env_token = os.getenv("DATABRICKS_TOKEN", "")
-    env_wh = os.getenv("WAREHOUSE_ID", "")
-
-    if env_host and env_token:
-        host_source = ".env"
-    elif DATABRICKS_HOST == "https://e2-demo-field-eng.cloud.databricks.com" and not env_host:
-        host_source = "기본값"
-    else:
-        host_source = "databricks CLI"
-
-    wh_source = ".env" if env_wh else "API 자동 조회"
-
-    lines = [
-        f"DATABRICKS_HOST  = {DATABRICKS_HOST}",
-        f"DATABRICKS_TOKEN = {mask_token(DATABRICKS_TOKEN)}",
-        f"WAREHOUSE_ID     = {WAREHOUSE_ID}",
-        f"인증 출처: HOST/TOKEN={host_source}, WAREHOUSE={wh_source}",
-    ]
-    return True, "\n     ".join(lines)
-
-
-# ── Step 2: Databricks 호스트 연결 ─────────────────────────────────
-
-
-def check_host_connection() -&gt; tuple[bool, str]:
-    """GET /api/2.0/clusters/spark-versions 로 호스트 연결을 확인합니다."""
-    headers = {
-        "Authorization": f"Bearer {DATABRICKS_TOKEN}",
-    }
-    try:
-        resp = httpx.get(
-            f"{DATABRICKS_HOST}/api/2.0/clusters/spark-versions",
-            headers=headers,
-            timeout=HTTP_TIMEOUT,
-        )
-        resp.raise_for_status()
-        return True, f"{DATABRICKS_HOST} 연결 성공"
-    except httpx.ConnectError:
-        return False, f"호스트에 연결할 수 없습니다: {DATABRICKS_HOST}\n   → URL을 확인해주세요"
-    except httpx.HTTPStatusError as e:
-        if e.response.status_code == 401:
-            return False, "인증 실패 (401) → DATABRICKS_TOKEN을 확인해주세요"
-        if e.response.status_code == 403:
-            return False, "권한 부족 (403) → 워크스페이스 접근 권한을 확인해주세요"
-        return False, f"HTTP 오류 {e.response.status_code}: {e.response.text[:200]}"
-    except httpx.TimeoutException:
-        return False, f"연결 시간 초과 ({HTTP_TIMEOUT}s) → 네트워크 상태를 확인해주세요"
-
-
-# ── Step 3: SQL Warehouse 접근 ─────────────────────────────────────
-
-
-def check_warehouse() -&gt; tuple[bool, str]:
-    """POST /api/2.0/sql/statements 로 SQL Warehouse 접근을 확인합니다."""
-    headers = {
-        "Authorization": f"Bearer {DATABRICKS_TOKEN}",
-        "Content-Type": "application/json",
-    }
-    try:
-        resp = httpx.post(
-            f"{DATABRICKS_HOST}/api/2.0/sql/statements",
-            headers=headers,
-            json={
-                "warehouse_id": WAREHOUSE_ID,
-                "statement": "SELECT 1",
-                "wait_timeout": WAIT_TIMEOUT,
-            },
-            timeout=HTTP_TIMEOUT,
-        )
-        resp.raise_for_status()
-        data = resp.json()
-        status = data.get("status", {}).get("state", "UNKNOWN")
-        if status == "SUCCEEDED":
-            return True, f"Warehouse {WAREHOUSE_ID} 정상 작동"
-        return False, f"쿼리 상태: {status} → Warehouse가 실행 중인지 확인해주세요"
-    except httpx.HTTPStatusError as e:
-        body = e.response.text[:300]
-        if "RESOURCE_DOES_NOT_EXIST" in body or "does not exist" in body.lower():
-            return False, f"Warehouse를 찾을 수 없습니다: {WAREHOUSE_ID}\n   → WAREHOUSE_ID를 확인해주세요"
-        return False, f"HTTP 오류 {e.response.status_code}: {body}"
-    except httpx.TimeoutException:
-        return False, f"쿼리 시간 초과 ({HTTP_TIMEOUT}s) → Warehouse 콜드스타트 중일 수 있습니다. 잠시 후 다시 시도해주세요"
-
-
-# ── Step 4: 데이터 스키마 확인 ─────────────────────────────────────
-
-
-def check_schema() -&gt; tuple[bool, str]:
-    """shared.fashion_recommendations 스키마에 필요한 테이블이 있는지 확인합니다."""
-    headers = {
-        "Authorization": f"Bearer {DATABRICKS_TOKEN}",
-        "Content-Type": "application/json",
-    }
-    required_tables = {"transactions", "customers"}
-
-    try:
-        resp = httpx.post(
-            f"{DATABRICKS_HOST}/api/2.0/sql/statements",
-            headers=headers,
-            json={
-                "warehouse_id": WAREHOUSE_ID,
-                "statement": "SHOW TABLES IN shared.fashion_recommendations",
-                "wait_timeout": WAIT_TIMEOUT,
-            },
-            timeout=HTTP_TIMEOUT,
-        )
-        resp.raise_for_status()
-        data = resp.json()
-        status = data.get("status", {}).get("state", "UNKNOWN")
-
-        if status != "SUCCEEDED":
-            return False, f"쿼리 상태: {status} → shared.fashion_recommendations 스키마 접근 권한을 확인해주세요"
-
-        # 결과에서 테이블명 추출
-        columns = [col["name"] for col in data.get("manifest", {}).get("schema", {}).get("columns", [])]
-        table_name_idx = columns.index("tableName") if "tableName" in columns else 0
-
-        found_tables = set()
-        for row in data.get("result", {}).get("data_array", []):
-            found_tables.add(row[table_name_idx])
-
-        missing = required_tables - found_tables
-        if missing:
-            return False, f"누락된 테이블: {', '.join(sorted(missing))}\n   → shared.fashion_recommendations 스키마에 데이터가 있는지 확인해주세요"
-
-        return True, f"테이블 확인 완료: {', '.join(sorted(required_tables))}"
-
-    except httpx.HTTPStatusError as e:
-        body = e.response.text[:300]
-        if "SCHEMA_NOT_FOUND" in body or "not found" in body.lower():
-            return False, "스키마를 찾을 수 없습니다: shared.fashion_recommendations\n   → 카탈로그/스키마 접근 권한을 확인해주세요"
-        return False, f"HTTP 오류 {e.response.status_code}: {body}"
-    except httpx.TimeoutException:
-        return False, f"쿼리 시간 초과 ({HTTP_TIMEOUT}s) → 잠시 후 다시 시도해주세요"
-
-
-# ── 메인 실행 ──────────────────────────────────────────────────────
-
-
-STEPS: list[tuple[str, callable]] = [
-    ("인증 정보 확인", check_auth_info),
-    ("Databricks 호스트 연결", check_host_connection),
-    ("SQL Warehouse 접근", check_warehouse),
-    ("데이터 스키마 확인", check_schema),
-]
-
-
-def main():
-    print("🔍 Exercise 00: Genie MCP 사전 환경 체크리스트")
-    print("=" * 60)
-
-    all_passed = True
-
-    for i, (label, check_fn) in enumerate(STEPS, 1):
-        print(f"\n  {i}️⃣  {label}...")
-
-        if not all_passed:
-            print(f"     ⏭️  건너뜀 (이전 단계 실패)")
-            continue
-
-        ok, message = check_fn()
-        if ok:
-            print(f"     ✅ {message}")
-        else:
-            print(f"     ❌ {message}")
-            all_passed = False
-
-    print("\n" + "=" * 60)
-    if all_passed:
-        print("✅ 모든 환경 설정이 정상입니다!")
-        print(f"   Warehouse ID: {WAREHOUSE_ID}")
-        print(f"\n💡 다음 단계: exercise_01a로 Genie Space를 생성하세요")
-        print(f"   python exercise_01a_create_space.py")
-    else:
-        print("❌ 환경 설정에 문제가 있습니다. 위 메시지를 확인해주세요.")
-        sys.exit(1)
-
-
-if __name__ == "__main__":
-    main()
-            </code></pre>
-            <aside class="notes">
-                Exercise 00의 전체 코드입니다. 환경 검증용 유틸리티로 그대로 실행합니다.
-                하이라이트된 구간을 확인해보세요:
-                첫 번째 — import와 load_dotenv (1-15행) — configparser, subprocess 등 인라인 인증에 필요한 모듈 포함
-                두 번째 — resolve_databricks_config (18-70행) — .env → CLI → 기본값 순서로 HOST/TOKEN/WAREHOUSE_ID 해석
-                세 번째 — 인증 해석 실행 (72-73행) — 3개 값을 한 번에 받아 모듈 수준 변수로 설정
-                네 번째 — mask_token과 check_auth_info (82-121행) — 토큰 마스킹 + 인증 출처(.env/CLI/기본값/API 자동 조회) 표시
-                다섯 번째 — check_host_connection (127-149행) — 경량 read-only 엔드포인트로 호스트 연결과 토큰 유효성을 동시에 검증
-                여섯 번째 — check_warehouse + check_schema (155-196행) — SELECT 1과 SHOW TABLES로 Warehouse/스키마 확인
-                일곱 번째 — main 함수 (202-258행) — cascading skip 패턴으로 이전 단계 실패 시 이후 단계를 건너뜀
             </aside>
         </section>
 
@@ -688,7 +384,7 @@ sql_snippets = {
     "filters": [
         {
             "id": uuid4().hex,
-            "sql": "transactions.sales_channel_id = 1",
+            "sql": ["transactions.sales_channel_id = 1"],
             "display_name": "Online Sales Only",
             "synonyms": ["online", "web sales"]
         },
@@ -698,7 +394,7 @@ sql_snippets = {
         {
             "id": uuid4().hex,
             "alias": "transaction_month",
-            "sql": "transactions.month",
+            "sql": ["transactions.month"],
             "display_name": "Transaction Month",
             "synonyms": ["month", "sale month"]
         },
@@ -708,7 +404,7 @@ sql_snippets = {
         {
             "id": uuid4().hex,
             "alias": "total_revenue",
-            "sql": "CAST(SUM(transactions.price) AS DECIMAL(38,2))",
+            "sql": ["CAST(SUM(transactions.price) AS DECIMAL(38,2))"],
             "display_name": "Total Revenue",
             "synonyms": ["revenue", "total sales"]
         },
@@ -742,36 +438,37 @@ def build_serialized_space(
     """Genie Space용 serialized_space(protobuf v2 JSON)를 생성합니다."""
     inst_block: dict = {
         "text_instructions": [
-            {"id": uuid4().hex, "content": [inst]} for inst in instructions
-        ],
-        "example_question_sqls": [
-            {
-                "id": uuid4().hex,
-                "question": [ex["question"]],
-                "sql": [ex["sql"]],
-            }
-            for ex in example_sqls
-        ],
+            {"id": uuid4().hex, "content": instructions}
+        ] if instructions else [],
+        "example_question_sqls": sorted(
+            [{"id": uuid4().hex, "question": [ex["question"]], "sql": [ex["sql"]]}
+             for ex in example_sqls],
+            key=lambda x: x["id"],
+        ),
     }
 
     if join_specs:
         inst_block["join_specs"] = join_specs
 
     if sql_snippets:
-        inst_block["sql_snippets"] = sql_snippets
+        sorted_snippets = {}
+        for category, items in sql_snippets.items():
+            sorted_snippets[category] = sorted(items, key=lambda x: x["id"])
+        inst_block["sql_snippets"] = sorted_snippets
 
     proto = {
         "version": 2,
         "data_sources": {
-            "tables": [
-                {"identifier": f"{t['catalog']}.{t['schema']}.{t['table']}"}
-                for t in tables
-            ]
+            "tables": sorted(
+                [{"identifier": f"{t['catalog']}.{t['schema']}.{t['table']}"} for t in tables],
+                key=lambda x: x["identifier"],
+            )
         },
         "config": {
-            "sample_questions": [
-                {"id": uuid4().hex, "question": [q]} for q in sample_questions
-            ]
+            "sample_questions": sorted(
+                [{"id": uuid4().hex, "question": [q]} for q in sample_questions],
+                key=lambda x: x["id"],
+            )
         },
         "instructions": inst_block,
     }
@@ -779,7 +476,7 @@ def build_serialized_space(
             </code></pre>
             <aside class="notes">
                 build_serialized_space 함수는 앞에서 정의한 설정 데이터를 Genie API가 요구하는 protobuf v2 JSON 형식으로 변환합니다.
-                text_instructions와 example_question_sqls에는 각각 고유 UUID를 부여합니다.
+                text_instructions는 모든 지시사항을 하나의 항목으로 병합하고, 모든 id 기반 리스트를 정렬합니다.
                 join_specs와 sql_snippets는 선택 사항이므로 있을 때만 포함합니다.
                 최종적으로 json.dumps로 문자열로 변환하여 API에 전달할 준비를 합니다.
             </aside>
@@ -820,65 +517,30 @@ def create_genie_space(
 
         <!-- Slide 11: Exercise 01a 실습 가이드 -->
         <section>
-            <h2>Exercise 01a: Claude Code로 구현하기</h2>
-            <p style="font-size: 0.7em; color: var(--ev-text-muted);">exercise_01a_create_space.py &mdash; TODO 기반 스켈레톤 파일</p>
-            <div style="text-align: left; margin: 0.8em auto; max-width: 90%;">
-                <h3 style="font-size: 0.85em;">API 흐름 요약</h3>
-                <table style="font-size: 0.7em; margin-top: 0.5em;">
-                    <thead>
-                        <tr>
-                            <th>단계</th>
-                            <th>함수</th>
-                            <th>역할</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>1</td>
-                            <td><code>build_serialized_space()</code></td>
-                            <td>테이블/지시사항/예제를 protobuf v2 JSON으로 변환</td>
-                        </tr>
-                        <tr>
-                            <td>2</td>
-                            <td><code>create_genie_space()</code></td>
-                            <td><code>POST /api/2.0/genie/spaces</code> 호출</td>
-                        </tr>
-                        <tr>
-                            <td>3</td>
-                            <td><code>main()</code></td>
-                            <td>설정 데이터 정의 + 함수 호출 + 결과 출력</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-            <div style="text-align: left; margin: 0.8em auto; max-width: 90%;">
-                <h3 style="font-size: 0.85em;">실습 단계</h3>
-                <ol style="font-size: 0.7em;">
-                    <li class="fragment">스켈레톤 파일의 TODO 확인: <code>exercise_01a_create_space.py</code></li>
-                    <li class="fragment">Claude Code에게 구현 요청:
-                        <pre style="margin: 0.3em 0;"><code class="language-text" data-trim>
-> exercise_01a_create_space.py의 TODO를 구현해줘
+            <h2 style="font-size: 1.8em;">Exercise 01a: Space 생성 코드 실행</h2>
+            <p style="font-size: 0.85em; color: var(--ev-text-muted);">exercise_01a_create_space.py &mdash; 완성 코드</p>
+            <div style="text-align: left; margin: 0.8em auto; max-width: 95%;">
+                <h3 style="font-size: 1.1em;">실습 단계</h3>
+                <ol style="font-size: 0.9em; line-height: 1.6;">
+                    <li class="fragment">코드를 읽고 주요 함수를 이해합니다: <br><code>build_serialized_space()</code>, <code>create_genie_space()</code></li>
+                    <li class="fragment">코드를 실행합니다:
+                        <pre style="margin: 0.4em 0;"><code class="language-bash" data-trim>
+uv run python 04-genie-mcp/exercise_01a_create_space.py
                         </code></pre>
                     </li>
-                    <li class="fragment">실행 및 테스트:
-                        <pre style="margin: 0.3em 0;"><code class="language-bash" data-trim>
-python exercise_01a_create_space.py
-                        </code></pre>
-                    </li>
+                    <li class="fragment">출력된 <code>Space ID</code>를 확인합니다</li>
                 </ol>
             </div>
-            <div class="emphasis-box fragment" style="margin-top: 0.5em;">
+            <div class="emphasis-box fragment" style="margin-top: 0.8em; font-size: 1.05em;">
                 출력된 <code>Space ID</code>를 exercise_01b에서 사용합니다
             </div>
             <aside class="notes">
-                Exercise 01a는 Genie Space를 API로 생성하는 실습입니다.
-                스켈레톤 파일에 TODO 주석이 포함되어 있습니다.
-                참가자는 Claude Code에게 TODO 구현을 요청하면 됩니다.
-                핵심 흐름은 세 단계입니다:
-                첫째, build_serialized_space로 테이블/지시사항/예제를 protobuf v2 JSON으로 변환합니다.
-                둘째, create_genie_space로 POST /genie/spaces API를 호출합니다.
-                셋째, main에서 Fashion Recommendations 데이터 설정을 정의하고 함수를 호출합니다.
+                Exercise 01a는 완성 코드입니다. Claude Code 없이 바로 실행하여 Genie API가 정상 동작하는지 확인합니다.
+                코드를 읽으면서 두 가지 핵심 함수를 이해합니다:
+                첫째, build_serialized_space — 테이블/지시사항/예제를 protobuf v2 JSON으로 변환합니다.
+                둘째, create_genie_space — POST /genie/spaces API를 호출합니다.
                 실행 후 출력된 Space ID를 exercise_01b에서 사용합니다.
+                API가 정상 동작하는 것을 확인한 후 Exercise 01b로 진행합니다.
             </aside>
         </section>
 
@@ -886,121 +548,10 @@ python exercise_01a_create_space.py
         <!-- Exercise 01b: Genie Space 질의 (Slides 12-14) -->
         <!-- ============================================================ -->
 
-        <!-- Slide 12: 질의 API 함수 -->
-        <section>
-            <h2>Exercise 01b: 질의 API 함수</h2>
-            <p style="font-size: 0.7em; color: var(--ev-text-muted);">create_conversation, send_message, poll_result, format_result</p>
-            <pre><code class="language-python" data-trim data-noescape style="font-size: 0.48em; line-height: 1.4;">
-def create_conversation(space_id: str) -> str:
-    """새 Genie 대화를 생성합니다."""
-    base_url = f"{DATABRICKS_HOST}/api/2.0/genie/spaces/{space_id}"
-    resp = httpx.post(f"{base_url}/conversations", headers=headers)
-    resp.raise_for_status()
-    return resp.json()["conversation_id"]
-
-
-def send_message(space_id: str, conversation_id: str, question: str) -> dict:
-    """Genie에 자연어 질문을 보냅니다."""
-    base_url = f"{DATABRICKS_HOST}/api/2.0/genie/spaces/{space_id}"
-    resp = httpx.post(
-        f"{base_url}/conversations/{conversation_id}/messages",
-        headers=headers, json={"content": question},
-    )
-    resp.raise_for_status()
-    return resp.json()
-
-
-def poll_result(
-    space_id: str, conversation_id: str, message_id: str, max_wait: int = 120,
-) -> dict:
-    """결과가 준비될 때까지 점진적 백오프로 폴링합니다."""
-    base_url = f"{DATABRICKS_HOST}/api/2.0/genie/spaces/{space_id}"
-    url = f"{base_url}/conversations/{conversation_id}/messages/{message_id}"
-
-    start = time.time()
-    interval = 1.0
-    while time.time() - start < max_wait:
-        resp = httpx.get(url, headers=headers)
-        resp.raise_for_status()
-        data = resp.json()
-        status = data.get("status", "")
-        if status == "COMPLETED":
-            return data
-        if status in ("FAILED", "CANCELLED"):
-            raise RuntimeError(f"Genie 질의 실패: {status}")
-        elapsed = time.time() - start
-        print(f"  ⏳ 상태: {status} ({elapsed:.0f}초 경과)")
-        time.sleep(interval)
-        interval = min(interval * 1.5, 5.0)
-
-    raise TimeoutError("Genie 응답 시간 초과")
-
-
-def format_result(data: dict) -> str:
-    """응답에서 텍스트/SQL 결과를 추출합니다."""
-    attachments = data.get("attachments", [])
-    parts = []
-    for att in attachments:
-        if "text" in att:
-            parts.append(att["text"].get("content", ""))
-        if "query" in att:
-            parts.append(f"SQL: {att['query'].get('query', '')}")
-    return "\n".join(parts) if parts else json.dumps(data, indent=2, ensure_ascii=False)
-            </code></pre>
-            <aside class="notes">
-                Exercise 01b의 4개 핵심 함수입니다.
-                create_conversation은 새 대화를 시작하고 conversation_id를 반환합니다.
-                send_message는 자연어 질문을 보내고 message_id를 반환합니다.
-                poll_result는 점진적 백오프로 결과를 폴링합니다 — 1초에서 시작하여 1.5배씩 늘려 최대 5초까지 증가합니다.
-                format_result는 응답에서 텍스트와 SQL을 추출하여 읽기 쉬운 형태로 변환합니다.
-                이 패턴은 빠른 쿼리는 즉시 결과를 받고, 느린 쿼리는 불필요한 API 호출을 줄입니다.
-            </aside>
-        </section>
-
-        <!-- Slide 13: Exercise 01b main() -->
-        <section>
-            <h2>Exercise 01b: main() — 질의 흐름</h2>
-            <p style="font-size: 0.7em; color: var(--ev-text-muted);">대화 생성 → 질문 전송 → 폴링 → 결과 출력</p>
-            <pre><code class="language-python" data-trim data-noescape style="font-size: 0.52em; line-height: 1.4;">
-SPACE_ID = sys.argv[1]  # exercise_01a에서 출력된 Space ID
-
-
-def main():
-    print("🔍 Exercise 01b: Genie Space 질의")
-    print("=" * 60)
-    print(f"  Space ID: {SPACE_ID}")
-
-    conversation_id = create_conversation(SPACE_ID)
-    print(f"     대화 ID: {conversation_id}")
-
-    question = "What is the total online revenue for 2020?"
-    print(f"  질문 전송: '{question}'")
-    result = send_message(SPACE_ID, conversation_id, question)
-    message_id = result["message_id"]
-
-    final = poll_result(SPACE_ID, conversation_id, message_id)
-    print(f"\n✅ 결과:")
-    print(f"   {format_result(final)}")
-
-
-if __name__ == "__main__":
-    main()
-            </code></pre>
-            <div class="emphasis-box fragment" style="margin-top: 0.8em;">
-                <strong>실행:</strong> <code>python exercise_01b_query_space.py &lt;SPACE_ID&gt;</code>
-            </div>
-            <aside class="notes">
-                Exercise 01b의 main 함수입니다. 질의에만 집중합니다.
-                exercise_01a에서 출력된 Space ID를 커맨드라인 인자로 받습니다.
-                대화를 생성하고, 질문을 보내고, 결과를 폴링하여 출력합니다.
-                이렇게 분리하면 이미 생성된 Space에 대해 여러 번 질의를 테스트할 수 있습니다.
-            </aside>
-        </section>
-
         <!-- Slide 14: Exercise 01b 실습 가이드 -->
         <section>
-            <h2>Exercise 01b: Claude Code로 구현하기</h2>
-            <p style="font-size: 0.7em; color: var(--ev-text-muted);">exercise_01b_query_space.py &mdash; TODO 기반 스켈레톤 파일</p>
+            <h2>Exercise 01b: Space 질의 코드 실행</h2>
+            <p style="font-size: 0.7em; color: var(--ev-text-muted);">exercise_01b_query_space.py &mdash; 완성 코드</p>
             <div style="text-align: left; margin: 0.8em auto; max-width: 90%;">
                 <h3 style="font-size: 0.85em;">질의 3단계 흐름</h3>
                 <div class="diagram">
@@ -1020,30 +571,26 @@ create_conversation()     send_message()       poll_result()
             <div style="text-align: left; margin: 0.8em auto; max-width: 90%;">
                 <h3 style="font-size: 0.85em;">실습 단계</h3>
                 <ol style="font-size: 0.7em;">
-                    <li class="fragment">스켈레톤 파일의 TODO 확인: <code>exercise_01b_query_space.py</code></li>
-                    <li class="fragment">Claude Code에게 구현 요청:
-                        <pre style="margin: 0.3em 0;"><code class="language-text" data-trim>
-> exercise_01b_query_space.py의 TODO를 구현해줘
-                        </code></pre>
-                    </li>
-                    <li class="fragment">실행 및 테스트:
+                    <li class="fragment">코드를 읽고 질의 3단계 흐름을 이해합니다</li>
+                    <li class="fragment">exercise_01a에서 얻은 Space ID로 실행합니다:
                         <pre style="margin: 0.3em 0;"><code class="language-bash" data-trim>
-python exercise_01b_query_space.py &lt;SPACE_ID&gt;
+uv run python 04-genie-mcp/exercise_01b_query_space.py &lt;SPACE_ID&gt;
                         </code></pre>
                     </li>
+                    <li class="fragment">질의 결과를 확인합니다</li>
                 </ol>
             </div>
             <div class="emphasis-box fragment" style="margin-top: 0.5em;">
-                exercise_01a에서 출력된 <code>Space ID</code>를 인자로 전달하세요
+                API 동작 확인 완료 &rarr; Exercise 02에서 MCP 서버로 래핑합니다
             </div>
             <aside class="notes">
-                Exercise 01b는 생성된 Genie Space에 자연어 질의를 수행하는 실습입니다.
+                Exercise 01b도 완성 코드입니다. 바로 실행하여 Genie 질의 API가 정상 동작하는지 확인합니다.
                 질의 흐름은 3단계입니다: 대화 생성, 질문 전송, 결과 폴링.
-                스켈레톤 파일에 4개 함수의 TODO가 있습니다:
+                코드에서 4개 함수의 역할을 이해합니다:
                 create_conversation, send_message, poll_result, format_result.
-                Claude Code에게 TODO 구현을 요청하면 됩니다.
                 poll_result에서는 점진적 백오프 패턴을 사용합니다 — 1초에서 시작하여 1.5배씩 늘려 최대 5초까지 증가합니다.
                 exercise_01a에서 출력된 Space ID를 커맨드라인 인자로 전달하여 실행합니다.
+                01a와 01b에서 API 동작을 확인했으니, 이제 Exercise 02에서 이 로직을 MCP 서버로 래핑합니다.
             </aside>
         </section>
 
@@ -1091,30 +638,35 @@ def _build_serialized_space(
     """protobuf v2 JSON 형식의 serialized_space를 생성합니다."""
     inst_block: dict = {
         "text_instructions": [
-            {"id": uuid4().hex, "content": [inst]} for inst in instructions
-        ],
-        "example_question_sqls": [
-            {"id": uuid4().hex, "question": [ex["question"]], "sql": [ex["sql"]]}
-            for ex in example_sqls
-        ],
+            {"id": uuid4().hex, "content": instructions}
+        ] if instructions else [],
+        "example_question_sqls": sorted(
+            [{"id": uuid4().hex, "question": [ex["question"]], "sql": [ex["sql"]]}
+             for ex in example_sqls],
+            key=lambda x: x["id"],
+        ),
     }
     if join_specs:
         inst_block["join_specs"] = join_specs
     if sql_snippets:
-        inst_block["sql_snippets"] = sql_snippets
+        sorted_snippets = {}
+        for category, items in sql_snippets.items():
+            sorted_snippets[category] = sorted(items, key=lambda x: x["id"])
+        inst_block["sql_snippets"] = sorted_snippets
 
     proto = {
         "version": 2,
         "data_sources": {
-            "tables": [
-                {"identifier": f"{t['catalog']}.{t['schema']}.{t['table']}"}
-                for t in tables
-            ]
+            "tables": sorted(
+                [{"identifier": f"{t['catalog']}.{t['schema']}.{t['table']}"} for t in tables],
+                key=lambda x: x["identifier"],
+            )
         },
         "config": {
-            "sample_questions": [
-                {"id": uuid4().hex, "question": [q]} for q in sample_questions
-            ]
+            "sample_questions": sorted(
+                [{"id": uuid4().hex, "question": [q]} for q in sample_questions],
+                key=lambda x: x["id"],
+            )
         },
         "instructions": inst_block,
     }
@@ -1228,8 +780,8 @@ if __name__ == "__main__":
 
         <!-- Slide 17: Exercise 02 실습 가이드 -->
         <section>
-            <h2>Exercise 02: Claude Code로 구현하기</h2>
-            <p style="font-size: 0.7em; color: var(--ev-text-muted);">exercise_02_genie_mcp_server.py &mdash; TODO 기반 스켈레톤 파일</p>
+            <h2>Exercise 02: MCP 서버 만들기 (코딩 실습)</h2>
+            <p style="font-size: 0.7em; color: var(--ev-text-muted);">exercise_01a/01b를 기반으로 MCP 서버 구현</p>
             <div style="text-align: left; margin: 0.8em auto; max-width: 90%;">
                 <h3 style="font-size: 0.85em;">MCP Tool 명세</h3>
                 <table style="font-size: 0.65em; margin-top: 0.5em;">
@@ -1268,27 +820,26 @@ if __name__ == "__main__":
                     <li class="fragment">스켈레톤 파일의 TODO 확인: <code>exercise_02_genie_mcp_server.py</code></li>
                     <li class="fragment">Claude Code에게 구현 요청:
                         <pre style="margin: 0.3em 0;"><code class="language-text" data-trim>
-> exercise_02_genie_mcp_server.py의 TODO를 구현해줘
+> exercise_01a, 01b를 참고해서 exercise_02의 MCP 서버를 완성해줘
                         </code></pre>
                     </li>
                     <li class="fragment">실행 및 테스트:
                         <pre style="margin: 0.3em 0;"><code class="language-bash" data-trim>
-python exercise_02_genie_mcp_server.py
+uv run python 04-genie-mcp/exercise_02_genie_mcp_server.py
                         </code></pre>
                     </li>
                 </ol>
             </div>
             <div class="emphasis-box fragment" style="margin-top: 0.5em;">
-                Exercise 01의 로직을 <code>@mcp.tool()</code> 데코레이터로 래핑 &mdash; 핵심은 동일합니다
+                Exercise 01a/01b의 완성 코드가 레퍼런스 &mdash; 동일 로직을 <code>@mcp.tool()</code>로 래핑
             </div>
             <aside class="notes">
-                Exercise 02는 Exercise 01의 API 로직을 MCP 서버로 래핑하는 실습입니다.
-                스켈레톤 파일에 3개 MCP tool과 3개 헬퍼 함수의 TODO가 있습니다.
-                Claude Code에게 TODO 구현을 요청하면 됩니다.
+                Exercise 02는 이번 섹션의 핵심 코딩 실습입니다.
+                Exercise 01a/01b에서 동작을 확인한 API 로직을 MCP 서버로 래핑합니다.
+                스켈레톤 파일에 3개 MCP tool과 3개 헬퍼 함수의 TODO가 있고,
+                각 TODO에는 01a/01b의 어떤 함수를 참고하면 되는지 명시되어 있습니다.
+                Claude Code에게 "exercise_01a, 01b를 참고해서 exercise_02의 MCP 서버를 완성해줘"라고 요청합니다.
                 핵심 포인트: Exercise 01과 API 호출 로직은 동일하지만, @mcp.tool() 데코레이터로 MCP 서버가 됩니다.
-                create_genie_space는 _build_serialized_space로 JSON을 구성하고 Space를 생성합니다.
-                ask_genie는 대화 생성과 _send_and_poll을 조합합니다.
-                continue_conversation은 기존 대화에 이어갑니다.
                 실행하면 MCP 서버가 시작되어 Claude Code에서 연결할 수 있습니다.
             </aside>
         </section>
@@ -1322,7 +873,7 @@ python exercise_02_genie_mcp_server.py
                 <p><strong>Claude:</strong> <code>continue_conversation</code> tool로 후속 질의합니다.</p>
             </div>
             <div class="emphasis-box fragment" style="margin-top: 0.8em;">
-                <strong>실습 워크플로우:</strong> Exercise 00 체크리스트 → Claude Code로 01a TODO 구현 → 01b TODO 구현 → 02 TODO 구현 → Claude Code에 MCP 연결
+                <strong>실습 워크플로우:</strong> Exercise 00 체크리스트 → 01a 실행 (Space 생성) → 01b 실행 (질의 확인) → 02 Claude Code로 MCP 서버 구현 → Claude Code에 MCP 연결
             </div>
             <aside class="notes">
                 Claude Code에서 사용하려면 settings.local.json에 MCP 서버를 등록합니다.
@@ -1330,8 +881,8 @@ python exercise_02_genie_mcp_server.py
                 생성된 Space에 질문하면 ask_genie tool이, 후속 질문은 continue_conversation tool이 호출됩니다.
                 실습 워크플로우는 다음과 같습니다:
                 먼저 Exercise 00으로 환경을 검증합니다.
-                그 다음 각 Exercise의 스켈레톤 파일에서 TODO를 확인하고, Claude Code에게 구현을 요청합니다.
-                Exercise 01a로 Space를 생성하고, 01b로 질의를 테스트합니다.
+                Exercise 01a를 실행하여 Space를 생성하고, 01b를 실행하여 질의 API를 확인합니다.
+                API 동작이 확인되면 Exercise 02에서 Claude Code로 MCP 서버를 구현합니다.
                 마지막으로 Exercise 02의 MCP 서버를 Claude Code에 연결하여 자연어로 전체 워크플로우를 수행합니다.
             </aside>
         </section>

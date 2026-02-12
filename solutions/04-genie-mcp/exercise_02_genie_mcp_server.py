@@ -31,12 +31,12 @@ def resolve_databricks_config() -> tuple[str, str, str]:
         try:
             cfg = configparser.ConfigParser()
             cfg.read(os.path.expanduser("~/.databrickscfg"))
-            profile = cfg["DEFAULT"] if "DEFAULT" in cfg else {}
+            profile = cfg["e2-demo-field-eng"] if "e2-demo-field-eng" in cfg else {}
             if not host:
                 host = profile.get("host", "").rstrip("/")
             if not token and host:
                 result = subprocess.run(
-                    ["databricks", "auth", "token", "--host", host],
+                    ["databricks", "auth", "token", "--host", host, "-p", "e2-demo-field-eng"],
                     capture_output=True,
                     text=True,
                     timeout=10,
@@ -104,36 +104,46 @@ def _build_serialized_space(
     """protobuf v2 JSON 형식의 serialized_space를 생성합니다."""
     inst_block: dict = {
         "text_instructions": [
-            {"id": uuid4().hex, "content": [inst]} for inst in instructions
-        ],
-        "example_question_sqls": [
-            {
-                "id": uuid4().hex,
-                "question": [ex["question"]],
-                "sql": [ex["sql"]],
-            }
-            for ex in example_sqls
-        ],
+            {"id": uuid4().hex, "content": instructions}
+        ] if instructions else [],
+        "example_question_sqls": sorted(
+            [
+                {
+                    "id": uuid4().hex,
+                    "question": [ex["question"]],
+                    "sql": [ex["sql"]],
+                }
+                for ex in example_sqls
+            ],
+            key=lambda x: x["id"],
+        ),
     }
 
     if join_specs:
         inst_block["join_specs"] = join_specs
 
     if sql_snippets:
-        inst_block["sql_snippets"] = sql_snippets
+        sorted_snippets = {}
+        for category, items in sql_snippets.items():
+            sorted_snippets[category] = sorted(items, key=lambda x: x["id"])
+        inst_block["sql_snippets"] = sorted_snippets
 
     proto = {
         "version": 2,
         "data_sources": {
-            "tables": [
-                {"identifier": f"{t['catalog']}.{t['schema']}.{t['table']}"}
-                for t in tables
-            ]
+            "tables": sorted(
+                [
+                    {"identifier": f"{t['catalog']}.{t['schema']}.{t['table']}"}
+                    for t in tables
+                ],
+                key=lambda x: x["identifier"],
+            )
         },
         "config": {
-            "sample_questions": [
-                {"id": uuid4().hex, "question": [q]} for q in sample_questions
-            ]
+            "sample_questions": sorted(
+                [{"id": uuid4().hex, "question": [q]} for q in sample_questions],
+                key=lambda x: x["id"],
+            )
         },
         "instructions": inst_block,
     }
