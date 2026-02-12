@@ -548,12 +548,11 @@ uv run python 04-genie-mcp/exercise_01a_create_space.py
         <!-- Exercise 01b: Genie Space 질의 (Slides 12-14) -->
         <!-- ============================================================ -->
 
-        <!-- Slide 14: Exercise 01b 실습 가이드 -->
+        <!-- Slide 14: Exercise 01b 질의 3단계 흐름 -->
         <section>
-            <h2>Exercise 01b: Space 질의 코드 실행</h2>
+            <h2>Exercise 01b: 질의 3단계 흐름</h2>
             <p style="font-size: 0.7em; color: var(--ev-text-muted);">exercise_01b_query_space.py &mdash; 완성 코드</p>
             <div style="text-align: left; margin: 0.8em auto; max-width: 90%;">
-                <h3 style="font-size: 0.85em;">질의 3단계 흐름</h3>
                 <div class="diagram">
 <pre style="background: transparent; border: none; box-shadow: none; text-align: center; font-size: 0.75em;">
 create_conversation()     send_message()       poll_result()
@@ -561,34 +560,42 @@ create_conversation()     send_message()       poll_result()
   conversation_id           message_id           COMPLETED
 </pre>
                 </div>
-                <ul style="font-size: 0.65em; margin-top: 0.3em;">
+                <ul style="font-size: 0.65em; margin-top: 0.5em;">
                     <li><code>create_conversation</code> &mdash; <code>POST /spaces/{id}/conversations</code></li>
                     <li><code>send_message</code> &mdash; <code>POST /conversations/{id}/messages</code></li>
                     <li><code>poll_result</code> &mdash; <code>GET /messages/{id}</code> (점진적 백오프)</li>
                     <li><code>format_result</code> &mdash; 응답에서 텍스트/SQL 추출</li>
                 </ul>
             </div>
-            <div style="text-align: left; margin: 0.8em auto; max-width: 90%;">
-                <h3 style="font-size: 0.85em;">실습 단계</h3>
-                <ol style="font-size: 0.7em;">
+            <aside class="notes">
+                질의 흐름은 3단계입니다: 대화 생성, 질문 전송, 결과 폴링.
+                코드에서 4개 함수의 역할을 이해합니다:
+                create_conversation, send_message, poll_result, format_result.
+                poll_result에서는 점진적 백오프 패턴을 사용합니다 — 1초에서 시작하여 1.5배씩 늘려 최대 5초까지 증가합니다.
+            </aside>
+        </section>
+
+        <!-- Slide 15: Exercise 01b 실습 가이드 -->
+        <section>
+            <h2>Exercise 01b: Space 질의 코드 실행</h2>
+            <p style="font-size: 0.8em; color: var(--ev-text-muted);">exercise_01b_query_space.py &mdash; 실습</p>
+            <div style="text-align: left; margin: 1em auto; max-width: 85%;">
+                <h3 style="font-size: 1em;">실습 단계</h3>
+                <ol style="font-size: 0.85em;">
                     <li class="fragment">코드를 읽고 질의 3단계 흐름을 이해합니다</li>
                     <li class="fragment">exercise_01a에서 얻은 Space ID로 실행합니다:
-                        <pre style="margin: 0.3em 0;"><code class="language-bash" data-trim>
+                        <pre style="margin: 0.5em 0; font-size: 0.8em;"><code class="language-bash" data-trim>
 uv run python 04-genie-mcp/exercise_01b_query_space.py &lt;SPACE_ID&gt;
                         </code></pre>
                     </li>
                     <li class="fragment">질의 결과를 확인합니다</li>
                 </ol>
             </div>
-            <div class="emphasis-box fragment" style="margin-top: 0.5em;">
+            <div class="emphasis-box fragment" style="margin-top: 0.8em;">
                 API 동작 확인 완료 &rarr; Exercise 02에서 MCP 서버로 래핑합니다
             </div>
             <aside class="notes">
                 Exercise 01b도 완성 코드입니다. 바로 실행하여 Genie 질의 API가 정상 동작하는지 확인합니다.
-                질의 흐름은 3단계입니다: 대화 생성, 질문 전송, 결과 폴링.
-                코드에서 4개 함수의 역할을 이해합니다:
-                create_conversation, send_message, poll_result, format_result.
-                poll_result에서는 점진적 백오프 패턴을 사용합니다 — 1초에서 시작하여 1.5배씩 늘려 최대 5초까지 증가합니다.
                 exercise_01a에서 출력된 Space ID를 커맨드라인 인자로 전달하여 실행합니다.
                 01a와 01b에서 API 동작을 확인했으니, 이제 Exercise 02에서 이 로직을 MCP 서버로 래핑합니다.
             </aside>
@@ -598,192 +605,11 @@ uv run python 04-genie-mcp/exercise_01b_query_space.py &lt;SPACE_ID&gt;
         <!-- Exercise 02: MCP 서버 (Slides 15-17) -->
         <!-- ============================================================ -->
 
-        <!-- Slide 15: MCP 서버 기본 구조 -->
+        <!-- Slide 17: Exercise 02 MCP Tool 명세 -->
         <section>
-            <h2>MCP 서버 기본 구조</h2>
-            <p style="font-size: 0.7em; color: var(--ev-text-muted);">FastMCP import, 인스턴스 생성, 헬퍼 함수 2개</p>
-            <pre><code class="language-python" data-trim data-noescape style="font-size: 0.48em; line-height: 1.4;">
-import json
-import os
-import time
-from uuid import uuid4
-
-import httpx
-from dotenv import load_dotenv
-from fastmcp import FastMCP
-
-load_dotenv()
-
-DATABRICKS_HOST = os.getenv("DATABRICKS_HOST", "").rstrip("/")
-DATABRICKS_TOKEN = os.getenv("DATABRICKS_TOKEN", "")
-WAREHOUSE_ID = os.getenv("WAREHOUSE_ID", "")
-
-if not all([DATABRICKS_HOST, DATABRICKS_TOKEN, WAREHOUSE_ID]):
-    print("⚠️  .env 파일에 필요한 환경변수를 설정해주세요.")
-    exit(1)
-
-mcp = FastMCP("Genie MCP")
-
-headers = {
-    "Authorization": f"Bearer {DATABRICKS_TOKEN}",
-    "Content-Type": "application/json",
-}
-
-
-def _build_serialized_space(
-    tables: list[dict], instructions: list[str], sample_questions: list[str],
-    example_sqls: list[dict], join_specs: list[dict] | None = None,
-    sql_snippets: dict | None = None,
-) -> str:
-    """protobuf v2 JSON 형식의 serialized_space를 생성합니다."""
-    inst_block: dict = {
-        "text_instructions": [
-            {"id": uuid4().hex, "content": instructions}
-        ] if instructions else [],
-        "example_question_sqls": sorted(
-            [{"id": uuid4().hex, "question": [ex["question"]], "sql": [ex["sql"]]}
-             for ex in example_sqls],
-            key=lambda x: x["id"],
-        ),
-    }
-    if join_specs:
-        inst_block["join_specs"] = join_specs
-    if sql_snippets:
-        sorted_snippets = {}
-        for category, items in sql_snippets.items():
-            sorted_snippets[category] = sorted(items, key=lambda x: x["id"])
-        inst_block["sql_snippets"] = sorted_snippets
-
-    proto = {
-        "version": 2,
-        "data_sources": {
-            "tables": sorted(
-                [{"identifier": f"{t['catalog']}.{t['schema']}.{t['table']}"} for t in tables],
-                key=lambda x: x["identifier"],
-            )
-        },
-        "config": {
-            "sample_questions": sorted(
-                [{"id": uuid4().hex, "question": [q]} for q in sample_questions],
-                key=lambda x: x["id"],
-            )
-        },
-        "instructions": inst_block,
-    }
-    return json.dumps(proto)
-
-
-def _send_and_poll(space_id: str, conversation_id: str, question: str) -> dict:
-    """메시지를 전송하고 점진적 백오프로 결과를 폴링합니다."""
-    base_url = f"{DATABRICKS_HOST}/api/2.0/genie/spaces/{space_id}"
-    resp = httpx.post(
-        f"{base_url}/conversations/{conversation_id}/messages",
-        headers=headers, json={"content": question},
-    )
-    resp.raise_for_status()
-    message_id = resp.json()["message_id"]
-
-    url = f"{base_url}/conversations/{conversation_id}/messages/{message_id}"
-    start = time.time()
-    interval = 1.0
-    max_wait = 120
-
-    while time.time() - start < max_wait:
-        resp = httpx.get(url, headers=headers)
-        resp.raise_for_status()
-        data = resp.json()
-        status = data.get("status", "")
-        if status == "COMPLETED":
-            return data
-        if status in ("FAILED", "CANCELLED"):
-            return {"error": f"질의 실패: {status}"}
-        time.sleep(interval)
-        interval = min(interval * 1.5, 5.0)
-
-    return {"error": "응답 시간 초과 (120초)"}
-            </code></pre>
-            <aside class="notes">
-                Exercise 02의 MCP 서버 코드입니다.
-                Exercise 01과 동일한 import와 환경변수 설정이지만, FastMCP를 추가로 import합니다.
-                mcp = FastMCP("Genie MCP")로 MCP 서버 인스턴스를 생성합니다.
-                _build_serialized_space와 _send_and_poll은 내부 헬퍼 함수로,
-                Exercise 01의 함수를 MCP 서버용으로 정리한 것입니다.
-                다음 슬라이드에서 이 헬퍼를 사용하는 3개의 MCP tool을 보겠습니다.
-            </aside>
-        </section>
-
-        <!-- Slide 16: MCP Tools — 3개 tool 정의 -->
-        <section>
-            <h2>MCP Tools: 3개 tool 정의</h2>
-            <p style="font-size: 0.7em; color: var(--ev-text-muted);"><code>@mcp.tool()</code> 데코레이터로 create_genie_space, ask_genie, continue_conversation</p>
-            <pre><code class="language-python" data-trim data-noescape style="font-size: 0.48em; line-height: 1.4;">
-@mcp.tool()
-def create_genie_space(
-    title: str, description: str, warehouse_id: str, tables: list[dict],
-    instructions: list[str] | None = None, sample_questions: list[str] | None = None,
-    example_sqls: list[dict] | None = None, join_specs: list[dict] | None = None,
-    sql_snippets: dict | None = None,
-) -> str:
-    """Databricks Genie Space를 생성합니다."""
-    serialized = _build_serialized_space(
-        tables=tables, instructions=instructions or [],
-        sample_questions=sample_questions or [], example_sqls=example_sqls or [],
-        join_specs=join_specs, sql_snippets=sql_snippets,
-    )
-    resp = httpx.post(
-        f"{DATABRICKS_HOST}/api/2.0/genie/spaces", headers=headers,
-        json={
-            "title": title, "description": description,
-            "warehouse_id": warehouse_id, "serialized_space": serialized,
-        },
-    )
-    resp.raise_for_status()
-    data = resp.json()
-    space_id = data.get("space_id", "unknown")
-    return f"Space 생성 완료\nSpace ID: {space_id}\nTitle: {title}"
-
-
-@mcp.tool()
-def ask_genie(space_id: str, question: str) -> str:
-    """Databricks Genie에 자연어로 데이터를 질의합니다. 새 대화를 시작합니다."""
-    base_url = f"{DATABRICKS_HOST}/api/2.0/genie/spaces/{space_id}"
-    resp = httpx.post(f"{base_url}/conversations", headers=headers)
-    resp.raise_for_status()
-    conversation_id = resp.json()["conversation_id"]
-
-    result = _send_and_poll(space_id, conversation_id, question)
-    response = _format_response(result)
-    return f"{response}\n\n(conversation_id: {conversation_id})"
-
-
-@mcp.tool()
-def continue_conversation(
-    space_id: str, conversation_id: str, question: str,
-) -> str:
-    """기존 Genie 대화에 후속 질문을 합니다."""
-    result = _send_and_poll(space_id, conversation_id, question)
-    return _format_response(result)
-
-
-if __name__ == "__main__":
-    mcp.run()
-            </code></pre>
-            <aside class="notes">
-                3개의 MCP tool입니다.
-                create_genie_space — 테이블, 지시사항 등을 받아 내부에서 serialized_space를 구성하고 Space를 생성합니다.
-                ask_genie — 새 대화를 시작하고 질의합니다. 대화 생성, 메시지 전송, 폴링을 모두 내부에서 처리합니다.
-                continue_conversation — 기존 대화에 후속 질문을 합니다. conversation_id를 받아 같은 대화에 이어갑니다.
-                @mcp.tool() 데코레이터만 붙이면 FastMCP가 자동으로 tool을 등록합니다.
-                마지막 mcp.run()으로 서버가 시작됩니다.
-            </aside>
-        </section>
-
-        <!-- Slide 17: Exercise 02 실습 가이드 -->
-        <section>
-            <h2>Exercise 02: MCP 서버 만들기 (코딩 실습)</h2>
+            <h2>Exercise 02: MCP Tool 명세</h2>
             <p style="font-size: 0.7em; color: var(--ev-text-muted);">exercise_01a/01b를 기반으로 MCP 서버 구현</p>
             <div style="text-align: left; margin: 0.8em auto; max-width: 90%;">
-                <h3 style="font-size: 0.85em;">MCP Tool 명세</h3>
                 <table style="font-size: 0.65em; margin-top: 0.5em;">
                     <thead>
                         <tr>
@@ -810,36 +636,46 @@ if __name__ == "__main__":
                         </tr>
                     </tbody>
                 </table>
-                <p style="font-size: 0.6em; color: var(--ev-text-muted); margin-top: 0.3em;">
+                <p style="font-size: 0.65em; color: var(--ev-text-muted); margin-top: 0.5em;">
                     헬퍼: <code>_build_serialized_space()</code>, <code>_send_and_poll()</code>, <code>_format_response()</code>
                 </p>
             </div>
+            <div class="emphasis-box" style="margin-top: 0.8em;">
+                Exercise 01a/01b의 완성 코드가 레퍼런스 &mdash; 동일 로직을 <code>@mcp.tool()</code>로 래핑
+            </div>
+            <aside class="notes">
+                Exercise 02에서 구현할 MCP 서버의 Tool 명세입니다.
+                3개의 MCP tool(create_genie_space, ask_genie, continue_conversation)과
+                3개의 헬퍼 함수(_build_serialized_space, _send_and_poll, _format_response)로 구성됩니다.
+                Exercise 01a/01b에서 이미 동작을 확인한 API 로직을 그대로 사용하되,
+                @mcp.tool() 데코레이터로 래핑하는 것이 핵심입니다.
+            </aside>
+        </section>
+
+        <!-- Slide 18: Exercise 02 실습 단계 -->
+        <section>
+            <h2>Exercise 02: 실습 가이드</h2>
+            <p style="font-size: 0.7em; color: var(--ev-text-muted);">Claude Code로 MCP 서버 코딩 실습</p>
             <div style="text-align: left; margin: 0.8em auto; max-width: 90%;">
-                <h3 style="font-size: 0.85em;">실습 단계</h3>
                 <ol style="font-size: 0.7em;">
                     <li class="fragment">스켈레톤 파일의 TODO 확인: <code>exercise_02_genie_mcp_server.py</code></li>
                     <li class="fragment">Claude Code에게 구현 요청:
-                        <pre style="margin: 0.3em 0;"><code class="language-text" data-trim>
-> exercise_01a, 01b를 참고해서 exercise_02의 MCP 서버를 완성해줘
+                        <pre style="margin: 0.5em 0; font-size: 0.8em;"><code class="language-text" data-trim>
+@04-genie-mcp/ exercise_01a, 01b를 참고해서 exercise_02의 MCP 서버를 완성해줘
                         </code></pre>
                     </li>
                     <li class="fragment">실행 및 테스트:
-                        <pre style="margin: 0.3em 0;"><code class="language-bash" data-trim>
+                        <pre style="margin: 0.5em 0; font-size: 0.8em;"><code class="language-bash" data-trim>
 uv run python 04-genie-mcp/exercise_02_genie_mcp_server.py
                         </code></pre>
                     </li>
                 </ol>
             </div>
-            <div class="emphasis-box fragment" style="margin-top: 0.5em;">
-                Exercise 01a/01b의 완성 코드가 레퍼런스 &mdash; 동일 로직을 <code>@mcp.tool()</code>로 래핑
-            </div>
             <aside class="notes">
                 Exercise 02는 이번 섹션의 핵심 코딩 실습입니다.
-                Exercise 01a/01b에서 동작을 확인한 API 로직을 MCP 서버로 래핑합니다.
                 스켈레톤 파일에 3개 MCP tool과 3개 헬퍼 함수의 TODO가 있고,
                 각 TODO에는 01a/01b의 어떤 함수를 참고하면 되는지 명시되어 있습니다.
                 Claude Code에게 "exercise_01a, 01b를 참고해서 exercise_02의 MCP 서버를 완성해줘"라고 요청합니다.
-                핵심 포인트: Exercise 01과 API 호출 로직은 동일하지만, @mcp.tool() 데코레이터로 MCP 서버가 됩니다.
                 실행하면 MCP 서버가 시작되어 Claude Code에서 연결할 수 있습니다.
             </aside>
         </section>
@@ -851,34 +687,42 @@ uv run python 04-genie-mcp/exercise_02_genie_mcp_server.py
         <!-- Slide 18: Claude Code 연결 + 실습 안내 -->
         <section>
             <h2>Claude Code 연결 + 실습 안내</h2>
-            <h3>settings.local.json 설정</h3>
-            <pre><code class="language-json" data-trim data-noescape>
+            <div style="display: flex; align-items: flex-start; gap: 1em;">
+                <div style="flex: 1;">
+                    <h3>① .mcp.json 설정</h3>
+                    <pre><code class="language-bash" data-trim># 프로젝트 루트의 .mcp.json에 추가
+cat > .mcp.json << 'EOF'
 {
   "mcpServers": {
     "genie": {
-      "command": "python",
-      "args": ["exercise_02_genie_mcp_server.py"],
-      "cwd": "./sections/04-genie-mcp"
+      "type": "stdio",
+      "command": "uv",
+      "args": ["run", "python", "04-genie-mcp/exercise_02_genie_mcp_server.py"]
     }
   }
 }
-            </code></pre>
-            <h3 style="margin-top: 0.8em;">대화 예시</h3>
-            <div class="emphasis-box" style="font-size: 0.75em;">
-                <p><strong>사용자:</strong> "Fashion Recommendations 데이터로 Genie Space를 만들어줘"</p>
-                <p><strong>Claude:</strong> <code>create_genie_space</code> tool로 Space를 생성합니다.</p>
-                <p style="margin-top: 0.5em;"><strong>사용자:</strong> "매출 Top 10 상품을 알려줘"</p>
-                <p><strong>Claude:</strong> <code>ask_genie</code> tool로 질의합니다.</p>
-                <p style="margin-top: 0.5em;"><strong>사용자:</strong> "온라인/오프라인별로 나눠서 보여줘"</p>
-                <p><strong>Claude:</strong> <code>continue_conversation</code> tool로 후속 질의합니다.</p>
+EOF</code></pre>
+                </div>
+                <div style="flex: 0.7;">
+                    <h3>② Claude Code 재시작</h3>
+                    <pre><code class="language-bash" data-trim># Claude Code 종료 후 다시 실행
+/exit
+claude</code></pre>
+                    <h3 style="margin-top: 1em;">③ 연결 확인</h3>
+                    <pre><code class="language-bash" data-trim>/mcp</code></pre>
+                    <p style="font-size: 0.8em; color: var(--ev-text-muted);">
+                        genie 서버가 목록에<br>표시되면 성공!
+                    </p>
+                </div>
             </div>
-            <div class="emphasis-box fragment" style="margin-top: 0.8em;">
+            <div class="emphasis-box" style="margin-top: 0.8em;">
                 <strong>실습 워크플로우:</strong> Exercise 00 체크리스트 → 01a 실행 (Space 생성) → 01b 실행 (질의 확인) → 02 Claude Code로 MCP 서버 구현 → Claude Code에 MCP 연결
             </div>
             <aside class="notes">
-                Claude Code에서 사용하려면 settings.local.json에 MCP 서버를 등록합니다.
-                등록 후 Claude Code에서 Space 생성을 요청하면 create_genie_space tool이 호출됩니다.
-                생성된 Space에 질문하면 ask_genie tool이, 후속 질문은 continue_conversation tool이 호출됩니다.
+                Claude Code에서 사용하려면 프로젝트 루트의 .mcp.json에 MCP 서버를 등록합니다.
+                설정을 저장한 뒤 Claude Code를 재시작해야 새 서버가 로드됩니다.
+                /mcp 명령어를 실행하면 등록된 MCP 서버 목록과 연결 상태를 확인할 수 있습니다.
+                genie가 목록에 보이면 정상적으로 연결된 것입니다.
                 실습 워크플로우는 다음과 같습니다:
                 먼저 Exercise 00으로 환경을 검증합니다.
                 Exercise 01a를 실행하여 Space를 생성하고, 01b를 실행하여 질의 API를 확인합니다.
@@ -887,7 +731,24 @@ uv run python 04-genie-mcp/exercise_02_genie_mcp_server.py
             </aside>
         </section>
 
-        <!-- Slide 19: 정리 & Q&A -->
+        <!-- Slide 19: 대화 예시 -->
+        <section>
+            <h2>대화 예시</h2>
+            <div class="emphasis-box" style="font-size: 0.85em;">
+                <p><strong>사용자:</strong> "Fashion Recommendations 데이터로 Genie Space를 만들어줘"</p>
+                <p><strong>Claude:</strong> <code>create_genie_space</code> tool로 Space를 생성합니다.</p>
+                <p style="margin-top: 0.5em;"><strong>사용자:</strong> "매출 Top 10 상품을 알려줘"</p>
+                <p><strong>Claude:</strong> <code>ask_genie</code> tool로 질의합니다.</p>
+                <p style="margin-top: 0.5em;"><strong>사용자:</strong> "온라인/오프라인별로 나눠서 보여줘"</p>
+                <p><strong>Claude:</strong> <code>continue_conversation</code> tool로 후속 질의합니다.</p>
+            </div>
+            <aside class="notes">
+                등록 후 Claude Code에서 Space 생성을 요청하면 create_genie_space tool이 호출됩니다.
+                생성된 Space에 질문하면 ask_genie tool이, 후속 질문은 continue_conversation tool이 호출됩니다.
+            </aside>
+        </section>
+
+        <!-- Slide 20: 정리 & Q&A -->
         <section>
             <h2>정리 & Q&A</h2>
             <ul>
