@@ -301,7 +301,7 @@ uv run python -c "import fastmcp; print('Ready!')"</code></pre>
             <!-- Slide 7: 로드맵 Part 2 -->
             <section>
                 <h2>로드맵: Part 2 &mdash; 실전 구현</h2>
-                <p style="font-size: 0.8em; color: var(--ev-text-muted); margin-bottom: 0.6em;">120분 | 실습 중심</p>
+                <p style="font-size: 0.8em; color: var(--ev-text-muted); margin-bottom: 0.6em;">170분 | 실습 중심</p>
                 <div class="roadmap-card fragment fade-up" data-fragment-index="1">
                     <span class="rm-num">04</span>
                     <span class="rm-title"><strong>Genie MCP</strong> &mdash; Databricks Genie API, MCP 서버 래핑</span>
@@ -314,26 +314,37 @@ uv run python -c "import fastmcp; print('Ready!')"</code></pre>
                 </div>
                 <div class="roadmap-card fragment fade-up" data-fragment-index="1">
                     <span class="rm-num">06</span>
+                    <span class="rm-title"><strong>Custom Agents</strong> &mdash; 나만의 에이전트 만들기</span>
+                    <span class="rm-meta">25분 &middot; 강의+실습</span>
+                </div>
+                <div class="roadmap-card fragment fade-up" data-fragment-index="1">
+                    <span class="rm-num">07</span>
+                    <span class="rm-title"><strong>Hooks</strong> &mdash; 이벤트 기반 자동화</span>
+                    <span class="rm-meta">25분 &middot; 강의+실습</span>
+                </div>
+                <div class="roadmap-card fragment fade-up" data-fragment-index="1">
+                    <span class="rm-num">08</span>
                     <span class="rm-title"><strong>AI Dev Kit</strong> &mdash; ChatAgent, MLflow Tracing, 배포 파이프라인</span>
                     <span class="rm-meta">15분 &middot; 강의+데모</span>
                 </div>
                 <div class="roadmap-card fragment fade-up" data-fragment-index="1">
-                    <span class="rm-num">07</span>
+                    <span class="rm-num">09</span>
                     <span class="rm-title"><strong>Build UI</strong> &mdash; FastAPI 웹 서버, Genie 채팅 UI 구축</span>
                     <span class="rm-meta">30분 &middot; 실습</span>
                 </div>
                 <div class="roadmap-card fragment fade-up" data-fragment-index="1">
-                    <span class="rm-num">08</span>
+                    <span class="rm-num">10</span>
                     <span class="rm-title"><strong>Deploy</strong> &mdash; Databricks Apps로 서비스 배포</span>
                     <span class="rm-meta">15분 &middot; 실습</span>
                 </div>
                 <aside class="notes">
-                    Part 2는 실전 구현입니다. 총 120분으로 실습 중심입니다.
+                    Part 2는 실전 구현입니다. 총 170분으로 실습 중심입니다.
                     섹션 4에서 Genie MCP 서버를 만들어 자연어 데이터 조회를 구현하고,
                     섹션 5에서 Skills 개념을 배우고 직접 Custom Skill을 만들어봅니다.
-                    섹션 6에서 Databricks AI Dev Kit을 알아보고,
-                    섹션 7에서 웹 UI를 만들어 프론트엔드와 백엔드를 통합합니다.
-                    마지막으로 섹션 8에서 Databricks Apps에 배포합니다.
+                    섹션 6에서 Custom Agents를 만들고, 섹션 7에서 Hooks로 이벤트 기반 자동화를 설정합니다.
+                    섹션 8에서 Databricks AI Dev Kit을 알아보고,
+                    섹션 9에서 웹 UI를 만들어 프론트엔드와 백엔드를 통합합니다.
+                    마지막으로 섹션 10에서 Databricks Apps에 배포합니다.
                     Part 2가 끝나면 실제로 동작하는 AI 웹 앱이 완성됩니다.
                 </aside>
             </section>
@@ -342,27 +353,35 @@ uv run python -c "import fastmcp; print('Ready!')"</code></pre>
             <section>
                 <h2>학습 경로</h2>
                 <div class="diagram">
-<pre style="margin: 0; background: transparent; border: none; box-shadow: none; font-size: 0.85em;">
- Part 1: 기초 다지기              Part 2: 실전 구현
- ─────────────────              ─────────────────
+<pre style="margin: 0; background: transparent; border: none; box-shadow: none; font-size: 0.75em;">
+ Part 1: 기초 다지기                Part 2: 실전 구현
+ ─────────────────                ─────────────────
 
- ┌──────────┐   ┌──────────┐   ┌──────────┐   ┌──────────┐
- │ 01. AI   │──▶│ 02.Claude│   │ 04.Genie │──▶│ 05.Skills│
- │Foundation│   │   Code   │   │   MCP    │   │          │
- └──────────┘   └────┬─────┘   └──────────┘   └──────────┘
-                     │              ▲
-                     ▼              │
-                ┌──────────┐───────┘
-                │ 03. MCP  │         ┌──────────┐   ┌──────────┐
-                │   Arch   │────────▶│ 06.AI    │──▶│ 07.Build │
-                └──────────┘         │ Dev Kit  │   │   UI     │
-                                     └──────────┘   └────┬─────┘
-                                                         │
-                                                         ▼
-                                                    ┌──────────┐
-                                                    │ 08.Deploy│
-                                                    │to Databri│
-                                                    └──────────┘
+ ┌──────────┐   ┌──────────┐     ┌──────────┐   ┌──────────┐
+ │ 01. AI   │──▶│ 02.Claude│     │ 04.Genie │──▶│ 05.Skills│
+ │Foundation│   │   Code   │     │   MCP    │   │          │
+ └──────────┘   └────┬─────┘     └──────────┘   └────┬─────┘
+                     │                ▲               │
+                     ▼                │               ▼
+                ┌──────────┐─────────┘          ┌──────────┐
+                │ 03. MCP  │                    │ 06.Agents│
+                │   Arch   │───────┐            └────┬─────┘
+                └──────────┘       │                 │
+                                   │                 ▼
+                                   │            ┌──────────┐
+                                   │            │ 07.Hooks │
+                                   │            └────┬─────┘
+                                   │                 │
+                                   ▼                 ▼
+                              ┌──────────┐   ┌──────────┐
+                              │ 08.AI    │──▶│ 09.Build │
+                              │ Dev Kit  │   │   UI     │
+                              └──────────┘   └────┬─────┘
+                                                   │
+                                                   ▼
+                                              ┌──────────┐
+                                              │ 10.Deploy│
+                                              └──────────┘
 </pre>
                 </div>
                 <p class="fragment fade-up" style="font-size: 0.75em; color: var(--ev-text-muted); margin-top: 0.5em; text-align: center;">
@@ -373,7 +392,8 @@ uv run python -c "import fastmcp; print('Ready!')"</code></pre>
                     Part 1에서는 AI Foundation에서 시작하여 Claude Code, MCP 순서로 기초를 다집니다.
                     MCP 아키텍처 이해가 Part 2의 핵심 기반이 됩니다.
                     Part 2에서는 MCP 지식을 바탕으로 Genie MCP 서버를 만들고,
-                    Skills를 배우고, AI Dev Kit과 UI를 거쳐 최종 배포까지 이어집니다.
+                    Skills, Agents, Hooks 순서로 Claude Code 확장 체계를 완성합니다.
+                    그 다음 AI Dev Kit과 UI를 거쳐 최종 배포까지 이어집니다.
                     순서대로 따라가면 자연스러운 흐름이지만, 필요한 섹션만 참고하셔도 됩니다.
                 </aside>
             </section>

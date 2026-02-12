@@ -1,0 +1,12 @@
+number: "06"
+title: "Custom Agents: 나만의 에이전트 만들기"
+duration_minutes: 25
+type: "lecture+hands-on"
+objectives:
+  - "Custom Agent 개념과 agent.md 구조 이해"
+  - "Skills vs Agents 차이점 파악"
+  - "실제 에이전트(researcher, validator) 분석"
+  - "직접 Custom Agent 만들기"
+slides: "index.html"
+prerequisites:
+  - "05-skills"

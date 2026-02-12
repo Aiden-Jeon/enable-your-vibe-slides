@@ -1,0 +1,566 @@
+<!doctype html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>07 - Hooks - Enable Your Vibe</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reset.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/theme/black.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/monokai.css">
+    <link rel="stylesheet" href="../../shared/assets/theme.css">
+    <style>
+        /* Section-specific styles */
+        .reveal .section-number {
+            font-size: 0.5em;
+            color: var(--ev-text-muted);
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+        }
+        .reveal .subtitle {
+            color: var(--ev-accent-light);
+            font-size: 1.2em;
+            margin-top: 0.2em;
+        }
+        .reveal .badge {
+            display: inline-block;
+            background: var(--ev-accent);
+            color: white;
+            font-size: 0.6em;
+            padding: 0.2em 0.6em;
+            border-radius: 20px;
+            vertical-align: middle;
+            margin-left: 0.5em;
+        }
+        .reveal .hook-card {
+            background: var(--ev-bg-alt);
+            border-left: 4px solid #60a5fa;
+            border-radius: 0 8px 8px 0;
+            padding: 0.8em 1.2em;
+            margin: 0.6em 0;
+        }
+        .reveal .hook-card h4 {
+            color: #60a5fa;
+            margin: 0 0 0.2em 0;
+            font-size: 0.95em;
+        }
+        .reveal .hook-card p {
+            margin: 0;
+            font-size: 0.8em;
+            color: var(--ev-text-muted);
+        }
+        .reveal .priority-box {
+            background: var(--ev-bg-alt);
+            border: 1px solid #333;
+            border-radius: 10px;
+            padding: 0.8em 1.2em;
+            margin: 0.4em 0;
+            text-align: center;
+        }
+        .reveal .priority-box h4 {
+            margin: 0 0 0.3em 0;
+            font-size: 0.9em;
+        }
+        .reveal .priority-box p {
+            margin: 0;
+            font-size: 0.8em;
+            color: var(--ev-text-muted);
+        }
+        .reveal .exercise-box {
+            background: var(--ev-bg-alt);
+            border: 2px solid var(--ev-accent);
+            border-radius: 12px;
+            padding: 1.2em 1.5em;
+            margin: 0.8em 0;
+        }
+        .reveal .exercise-box h4 {
+            color: var(--ev-accent);
+            margin: 0 0 0.5em 0;
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar Navigation -->
+    <button id="sidebar-toggle" class="sidebar-toggle"><span></span><span></span><span></span></button>
+    <nav id="sidebar" class="sidebar">
+        <div class="sidebar-header">
+            <h2>Enable Your Vibe</h2>
+            <p>Vibe Coding 핸즈온 세션</p>
+        </div>
+        <ul class="sidebar-sections"></ul>
+    </nav>
+    <div id="sidebar-overlay" class="sidebar-overlay"></div>
+
+    <div class="reveal">
+        <div class="slides">
+
+            <!-- Slide 1: Title -->
+            <section>
+                <p class="section-number">Section 07</p>
+                <h1>Hooks</h1>
+                <p class="subtitle">이벤트 기반 자동화</p>
+                <br>
+                <p style="font-size: 0.7em; color: var(--ev-text-muted);">
+                    Enable Your Vibe &mdash; AI-Powered Development Hands-on
+                </p>
+                <p style="font-size: 0.6em; color: var(--ev-text-muted);">
+                    25분 | 강의+실습
+                </p>
+                <aside class="notes">
+                    섹션 7을 시작합니다. 이번 세션에서는 Claude Code의 세 번째 확장 체계인 Hooks를 다룹니다.
+                    Skills가 명시적 호출, Agents가 역할 기반이라면, Hooks는 이벤트에 자동으로 반응하는 자동화입니다.
+                    이 세션을 마치면 Claude Code의 세 가지 확장 체계를 모두 이해하게 됩니다.
+                </aside>
+            </section>
+
+            <!-- Slide 2: 학습 목표 -->
+            <section>
+                <h2>학습 목표</h2>
+                <ul>
+                    <li class="fragment fade-up" data-fragment-index="0">Hooks 개념과 <strong>이벤트 트리거</strong> 방식을 이해한다</li>
+                    <li class="fragment fade-up" data-fragment-index="0">Hook <strong>타입별 사용 시나리오</strong>를 학습한다</li>
+                    <li class="fragment fade-up" data-fragment-index="0"><code>settings.json</code>에서 Hook 설정 방법을 숙지한다</li>
+                    <li class="fragment fade-up" data-fragment-index="0">실습: 간단한 Hook을 <strong>설정하고 테스트</strong>한다</li>
+                </ul>
+                <aside class="notes">
+                    네 가지 학습 목표입니다.
+                    첫째, Hooks가 무엇이고 어떤 이벤트에 트리거되는지 이해합니다.
+                    둘째, PreToolUse, PostToolUse 등 Hook 타입별 시나리오를 학습합니다.
+                    셋째, settings.json에서 Hook을 설정하는 구체적인 방법을 알아봅니다.
+                    넷째, 실습을 통해 직접 Hook을 설정하고 테스트해봅니다.
+                </aside>
+            </section>
+
+            <!-- Slide 3: 확장 체계 복습 -->
+            <section>
+                <h2>Claude Code 확장 체계 복습</h2>
+                <p style="font-size: 0.85em; margin-bottom: 0.8em;">세 가지 확장 방법 중 <strong style="color: #60a5fa;">Hooks</strong>를 다룹니다</p>
+                <div style="display: flex; justify-content: space-around; gap: 1.5em;">
+                    <!-- Skills -->
+                    <div style="flex: 1; border: 2px solid #555; border-radius: 12px; padding: 1.5em; background: rgba(255,255,255,0.02); text-align: center; opacity: 0.6;">
+                        <h3 style="margin-top: 0; color: var(--ev-accent);">Skills</h3>
+                        <div style="font-size: 0.9em; color: var(--ev-text-muted);">/명령어 호출</div>
+                        <div style="font-size: 0.85em; color: var(--ev-text-muted);">Section 05에서 학습</div>
+                    </div>
+
+                    <!-- Agents -->
+                    <div style="flex: 1; border: 2px solid #555; border-radius: 12px; padding: 1.5em; background: rgba(255,255,255,0.02); text-align: center; opacity: 0.6;">
+                        <h3 style="margin-top: 0; color: #4ade80;">Agents</h3>
+                        <div style="font-size: 0.9em; color: var(--ev-text-muted);">@에이전트 호출</div>
+                        <div style="font-size: 0.85em; color: var(--ev-text-muted);">Section 06에서 학습</div>
+                    </div>
+
+                    <!-- Hooks (강조) -->
+                    <div style="flex: 1; border: 2px solid #60a5fa; border-radius: 12px; padding: 1.5em; background: rgba(96, 165, 250, 0.1); text-align: center;">
+                        <h3 style="margin-top: 0; color: #60a5fa;">Hooks</h3>
+                        <div style="font-size: 0.95em;"><strong>이벤트 트리거</strong></div>
+                        <div style="font-size: 0.85em; color: #60a5fa;">이번 섹션!</div>
+                    </div>
+                </div>
+                <aside class="notes">
+                    확장 체계를 다시 복습합니다.
+                    Skills는 Section 05에서, Agents는 Section 06에서 이미 배웠습니다.
+                    이번 섹션에서 Hooks를 배우면 세 가지 확장 체계를 모두 완성합니다.
+                    Hooks는 다른 둘과 달리 사용자가 직접 호출하는 것이 아니라, 특정 이벤트에 자동으로 트리거됩니다.
+                </aside>
+            </section>
+
+            <!-- Slide 4: Hooks란? -->
+            <section>
+                <h2>Hooks란?</h2>
+                <ul>
+                    <li><strong>이벤트 기반</strong>으로 자동 실행되는 쉘 명령어</li>
+                    <li><code>settings.json</code>의 <code>hooks</code> 필드에 설정</li>
+                    <li>Claude Code의 특정 동작 <strong>전/후</strong>에 자동으로 트리거</li>
+                    <li>코드 포매팅, 안전 가드레일, 알림 등에 활용</li>
+                </ul>
+                <div class="emphasis-box fragment fade-up" style="margin-top: 1em;">
+                    <strong>핵심 아이디어:</strong> "이 이벤트가 발생하면 자동으로 이 작업을 실행해줘"를 설정한 것
+                </div>
+                <div class="fragment fade-up" style="margin-top: 0.8em;">
+                    <pre><code class="language-text" data-trim>
+Skills:  사용자가 /명령어로 명시적 호출
+Agents:  사용자가 @에이전트로 명시적 호출
+Hooks:   이벤트 발생 시 자동으로 실행 (암시적)
+                    </code></pre>
+                </div>
+                <aside class="notes">
+                    Hooks의 핵심 개념을 설명합니다.
+                    Skills와 Agents는 사용자가 명시적으로 호출해야 합니다.
+                    반면 Hooks는 특정 이벤트가 발생하면 자동으로 실행됩니다.
+                    예를 들어, Claude Code가 파일을 수정한 후 자동으로 코드 포매팅을 실행하거나,
+                    위험한 명령어를 실행하기 전에 자동으로 차단할 수 있습니다.
+                    settings.json에 설정하면 별도의 호출 없이 자동으로 동작합니다.
+                </aside>
+            </section>
+
+            <!-- Slide 5: Hook 이벤트 타입 -->
+            <section>
+                <h2>Hook 이벤트 타입</h2>
+                <table style="font-size: 0.8em;">
+                    <thead>
+                        <tr>
+                            <th>이벤트</th>
+                            <th>트리거 시점</th>
+                            <th>대표 사용 사례</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>PreToolUse</code></td>
+                            <td>도구 실행 <strong>전</strong></td>
+                            <td>위험 명령 차단, 입력 검증</td>
+                        </tr>
+                        <tr>
+                            <td><code>PostToolUse</code></td>
+                            <td>도구 실행 <strong>후</strong></td>
+                            <td>코드 포매팅, 린팅</td>
+                        </tr>
+                        <tr>
+                            <td><code>Notification</code></td>
+                            <td>알림 발생 시</td>
+                            <td>Slack 알림, 로깅</td>
+                        </tr>
+                        <tr>
+                            <td><code>Stop</code></td>
+                            <td>에이전트 <strong>턴 종료</strong> 시</td>
+                            <td>작업 완료 알림, 정리 작업</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="emphasis-box fragment fade-up" style="margin-top: 0.8em;">
+                    <strong>가장 자주 사용:</strong>
+                    <code>PreToolUse</code> (안전) + <code>PostToolUse</code> (자동화)
+                </div>
+                <aside class="notes">
+                    네 가지 Hook 이벤트 타입이 있습니다.
+                    PreToolUse는 도구 실행 전에 트리거됩니다. 위험한 명령을 미리 차단하는 데 사용합니다.
+                    PostToolUse는 도구 실행 후에 트리거됩니다. 파일 수정 후 자동 포매팅에 주로 사용합니다.
+                    Notification은 알림이 발생할 때 트리거됩니다. 외부 서비스에 알림을 보낼 수 있습니다.
+                    Stop은 에이전트의 턴이 종료될 때 트리거됩니다.
+                    실무에서 가장 자주 사용하는 것은 PreToolUse와 PostToolUse입니다.
+                </aside>
+            </section>
+
+            <!-- Slide 6: Hook 설정 구조 -->
+            <section>
+                <h2>Hook 설정 구조</h2>
+                <p style="font-size: 0.85em; margin-bottom: 0.5em;">
+                    <code>settings.json</code>의 <code>hooks</code> 필드에 정의
+                </p>
+                <pre><code class="language-json" data-trim data-line-numbers="1-2|3|4|5|6-9">
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "black $CLAUDE_FILE_PATH"
+          }
+        ]
+      }
+    ]
+  }
+}
+                </code></pre>
+                <div class="columns fragment fade-up" style="margin-top: 0.5em;">
+                    <div>
+                        <h4 style="color: #60a5fa; font-size: 0.9em;">matcher</h4>
+                        <p style="font-size: 0.8em; color: var(--ev-text-muted);">트리거할 도구 이름 패턴 (정규식)</p>
+                    </div>
+                    <div>
+                        <h4 style="color: #60a5fa; font-size: 0.9em;">command</h4>
+                        <p style="font-size: 0.8em; color: var(--ev-text-muted);">실행할 쉘 명령어</p>
+                    </div>
+                    <div>
+                        <h4 style="color: #60a5fa; font-size: 0.9em;">환경변수</h4>
+                        <p style="font-size: 0.8em; color: var(--ev-text-muted);"><code>$CLAUDE_FILE_PATH</code> 등 자동 주입</p>
+                    </div>
+                </div>
+                <aside class="notes">
+                    Hook 설정의 구체적인 구조를 살펴봅니다.
+                    settings.json의 hooks 필드에 이벤트 타입별로 Hook을 정의합니다.
+                    PostToolUse 이벤트에 Hook을 설정한 예시입니다.
+                    matcher는 어떤 도구에 반응할지 정규식으로 지정합니다. Write|Edit는 파일 수정 도구에 반응합니다.
+                    command에 실행할 쉘 명령어를 지정합니다.
+                    $CLAUDE_FILE_PATH 같은 환경변수가 자동으로 주입되어 수정된 파일 경로를 알 수 있습니다.
+                </aside>
+            </section>
+
+            <!-- Slide 7: 설정 파일 위치와 우선순위 -->
+            <section>
+                <h2>설정 파일 위치와 우선순위</h2>
+                <div style="display: flex; flex-direction: column; gap: 0.8em; margin-top: 1em;">
+                    <div class="priority-box fragment fade-up" style="border-color: var(--ev-accent);">
+                        <h4 style="color: var(--ev-accent);">1. 프로젝트 설정 (최우선)</h4>
+                        <p><code>.claude/settings.json</code></p>
+                        <p>프로젝트별 Hook &mdash; Git으로 팀과 공유</p>
+                    </div>
+                    <div style="text-align: center; font-size: 1.2em; color: var(--ev-text-muted);">&uarr; 우선순위</div>
+                    <div class="priority-box fragment fade-up">
+                        <h4 style="color: #60a5fa;">2. 사용자 설정</h4>
+                        <p><code>~/.claude/settings.json</code></p>
+                        <p>개인 환경 Hook &mdash; 모든 프로젝트에 적용</p>
+                    </div>
+                    <div style="text-align: center; font-size: 1.2em; color: var(--ev-text-muted);">&uarr; 우선순위</div>
+                    <div class="priority-box fragment fade-up" style="opacity: 0.7;">
+                        <h4 style="color: var(--ev-text-muted);">3. 엔터프라이즈 설정</h4>
+                        <p>관리자가 배포하는 조직 전체 설정</p>
+                    </div>
+                </div>
+                <aside class="notes">
+                    settings.json은 세 가지 레벨에서 설정할 수 있습니다.
+                    프로젝트 레벨이 최우선입니다. .claude/settings.json에 정의하면 해당 프로젝트에서만 적용됩니다.
+                    Git으로 관리하면 팀원 전체가 같은 Hook을 사용할 수 있습니다.
+                    사용자 레벨은 홈 디렉토리의 ~/.claude/settings.json입니다. 모든 프로젝트에 적용됩니다.
+                    엔터프라이즈 레벨은 조직 관리자가 배포하는 설정입니다.
+                    프로젝트 설정이 사용자 설정보다 우선하므로, 프로젝트별로 다른 Hook을 사용할 수 있습니다.
+                </aside>
+            </section>
+
+            <!-- Slide 8: 실전 예시: Auto-format -->
+            <section>
+                <h2>실전 예시: Auto-format Hook</h2>
+                <p style="font-size: 0.85em; margin-bottom: 0.5em;">
+                    파일 수정 후 자동으로 <strong>코드 포매팅</strong> 실행
+                </p>
+                <pre><code class="language-json" data-trim>
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cd $CLAUDE_PROJECT_DIR && black $CLAUDE_FILE_PATH && isort $CLAUDE_FILE_PATH"
+          }
+        ]
+      }
+    ]
+  }
+}
+                </code></pre>
+                <div class="hook-card fragment fade-up">
+                    <h4>동작 흐름</h4>
+                    <p>
+                        Claude Code가 파일 수정 (Write/Edit)
+                        &rarr; Hook 자동 트리거
+                        &rarr; <code>black</code>으로 포매팅
+                        &rarr; <code>isort</code>로 import 정렬
+                    </p>
+                </div>
+                <div class="fragment fade-up emphasis-box" style="margin-top: 0.5em;">
+                    <strong>장점:</strong> Claude Code가 생성한 코드가 항상 팀 컨벤션에 맞게 포매팅됨
+                </div>
+                <aside class="notes">
+                    가장 유용한 Hook 중 하나인 Auto-format 예시입니다.
+                    PostToolUse 이벤트에서 Write 또는 Edit 도구가 사용된 후 트리거됩니다.
+                    black으로 Python 코드를 포매팅하고, isort로 import 문을 정렬합니다.
+                    이렇게 설정하면 Claude Code가 파일을 수정할 때마다 자동으로 포매팅이 적용됩니다.
+                    수동으로 포매팅할 필요가 없어지고, 항상 팀 컨벤션에 맞는 코드가 유지됩니다.
+                </aside>
+            </section>
+
+            <!-- Slide 9: 실전 예시: 안전 가드레일 -->
+            <section>
+                <h2>실전 예시: 안전 가드레일 Hook</h2>
+                <p style="font-size: 0.85em; margin-bottom: 0.5em;">
+                    위험한 명령을 <strong>사전에 차단</strong>하는 안전 장치
+                </p>
+                <pre><code class="language-json" data-trim>
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo $CLAUDE_TOOL_INPUT | grep -qE '(rm -rf|drop table|DELETE FROM)' && echo 'BLOCK: 위험한 명령이 감지되었습니다' && exit 2 || exit 0"
+          }
+        ]
+      }
+    ]
+  }
+}
+                </code></pre>
+                <div class="hook-card fragment fade-up">
+                    <h4>동작 흐름</h4>
+                    <p>
+                        Claude Code가 Bash 명령 실행 시도
+                        &rarr; PreToolUse Hook 트리거
+                        &rarr; <code>rm -rf</code>, <code>drop table</code> 등 감지 시 차단 (exit 2)
+                    </p>
+                </div>
+                <div class="fragment fade-up emphasis-box" style="margin-top: 0.5em;">
+                    <strong>exit 2</strong>: Hook이 exit 2를 반환하면 도구 실행이 차단됩니다
+                </div>
+                <aside class="notes">
+                    안전 가드레일 Hook 예시입니다.
+                    PreToolUse 이벤트에서 Bash 도구가 사용되기 전에 트리거됩니다.
+                    입력된 명령어에 rm -rf, drop table, DELETE FROM 같은 위험한 패턴이 있으면 차단합니다.
+                    핵심은 exit code입니다. exit 2를 반환하면 Claude Code가 해당 도구 실행을 차단합니다.
+                    exit 0은 정상 통과, exit 2는 차단입니다.
+                    이런 가드레일을 프로젝트 설정에 넣어두면 팀 전체의 안전성이 높아집니다.
+                </aside>
+            </section>
+
+            <!-- Slide 10: Skills + Agents + Hooks 통합 -->
+            <section>
+                <h2>Skills + Agents + Hooks 통합</h2>
+                <p style="font-size: 0.85em; margin-bottom: 0.8em;">세 가지 확장 체계를 <strong>조합</strong>하여 강력한 워크플로우 구성</p>
+                <div class="diagram">
+<pre style="background: transparent; border: none; box-shadow: none; text-align: center; font-size: 0.85em;">
+  /slide-deck 호출        @validator 검증        자동 포매팅
+ ┌──────────────┐      ┌──────────────┐      ┌──────────────┐
+ │   Skills     │ ───▶ │   Agents     │      │    Hooks     │
+ │              │      │              │      │              │
+ │  슬라이드    │      │  품질 검증   │      │  PostToolUse │
+ │  자동 생성   │      │  보고서 작성 │      │  코드 포매팅 │
+ └──────────────┘      └──────────────┘      └──────┬───────┘
+                                                    │
+                                               자동 실행!
+</pre>
+                </div>
+                <div class="fragment fade-up" style="margin-top: 0.5em;">
+                    <table style="font-size: 0.75em;">
+                        <thead>
+                            <tr><th>확장 체계</th><th>트리거</th><th>초점</th><th>호출 방식</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td style="color: var(--ev-accent);"><strong>Skills</strong></td><td>명시적</td><td>작업 절차 (How)</td><td><code>/skill-name</code></td></tr>
+                            <tr><td style="color: #4ade80;"><strong>Agents</strong></td><td>명시적</td><td>역할/관점 (Who)</td><td><code>@agent-name</code></td></tr>
+                            <tr><td style="color: #60a5fa;"><strong>Hooks</strong></td><td>자동</td><td>이벤트 반응 (When)</td><td>settings.json</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <aside class="notes">
+                    세 가지 확장 체계를 조합하면 강력한 워크플로우를 만들 수 있습니다.
+                    예를 들어, /slide-deck 스킬로 슬라이드를 생성하고,
+                    @validator 에이전트로 품질을 검증하며,
+                    파일이 수정될 때마다 Hook이 자동으로 포매팅을 적용합니다.
+                    Skills는 How(어떻게), Agents는 Who(누가), Hooks는 When(언제)에 초점을 맞춥니다.
+                    이 세 가지를 적절히 조합하면 Claude Code를 팀의 워크플로우에 완벽하게 맞출 수 있습니다.
+                </aside>
+            </section>
+
+            <!-- Slide 11: 실습 -->
+            <section>
+                <h2>실습: Hook 설정하기 <span class="badge">Hands-on</span></h2>
+                <div class="columns">
+                    <div>
+                        <div class="exercise-box fragment fade-up">
+                            <h4>Exercise 1: Auto-format Hook (10분)</h4>
+                            <ol style="font-size: 0.8em;">
+                                <li><code>.claude/settings.json</code>에 PostToolUse Hook 추가</li>
+                                <li>Write/Edit 후 자동으로 <code>black</code> 실행되도록 설정</li>
+                                <li>Python 파일을 수정하여 Hook 동작 확인</li>
+                            </ol>
+                            <p style="font-size: 0.75em; color: var(--ev-text-muted); margin-top: 0.5em;">
+                                <code style="color: var(--ev-accent-light);">&gt; .claude/settings.json에 Python auto-format Hook을 추가해줘</code>
+                            </p>
+                        </div>
+                        <div class="exercise-box fragment fade-up">
+                            <h4>Exercise 2: Safety Hook (10분)</h4>
+                            <ol style="font-size: 0.8em;">
+                                <li>PreToolUse Hook으로 위험 명령 차단 설정</li>
+                                <li><code>rm -rf</code>, <code>drop table</code> 등 패턴 차단</li>
+                                <li>테스트: 위험 명령 실행 시도 &rarr; 차단 확인</li>
+                            </ol>
+                            <p style="font-size: 0.75em; color: var(--ev-text-muted); margin-top: 0.5em;">
+                                <code style="color: var(--ev-accent-light);">&gt; .claude/settings.json에 위험 명령 차단 Hook을 추가해줘</code>
+                            </p>
+                        </div>
+                    </div>
+                    <div class="fragment fade-up">
+                        <h3>체크리스트</h3>
+                        <ul style="font-size: 0.8em;">
+                            <li>settings.json의 JSON 문법이 올바른가?</li>
+                            <li>matcher 패턴이 의도한 도구와 매칭되는가?</li>
+                            <li>command가 실행 가능한 쉘 명령인가?</li>
+                            <li>PreToolUse Hook에서 차단 시 exit 2를 반환하는가?</li>
+                            <li>Hook이 의도대로 트리거되는가?</li>
+                        </ul>
+                    </div>
+                </div>
+                <aside class="notes">
+                    실습 시간입니다. 두 가지 Exercise를 진행합니다.
+                    Exercise 1은 Auto-format Hook을 설정하는 것입니다.
+                    settings.json에 PostToolUse Hook을 추가하고, Python 파일을 수정하여 자동 포매팅이 동작하는지 확인합니다.
+                    Exercise 2는 Safety Hook을 설정하는 것입니다.
+                    PreToolUse Hook으로 위험한 명령을 차단하고, 실제로 차단이 되는지 테스트합니다.
+                    체크리스트를 참고하여 Hook이 올바르게 동작하는지 검증하세요.
+                </aside>
+            </section>
+
+            <!-- Slide 12: 정리 -->
+            <section>
+                <h2>정리</h2>
+                <div class="emphasis-box">
+                    <h3>핵심 정리</h3>
+                    <ul style="font-size: 0.9em;">
+                        <li class="fragment fade-up">
+                            <strong>Hooks</strong> &mdash; 이벤트 기반으로 자동 실행되는 쉘 명령어
+                        </li>
+                        <li class="fragment fade-up">
+                            <strong>4가지 이벤트</strong> &mdash; PreToolUse, PostToolUse, Notification, Stop
+                        </li>
+                        <li class="fragment fade-up">
+                            <strong>설정 위치</strong> &mdash; settings.json (프로젝트 &gt; 사용자 &gt; 엔터프라이즈)
+                        </li>
+                        <li class="fragment fade-up">
+                            <strong>주요 활용</strong> &mdash; 자동 포매팅 (PostToolUse) + 안전 가드레일 (PreToolUse)
+                        </li>
+                        <li class="fragment fade-up">
+                            <strong>확장 체계 완성</strong> &mdash; Skills (How) + Agents (Who) + Hooks (When)
+                        </li>
+                    </ul>
+                </div>
+                <aside class="notes">
+                    정리하겠습니다.
+                    Hooks는 이벤트 기반으로 자동 실행되는 쉘 명령어입니다.
+                    네 가지 이벤트 타입이 있고, PreToolUse와 PostToolUse가 가장 자주 사용됩니다.
+                    settings.json에서 설정하며, 프로젝트 레벨이 사용자 레벨보다 우선합니다.
+                    자동 포매팅과 안전 가드레일이 가장 대표적인 활용 사례입니다.
+                    이것으로 Claude Code의 세 가지 확장 체계를 모두 배웠습니다.
+                    Skills는 How, Agents는 Who, Hooks는 When에 초점을 맞춥니다.
+                </aside>
+            </section>
+
+            <!-- Slide 13: Q&A -->
+            <section>
+                <h1>Q&amp;A</h1>
+                <p>질문이 있으신가요?</p>
+                <div style="margin-top: 2em; font-size: 0.85em; color: var(--ev-text-muted);">
+                    <p>다음: <strong>Section 08 &mdash; AI Dev Kit</strong></p>
+                    <p style="font-size: 0.8em;">Databricks AI Dev Kit, ChatAgent 인터페이스, MLflow Tracing</p>
+                </div>
+                <aside class="notes">
+                    질문을 받겠습니다.
+                    예상 질문들:
+                    - Q: Hook이 실패하면 어떻게 되나요? A: Hook 자체의 실패는 Claude Code 동작에 영향을 주지 않습니다. 단, PreToolUse에서 exit 2를 반환하면 도구 실행이 차단됩니다.
+                    - Q: Hook에서 Python 스크립트를 실행할 수 있나요? A: 네, command에 python script.py를 지정하면 됩니다.
+                    다음 섹션은 Databricks AI Dev Kit입니다. 에이전트를 프로덕션에 배포하기 위한 프레임워크를 알아봅니다.
+                </aside>
+            </section>
+
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/notes/notes.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/highlight.js"></script>
+    <script>
+        Reveal.initialize({
+            hash: true,
+            slideNumber: true,
+            plugins: [ RevealNotes, RevealHighlight ]
+        });
+    </script>
+    <script src="../../shared/scripts/sidebar.js"></script>
+    <script src="../../shared/scripts/copy-code.js"></script>
+</body>
+</html>

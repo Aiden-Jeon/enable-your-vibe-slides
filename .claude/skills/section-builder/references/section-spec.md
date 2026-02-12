@@ -1,4 +1,4 @@
-# 9개 섹션 마스터 스펙
+# 11개 섹션 마스터 스펙
 
 ## Section 01: AI Foundation - Claude AI 기초
 - **시간**: 15분 | **유형**: 강의
@@ -59,7 +59,33 @@
   - `exercise_02_genie_mcp_server.py`: Genie MCP 서버 구현
   - `.env.example`: DATABRICKS_HOST, DATABRICKS_TOKEN, GENIE_SPACE_ID
 
-## Section 06: Skills Workflow - Skills로 워크플로우 구조화
+## Section 06: Custom Agents - 나만의 에이전트 만들기
+- **시간**: 25분 | **유형**: 강의+실습
+- **목표**: Custom Agent 개념과 agent.md 구조 이해, 직접 Agent 만들기
+- **내용**:
+  - Custom Agents란? (@호출, agent.md)
+  - agent.md 구조 (역할/제약 조건/출력 형식)
+  - 실제 예시: researcher, validator 에이전트
+  - Skills vs Agents 비교
+  - Agent 설계 원칙
+- **코드**:
+  - `exercise_01_simple_agent/`: 간단한 Agent 예제
+  - `exercise_02_project_agent/`: 프로젝트용 Agent 예제
+
+## Section 07: Hooks - 이벤트 기반 자동화
+- **시간**: 25분 | **유형**: 강의+실습
+- **목표**: Hooks 개념과 이벤트 트리거 방식 이해, Hook 설정 실습
+- **내용**:
+  - Hooks란? (이벤트 기반 자동 실행)
+  - Hook 이벤트 타입 (PreToolUse/PostToolUse/Notification/Stop)
+  - Hook 설정 구조 (settings.json)
+  - 설정 파일 위치와 우선순위
+  - 실전 예시: Auto-format, 안전 가드레일
+  - Skills + Agents + Hooks 통합
+- **코드**:
+  - `.claude/settings.json` 예제
+
+## Section 08: Skills Workflow - Skills로 워크플로우 구조화
 - **시간**: 25분 | **유형**: 실습
 - **목표**: Custom Skills를 만들어 반복 작업을 자동화하는 방법 학습
 - **내용**:
@@ -72,7 +98,7 @@
   - `exercise_01_simple_skill/`: 간단한 Skill 예제 (디렉토리)
   - `exercise_02_skill_with_refs/`: 레퍼런스 활용 Skill 예제
 
-## Section 07: AI Dev Kit - Databricks AI Dev Kit
+## Section 09: AI Dev Kit - Databricks AI Dev Kit
 - **시간**: 15분 | **유형**: 강의+데모
 - **목표**: Databricks AI Dev Kit의 소개와 databricks-agents 활용법 이해
 - **내용**:
@@ -82,7 +108,7 @@
   - 로컬 개발 → Databricks 배포 워크플로우
 - **코드**: 데모용 간단한 예제 (선택)
 
-## Section 08: Build UI - UI 만들기
+## Section 10: Build UI - UI 만들기
 - **시간**: 30분 | **유형**: 실습
 - **목표**: FastAPI + 정적 프론트엔드로 Genie 챗봇 UI 구현
 - **내용**:
@@ -99,7 +125,7 @@
     - `static/style.css`: 스타일
     - `static/app.js`: 프론트엔드 로직
 
-## Section 09: Deploy to Databricks - Databricks 배포
+## Section 11: Deploy to Databricks - Databricks 배포
 - **시간**: 15분 | **유형**: 실습
 - **목표**: Databricks Apps로 애플리케이션 배포
 - **내용**:

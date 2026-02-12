@@ -1,0 +1,12 @@
+number: "07"
+title: "Hooks: 이벤트 기반 자동화"
+duration_minutes: 25
+type: "lecture+hands-on"
+objectives:
+  - "Hooks 개념과 이벤트 트리거 방식 이해"
+  - "Hook 타입별 사용 시나리오 학습"
+  - "settings.json에서 Hook 설정 방법 숙지"
+  - "실습: 간단한 Hook 설정 및 테스트"
+slides: "index.html"
+prerequisites:
+  - "06-agents"

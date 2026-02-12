@@ -1,4 +1,4 @@
-number: "07"
+number: "09"
 title: "Build UI: UI 만들기"
 duration_minutes: 30
 type: "hands-on"
@@ -9,4 +9,4 @@ objectives:
 slides: "index.html"
 prerequisites:
   - "04-genie-mcp"
-  - "06-ai-dev-kit"
+  - "08-ai-dev-kit"

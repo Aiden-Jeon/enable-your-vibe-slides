@@ -1,4 +1,4 @@
-number: "08"
+number: "10"
 title: "Deploy to Databricks: Databricks 배포"
 duration_minutes: 15
 type: "hands-on"
@@ -8,4 +8,4 @@ objectives:
   - "databricks CLI를 사용한 앱 배포 실습"
 slides: "index.html"
 prerequisites:
-  - "07-build-ui"
+  - "09-build-ui"

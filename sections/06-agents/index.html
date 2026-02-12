@@ -1,0 +1,540 @@
+<!doctype html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>06 - Custom Agents - Enable Your Vibe</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reset.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/theme/black.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/monokai.css">
+    <link rel="stylesheet" href="../../shared/assets/theme.css">
+    <style>
+        /* Section-specific styles */
+        .reveal .section-number {
+            font-size: 0.5em;
+            color: var(--ev-text-muted);
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+        }
+        .reveal .subtitle {
+            color: var(--ev-accent-light);
+            font-size: 1.2em;
+            margin-top: 0.2em;
+        }
+        .reveal .badge {
+            display: inline-block;
+            background: var(--ev-accent);
+            color: white;
+            font-size: 0.6em;
+            padding: 0.2em 0.6em;
+            border-radius: 20px;
+            vertical-align: middle;
+            margin-left: 0.5em;
+        }
+        .reveal .principle-box {
+            background: var(--ev-bg-alt);
+            border-left: 4px solid var(--ev-accent);
+            border-radius: 0 8px 8px 0;
+            padding: 0.8em 1.2em;
+            margin: 0.6em 0;
+        }
+        .reveal .principle-box h4 {
+            color: var(--ev-accent-light);
+            margin: 0 0 0.2em 0;
+            font-size: 0.95em;
+        }
+        .reveal .principle-box p {
+            margin: 0;
+            font-size: 0.8em;
+            color: var(--ev-text-muted);
+        }
+        .reveal .tree-diagram {
+            font-family: "Courier New", monospace;
+            text-align: left;
+            font-size: 0.7em;
+            line-height: 1.6;
+            background: var(--ev-code-bg);
+            padding: 1.2em 1.5em;
+            border-radius: 8px;
+            border: 1px solid #333;
+        }
+        .reveal .tree-diagram .dir {
+            color: var(--ev-accent-light);
+            font-weight: bold;
+        }
+        .reveal .tree-diagram .file {
+            color: var(--ev-text);
+        }
+        .reveal .tree-diagram .desc {
+            color: var(--ev-text-muted);
+        }
+        .reveal .exercise-box {
+            background: var(--ev-bg-alt);
+            border: 2px solid var(--ev-accent);
+            border-radius: 12px;
+            padding: 1.2em 1.5em;
+            margin: 0.8em 0;
+        }
+        .reveal .exercise-box h4 {
+            color: var(--ev-accent);
+            margin: 0 0 0.5em 0;
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar Navigation -->
+    <button id="sidebar-toggle" class="sidebar-toggle"><span></span><span></span><span></span></button>
+    <nav id="sidebar" class="sidebar">
+        <div class="sidebar-header">
+            <h2>Enable Your Vibe</h2>
+            <p>Vibe Coding 핸즈온 세션</p>
+        </div>
+        <ul class="sidebar-sections"></ul>
+    </nav>
+    <div id="sidebar-overlay" class="sidebar-overlay"></div>
+
+    <div class="reveal">
+        <div class="slides">
+
+            <!-- Slide 1: Title -->
+            <section>
+                <p class="section-number">Section 06</p>
+                <h1>Custom Agents</h1>
+                <p class="subtitle">나만의 에이전트 만들기</p>
+                <br>
+                <p style="font-size: 0.7em; color: var(--ev-text-muted);">
+                    Enable Your Vibe &mdash; AI-Powered Development Hands-on
+                </p>
+                <p style="font-size: 0.6em; color: var(--ev-text-muted);">
+                    25분 | 강의+실습
+                </p>
+                <aside class="notes">
+                    섹션 6을 시작합니다. 이번 세션에서는 Claude Code의 Custom Agents를 다룹니다.
+                    이전 섹션에서 Skills를 배웠다면, 이번에는 특정 역할에 특화된 에이전트를 만드는 방법을 알아봅니다.
+                    Skills가 "무엇을 어떻게 할 것인가"라면, Agents는 "누가 어떤 관점에서 할 것인가"입니다.
+                </aside>
+            </section>
+
+            <!-- Slide 2: 학습 목표 -->
+            <section>
+                <h2>학습 목표</h2>
+                <ul>
+                    <li class="fragment fade-up" data-fragment-index="0">Custom Agent 개념과 <code>agent.md</code> 구조를 이해한다</li>
+                    <li class="fragment fade-up" data-fragment-index="0"><strong>Skills vs Agents</strong> 차이점을 파악한다</li>
+                    <li class="fragment fade-up" data-fragment-index="0">실제 에이전트(<code>researcher</code>, <code>validator</code>)를 분석한다</li>
+                    <li class="fragment fade-up" data-fragment-index="0">직접 <strong>Custom Agent</strong>를 만들어본다</li>
+                </ul>
+                <aside class="notes">
+                    네 가지 학습 목표입니다.
+                    첫째, Custom Agent가 무엇이고 agent.md 파일이 어떤 구조인지 이해합니다.
+                    둘째, 이전 섹션에서 배운 Skills와 Agents의 차이를 명확히 파악합니다.
+                    셋째, 이 프로젝트에서 실제로 사용 중인 에이전트를 분석합니다.
+                    넷째, 실습을 통해 직접 Custom Agent를 만들어봅니다.
+                </aside>
+            </section>
+
+            <!-- Slide 3: 확장 체계 복습 -->
+            <section>
+                <h2>Claude Code 확장 체계 복습</h2>
+                <p style="font-size: 0.85em; margin-bottom: 0.8em;">세 가지 확장 방법 중 <strong style="color: #4ade80;">Agents</strong>를 다룹니다</p>
+                <div style="display: flex; justify-content: space-around; gap: 1.5em;">
+                    <!-- Skills -->
+                    <div style="flex: 1; border: 2px solid #555; border-radius: 12px; padding: 1.5em; background: rgba(255,255,255,0.02); text-align: center; opacity: 0.6;">
+                        <h3 style="margin-top: 0; color: var(--ev-accent);">Skills</h3>
+                        <div style="font-size: 0.9em; color: var(--ev-text-muted);">/명령어 호출</div>
+                        <div style="font-size: 0.85em; color: var(--ev-text-muted);">Section 05에서 학습</div>
+                    </div>
+
+                    <!-- Agents (강조) -->
+                    <div style="flex: 1; border: 2px solid #4ade80; border-radius: 12px; padding: 1.5em; background: rgba(74, 222, 128, 0.1); text-align: center;">
+                        <h3 style="margin-top: 0; color: #4ade80;">Agents</h3>
+                        <div style="font-size: 0.95em;"><strong>@에이전트 호출</strong></div>
+                        <div style="font-size: 0.85em; color: #4ade80;">이번 섹션!</div>
+                    </div>
+
+                    <!-- Hooks -->
+                    <div style="flex: 1; border: 2px solid #555; border-radius: 12px; padding: 1.5em; background: rgba(255,255,255,0.02); text-align: center; opacity: 0.6;">
+                        <h3 style="margin-top: 0; color: #60a5fa;">Hooks</h3>
+                        <div style="font-size: 0.9em; color: var(--ev-text-muted);">이벤트 트리거</div>
+                        <div style="font-size: 0.85em; color: var(--ev-text-muted);">Section 07에서 학습</div>
+                    </div>
+                </div>
+                <aside class="notes">
+                    Section 05에서 배운 확장 체계를 복습합니다.
+                    Skills, Agents, Hooks 세 가지 중에서 이번 섹션에서는 Agents를 심도 있게 다룹니다.
+                    Skills는 이미 배웠고, Hooks는 다음 섹션에서 배울 예정입니다.
+                </aside>
+            </section>
+
+            <!-- Slide 4: Custom Agents란? -->
+            <section>
+                <h2>Custom Agents란?</h2>
+                <ul>
+                    <li><code>agent.md</code> 파일로 정의하는 <strong>역할 기반 AI 에이전트</strong></li>
+                    <li>프로젝트 내 <code>.claude/agents/</code> 디렉토리에 위치</li>
+                    <li>특정 역할에 특화된 <strong>페르소나</strong>를 부여</li>
+                    <li>호출 방법: <code>@agent-name</code></li>
+                </ul>
+                <div class="emphasis-box fragment fade-up" style="margin-top: 1em;">
+                    <strong>핵심 아이디어:</strong> "이 작업은 이런 전문가 관점에서 해줘"를 코드화한 것
+                </div>
+                <div class="fragment fade-up" style="margin-top: 0.8em;">
+                    <pre><code class="language-text" data-trim>
+# Claude Code에서 에이전트 호출
+> @researcher 최신 MCP 프로토콜 변경사항을 조사해줘
+> @validator 이 슬라이드 섹션을 검증해줘
+                    </code></pre>
+                </div>
+                <aside class="notes">
+                    Custom Agents의 핵심 개념을 설명합니다.
+                    agent.md는 마크다운 파일로, Claude Code에게 특정 역할의 전문가처럼 행동하도록 지시합니다.
+                    Skills가 작업 절차를 정의한다면, Agents는 역할과 관점을 정의합니다.
+                    예를 들어 researcher 에이전트는 조사 전문가로, validator 에이전트는 검증 전문가로 동작합니다.
+                    골뱅이(@) 기호로 호출하면 해당 역할에 맞는 응답을 받을 수 있습니다.
+                </aside>
+            </section>
+
+            <!-- Slide 5: agent.md 구조 -->
+            <section>
+                <h2>agent.md 파일 구조</h2>
+                <div class="columns">
+                    <div>
+                        <pre><code class="language-markdown" data-trim data-line-numbers="1-3|5-7|9-12|14-17">
+# 에이전트 이름
+
+에이전트에 대한 한줄 설명
+
+## 역할 (Role)
+당신은 [전문 분야] 전문가입니다.
+[역할에 대한 상세 설명]
+
+## 제약 조건 (Constraints)
+- 조사 범위 제한
+- 사용 가능한 도구 명시
+- 금지 사항
+
+## 출력 형식 (Output Format)
+결과물의 형태를 정의합니다:
+- 마크다운 보고서
+- 체크리스트
+                        </code></pre>
+                    </div>
+                    <div>
+                        <div class="principle-box fragment fade-up">
+                            <h4>역할 섹션</h4>
+                            <p>에이전트의 전문성과 관점을 정의. "당신은 ~입니다"로 시작</p>
+                        </div>
+                        <div class="principle-box fragment fade-up">
+                            <h4>제약 조건 섹션</h4>
+                            <p>에이전트가 하지 말아야 할 것, 범위 제한, 사용 도구 명시</p>
+                        </div>
+                        <div class="principle-box fragment fade-up">
+                            <h4>출력 형식 섹션</h4>
+                            <p>결과물의 구조와 포맷을 미리 정의하여 일관성 보장</p>
+                        </div>
+                    </div>
+                </div>
+                <aside class="notes">
+                    agent.md의 기본 구조입니다.
+                    역할 섹션에서는 에이전트의 전문성을 정의합니다. "당신은 ~ 전문가입니다"로 시작하는 것이 좋습니다.
+                    제약 조건 섹션에서는 에이전트가 하지 말아야 할 것과 범위를 명시합니다.
+                    출력 형식 섹션에서는 결과물이 어떤 형태여야 하는지 정의합니다.
+                    Skills의 SKILL.md와 비교하면, Skills는 처리 절차가 핵심이고, Agents는 역할과 제약 조건이 핵심입니다.
+                </aside>
+            </section>
+
+            <!-- Slide 6: 실제 예시: researcher.md -->
+            <section>
+                <h2>실제 예시: researcher 에이전트</h2>
+                <p style="color: var(--ev-text-muted); font-size: 0.85em;">이 프로젝트에서 실제 사용 중인 에이전트</p>
+                <pre><code class="language-markdown" data-trim data-line-numbers="1-3|5-9|11-15|17-22">
+# researcher
+
+교육 콘텐츠 리서치 전문 에이전트
+
+## 역할
+당신은 AI/ML 및 개발 도구 분야의 리서치 전문가입니다.
+교육 자료 제작에 필요한 최신 정보를 수집하고,
+정확하고 실용적인 내용을 정리합니다.
+
+## 제약 조건
+- 공식 문서와 신뢰할 수 있는 소스만 참조
+- 추측이나 불확실한 정보는 명시적으로 표시
+- 코드 예시는 반드시 동작 가능한 것만 포함
+- 한국어로 결과물 작성
+
+## 출력 형식
+### 조사 결과
+- **주제**: [조사 주제]
+- **핵심 내용**: 불릿 포인트로 정리
+- **참고 소스**: URL 목록
+- **교육 자료 반영 포인트**: 슬라이드에 활용할 내용
+                </code></pre>
+                <aside class="notes">
+                    이 프로젝트에서 실제로 사용 중인 researcher 에이전트입니다.
+                    역할에서 AI/ML 및 개발 도구 분야의 리서치 전문가로 정의했습니다.
+                    제약 조건에서 공식 문서만 참조하고, 불확실한 정보는 명시하도록 했습니다.
+                    출력 형식에서 주제, 핵심 내용, 참고 소스, 교육 자료 반영 포인트를 구조화했습니다.
+                    이런 구조 덕분에 누가 @researcher를 호출해도 동일한 형식의 조사 결과를 받을 수 있습니다.
+                </aside>
+            </section>
+
+            <!-- Slide 7: 실제 예시: validator.md -->
+            <section>
+                <h2>실제 예시: validator 에이전트</h2>
+                <pre><code class="language-markdown" data-trim data-line-numbers="1-3|5-8|10-16|18-24">
+# validator
+
+슬라이드 및 코드 품질 검증 에이전트
+
+## 역할
+당신은 교육 콘텐츠 품질 검증 전문가입니다.
+슬라이드의 정확성, 일관성, 완성도를
+체계적으로 검증합니다.
+
+## 체크리스트
+- [ ] 섹션 번호와 제목이 section.yaml과 일치
+- [ ] 모든 슬라이드에 스피커 노트 포함
+- [ ] 코드 블록에 language 속성 지정
+- [ ] 다크 테마 색상 컨벤션 준수
+- [ ] 이전/다음 섹션 참조가 올바른지
+- [ ] reveal.js CDN 링크가 최신 버전인지
+
+## 출력 형식
+### 검증 결과
+- **통과 항목**: [체크 표시 목록]
+- **수정 필요**: [이슈와 수정 방안]
+- **경고**: [주의사항]
+- **종합 평가**: PASS / FAIL (사유)
+                </code></pre>
+                <aside class="notes">
+                    validator 에이전트는 품질 검증에 특화되어 있습니다.
+                    역할에서 교육 콘텐츠 품질 검증 전문가로 정의했습니다.
+                    체크리스트 섹션이 핵심인데, 검증해야 할 항목을 구체적으로 나열합니다.
+                    출력 형식에서 통과 항목, 수정 필요, 경고, 종합 평가를 구조화했습니다.
+                    이 에이전트를 사용하면 슬라이드를 만든 후 일관된 기준으로 품질을 검증할 수 있습니다.
+                </aside>
+            </section>
+
+            <!-- Slide 8: Skills vs Agents 비교 -->
+            <section>
+                <h2>Skills vs Agents 비교</h2>
+                <table style="font-size: 0.8em;">
+                    <thead>
+                        <tr><th></th><th style="color: var(--ev-accent);">Skills</th><th style="color: #4ade80;">Agents</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><strong>정의</strong></td><td>작업 절차 (How)</td><td>역할과 관점 (Who)</td></tr>
+                        <tr><td><strong>파일</strong></td><td>SKILL.md</td><td>agent.md</td></tr>
+                        <tr><td><strong>위치</strong></td><td>.claude/skills/</td><td>.claude/agents/</td></tr>
+                        <tr><td><strong>호출</strong></td><td><code>/skill-name</code></td><td><code>@agent-name</code></td></tr>
+                        <tr><td><strong>초점</strong></td><td>"무엇을, 어떻게"</td><td>"누가, 어떤 범위에서"</td></tr>
+                        <tr><td><strong>예시</strong></td><td>/slide-deck, /api-endpoint</td><td>@researcher, @validator</td></tr>
+                    </tbody>
+                </table>
+                <div class="emphasis-box fragment fade-up" style="margin-top: 1em;">
+                    <strong>선택 가이드:</strong><br>
+                    <span style="font-size: 0.9em;">
+                        반복적인 <strong>작업 절차</strong>가 있다 &rarr; <span style="color: var(--ev-accent);">Skill</span> |
+                        특정 <strong>전문가 관점</strong>이 필요하다 &rarr; <span style="color: #4ade80;">Agent</span>
+                    </span>
+                </div>
+                <aside class="notes">
+                    Skills와 Agents의 핵심 차이를 비교합니다.
+                    Skills는 작업의 절차, 즉 How를 정의합니다. "이 작업은 이 순서대로 해줘."
+                    Agents는 역할과 관점, 즉 Who를 정의합니다. "이 전문가처럼 행동해줘."
+                    선택 기준은 간단합니다.
+                    동일한 작업을 반복적으로 수행해야 한다면 Skill을 만듭니다.
+                    특정 전문가의 관점이 필요하다면 Agent를 만듭니다.
+                    실무에서는 둘을 조합해서 사용합니다. 예를 들어 @researcher에게 조사를 요청한 후, /slide-deck으로 슬라이드를 생성할 수 있습니다.
+                </aside>
+            </section>
+
+            <!-- Slide 9: Agent 설계 원칙 -->
+            <section>
+                <h2>Agent 설계 원칙</h2>
+                <div class="principle-box fragment fade-up">
+                    <h4>1. 명확한 역할 정의</h4>
+                    <p>"당신은 ~ 전문가입니다"로 시작. 역할이 모호하면 결과도 모호해집니다.</p>
+                </div>
+                <div class="principle-box fragment fade-up">
+                    <h4>2. 적절한 제약 조건</h4>
+                    <p>하지 말아야 할 것을 명시. 범위가 넓을수록 제약 조건이 중요합니다.</p>
+                </div>
+                <div class="principle-box fragment fade-up">
+                    <h4>3. 구조화된 출력 형식</h4>
+                    <p>결과물의 형태를 미리 정의하면 일관된 품질을 보장할 수 있습니다.</p>
+                </div>
+                <div class="principle-box fragment fade-up">
+                    <h4>4. 단일 책임 원칙</h4>
+                    <p>하나의 Agent는 하나의 역할에 집중. 여러 역할이 필요하면 여러 Agent를 만듭니다.</p>
+                </div>
+                <aside class="notes">
+                    좋은 Agent를 설계하기 위한 네 가지 원칙입니다.
+                    첫째, 역할을 명확하게 정의합니다. 모호한 역할은 모호한 결과를 낳습니다.
+                    둘째, 적절한 제약 조건을 둡니다. 특히 범위가 넓은 에이전트일수록 제약이 중요합니다.
+                    셋째, 출력 형식을 미리 정의합니다. 매번 다른 형식으로 결과가 나오면 활용하기 어렵습니다.
+                    넷째, 단일 책임 원칙을 따릅니다. 리서치와 검증을 하나의 Agent에 넣지 마세요.
+                </aside>
+            </section>
+
+            <!-- Slide 10: Agent 디렉토리 구조 -->
+            <section>
+                <h2>Agent 디렉토리 구조</h2>
+                <div class="columns">
+                    <div>
+                        <div class="tree-diagram">
+                            <span class="dir">.claude/</span><br>
+                            <span class="file">&boxvr;&boxh;&boxh; <span class="dir">agents/</span></span> <span class="desc">&larr; Agent 정의</span><br>
+                            <span class="file">&boxvr;&ensp;&ensp; &boxvr;&boxh;&boxh; researcher.md</span> <span class="desc">&larr; 리서치 전문가</span><br>
+                            <span class="file">&boxvr;&ensp;&ensp; &boxur;&boxh;&boxh; validator.md</span> <span class="desc">&larr; 검증 전문가</span><br>
+                            <span class="file">&boxvr;&boxh;&boxh; <span class="dir">skills/</span></span> <span class="desc">&larr; Skill 정의</span><br>
+                            <span class="file">&boxvr;&ensp;&ensp; &boxvr;&boxh;&boxh; <span class="dir">slide-deck/</span></span><br>
+                            <span class="file">&boxvr;&ensp;&ensp; &boxvr;&boxh;&boxh; <span class="dir">hands-on-code/</span></span><br>
+                            <span class="file">&boxvr;&ensp;&ensp; &boxur;&boxh;&boxh; <span class="dir">section-builder/</span></span><br>
+                            <span class="file">&boxur;&boxh;&boxh; CLAUDE.md</span> <span class="desc">&larr; 프로젝트 컨텍스트</span>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="fragment fade-up" style="margin-bottom: 0.8em;">
+                            <h3>핵심 포인트</h3>
+                            <ul style="font-size: 0.8em;">
+                                <li><code>.claude/agents/</code> 디렉토리에 배치</li>
+                                <li>각 Agent는 <strong>하나의 .md 파일</strong></li>
+                                <li>파일명 = 에이전트 호출명</li>
+                                <li>Skills보다 구조가 단순</li>
+                            </ul>
+                        </div>
+                        <div class="fragment fade-up emphasis-box">
+                            <p style="font-size: 0.85em; margin: 0;">
+                                <strong>Skills</strong>: 디렉토리 + SKILL.md + references/<br>
+                                <strong>Agents</strong>: <code>agent-name.md</code> 파일 하나로 완성
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <aside class="notes">
+                    실제 프로젝트에서 Agent가 어떻게 배치되는지 보겠습니다.
+                    .claude 디렉토리 아래에 agents 폴더가 있고, 각 에이전트는 하나의 마크다운 파일입니다.
+                    Skills와 비교하면 구조가 훨씬 단순합니다.
+                    Skills는 디렉토리 안에 SKILL.md와 references를 가지지만,
+                    Agents는 .md 파일 하나로 완성됩니다.
+                    파일명이 곧 호출명이 됩니다. researcher.md → @researcher로 호출합니다.
+                </aside>
+            </section>
+
+            <!-- Slide 11: 실습 -->
+            <section>
+                <h2>실습: Custom Agent 만들기 <span class="badge">Hands-on</span></h2>
+                <div class="columns">
+                    <div>
+                        <div class="exercise-box fragment fade-up">
+                            <h4>Exercise 1: 간단한 Agent (10분)</h4>
+                            <ol style="font-size: 0.8em;">
+                                <li><code>exercise_01_simple_agent/agent.md</code> 템플릿 확인</li>
+                                <li>Claude Code에게 <code>code-reviewer</code> 에이전트 작성 요청</li>
+                                <li><code>@code-reviewer</code>로 호출하여 테스트</li>
+                            </ol>
+                            <p style="font-size: 0.75em; color: var(--ev-text-muted); margin-top: 0.5em;">
+                                <code style="color: var(--ev-accent-light);">&gt; exercise_01_simple_agent/agent.md에 code-reviewer 에이전트를 작성해줘</code>
+                            </p>
+                        </div>
+                        <div class="exercise-box fragment fade-up">
+                            <h4>Exercise 2: 프로젝트용 Agent (10분)</h4>
+                            <ol style="font-size: 0.8em;">
+                                <li>팀에서 필요한 역할을 정의</li>
+                                <li>Claude Code에게 해당 에이전트 작성 요청</li>
+                                <li>에이전트를 호출하여 실제 업무에 적용</li>
+                            </ol>
+                            <p style="font-size: 0.75em; color: var(--ev-text-muted); margin-top: 0.5em;">
+                                예: <code style="color: var(--ev-accent-light);">@data-analyst</code>,
+                                <code style="color: var(--ev-accent-light);">@sql-optimizer</code>,
+                                <code style="color: var(--ev-accent-light);">@doc-writer</code>
+                            </p>
+                        </div>
+                    </div>
+                    <div class="fragment fade-up">
+                        <h3>체크리스트</h3>
+                        <ul style="font-size: 0.8em;">
+                            <li>역할이 명확하게 정의되어 있는가?</li>
+                            <li>제약 조건이 적절히 설정되어 있는가?</li>
+                            <li>출력 형식이 구조화되어 있는가?</li>
+                            <li>단일 책임 원칙을 따르는가?</li>
+                            <li>에이전트를 호출했을 때 기대한 역할로 동작하는가?</li>
+                        </ul>
+                    </div>
+                </div>
+                <aside class="notes">
+                    실습 시간입니다. 두 가지 Exercise를 진행합니다.
+                    Exercise 1은 간단한 code-reviewer 에이전트를 만드는 것입니다.
+                    템플릿 파일을 확인한 후 Claude Code에게 작성을 요청하고, 실제로 호출하여 테스트합니다.
+                    Exercise 2는 좀 더 자유롭게, 팀에서 실제로 필요한 역할의 에이전트를 만들어봅니다.
+                    data-analyst, sql-optimizer, doc-writer 등 자신의 업무에 맞는 에이전트를 설계해보세요.
+                    체크리스트를 참고하여 품질을 검증합니다.
+                </aside>
+            </section>
+
+            <!-- Slide 12: 정리 -->
+            <section>
+                <h2>정리</h2>
+                <div class="emphasis-box">
+                    <h3>핵심 정리</h3>
+                    <ul style="font-size: 0.9em;">
+                        <li class="fragment fade-up">
+                            <strong>Custom Agents</strong> &mdash; <code>agent.md</code>로 정의하는 역할 기반 AI 에이전트
+                        </li>
+                        <li class="fragment fade-up">
+                            <strong>핵심 구조</strong> &mdash; 역할 + 제약 조건 + 출력 형식
+                        </li>
+                        <li class="fragment fade-up">
+                            <strong>Skills vs Agents</strong> &mdash; 절차 중심 vs 역할 중심, 실무에서는 조합 사용
+                        </li>
+                        <li class="fragment fade-up">
+                            <strong>설계 원칙</strong> &mdash; 명확한 역할, 적절한 제약, 구조화된 출력, 단일 책임
+                        </li>
+                    </ul>
+                </div>
+                <aside class="notes">
+                    정리하겠습니다.
+                    Custom Agents는 agent.md 파일 하나로 역할 기반 AI 에이전트를 정의합니다.
+                    핵심 구조는 역할, 제약 조건, 출력 형식 세 가지입니다.
+                    Skills는 절차 중심, Agents는 역할 중심으로, 실무에서는 둘을 조합해서 사용합니다.
+                    좋은 Agent는 명확한 역할, 적절한 제약, 구조화된 출력, 단일 책임 원칙을 갖춥니다.
+                </aside>
+            </section>
+
+            <!-- Slide 13: Q&A -->
+            <section>
+                <h1>Q&amp;A</h1>
+                <p>질문이 있으신가요?</p>
+                <div style="margin-top: 2em; font-size: 0.85em; color: var(--ev-text-muted);">
+                    <p>다음: <strong>Section 07 &mdash; Hooks</strong></p>
+                    <p style="font-size: 0.8em;">이벤트 기반 자동화, settings.json 설정, 안전 가드레일</p>
+                </div>
+                <aside class="notes">
+                    질문을 받겠습니다.
+                    예상 질문들:
+                    - Q: Agent가 여러 개일 때 서로 호출할 수 있나요? A: 직접 호출은 불가능하지만, 사용자가 한 Agent의 결과를 다른 Agent에게 전달할 수 있습니다.
+                    - Q: Skills와 Agents 중 어떤 것을 먼저 만들어야 하나요? A: 반복 작업이 먼저 보이면 Skills, 전문가 관점이 먼저 필요하면 Agents부터 시작하세요.
+                    다음 섹션은 Hooks입니다. Claude Code의 세 번째 확장 체계로, 이벤트 기반 자동화를 다룹니다.
+                </aside>
+            </section>
+
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/notes/notes.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/highlight.js"></script>
+    <script>
+        Reveal.initialize({
+            hash: true,
+            slideNumber: true,
+            plugins: [ RevealNotes, RevealHighlight ]
+        });
+    </script>
+    <script src="../../shared/scripts/sidebar.js"></script>
+    <script src="../../shared/scripts/copy-code.js"></script>
+</body>
+</html>
