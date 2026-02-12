@@ -178,7 +178,7 @@
                     <strong>핵심 아이디어:</strong> "이 이벤트가 발생하면 자동으로 이 작업을 실행해줘"를 설정한 것
                 </div>
                 <div class="fragment fade-up" style="margin-top: 0.8em;">
-                    <pre><code class="language-text" data-trim>
+                    <pre><code class="language-text">
 Skills:  사용자가 /명령어로 명시적 호출
 Agents:  사용자가 @에이전트로 명시적 호출
 Hooks:   이벤트 발생 시 자동으로 실행 (암시적)
@@ -248,7 +248,7 @@ Hooks:   이벤트 발생 시 자동으로 실행 (암시적)
                 <p style="font-size: 0.85em; margin-bottom: 0.5em;">
                     <code>settings.json</code>의 <code>hooks</code> 필드에 정의
                 </p>
-                <pre><code class="language-json" data-trim data-line-numbers="1-2|3|4|5|6-9">
+                <pre><code class="language-json" style="font-size: 0.8em;">
 {
   "hooks": {
     "PostToolUse": [
@@ -257,7 +257,7 @@ Hooks:   이벤트 발생 시 자동으로 실행 (암시적)
         "hooks": [
           {
             "type": "command",
-            "command": "black $CLAUDE_FILE_PATH"
+            "command": "cat | jq -r '.tool_input.file_path' | xargs black"
           }
         ]
       }
@@ -275,8 +275,8 @@ Hooks:   이벤트 발생 시 자동으로 실행 (암시적)
                         <p style="font-size: 0.8em; color: var(--ev-text-muted);">실행할 쉘 명령어</p>
                     </div>
                     <div>
-                        <h4 style="color: #60a5fa; font-size: 0.9em;">환경변수</h4>
-                        <p style="font-size: 0.8em; color: var(--ev-text-muted);"><code>$CLAUDE_FILE_PATH</code> 등 자동 주입</p>
+                        <h4 style="color: #60a5fa; font-size: 0.9em;">stdin</h4>
+                        <p style="font-size: 0.8em; color: var(--ev-text-muted);">JSON으로 tool 정보 전달 (<code>jq</code>로 파싱)</p>
                     </div>
                 </div>
                 <aside class="notes">
@@ -285,7 +285,7 @@ Hooks:   이벤트 발생 시 자동으로 실행 (암시적)
                     PostToolUse 이벤트에 Hook을 설정한 예시입니다.
                     matcher는 어떤 도구에 반응할지 정규식으로 지정합니다. Write|Edit는 파일 수정 도구에 반응합니다.
                     command에 실행할 쉘 명령어를 지정합니다.
-                    $CLAUDE_FILE_PATH 같은 환경변수가 자동으로 주입되어 수정된 파일 경로를 알 수 있습니다.
+                    Hook은 stdin으로 JSON을 전달받으며, jq로 파싱하여 파일 경로 등의 정보를 얻을 수 있습니다.
                 </aside>
             </section>
 
@@ -293,19 +293,19 @@ Hooks:   이벤트 발생 시 자동으로 실행 (암시적)
             <section>
                 <h2>설정 파일 위치와 우선순위</h2>
                 <div style="display: flex; flex-direction: column; gap: 0.8em; margin-top: 1em;">
-                    <div class="priority-box fragment fade-up" style="border-color: var(--ev-accent);">
+                    <div class="priority-box fragment fade-up" data-fragment-index="2" style="border-color: var(--ev-accent);">
                         <h4 style="color: var(--ev-accent);">1. 프로젝트 설정 (최우선)</h4>
                         <p><code>.claude/settings.json</code></p>
                         <p>프로젝트별 Hook &mdash; Git으로 팀과 공유</p>
                     </div>
-                    <div style="text-align: center; font-size: 1.2em; color: var(--ev-text-muted);">&uarr; 우선순위</div>
-                    <div class="priority-box fragment fade-up">
+                    <div class="fragment fade-up" data-fragment-index="1" style="text-align: center; font-size: 0.9em; color: #ef4444; font-weight: bold;">&uarr; <span style="color: #ef4444;">우선순위</span></div>
+                    <div class="priority-box fragment fade-up" data-fragment-index="1">
                         <h4 style="color: #60a5fa;">2. 사용자 설정</h4>
                         <p><code>~/.claude/settings.json</code></p>
                         <p>개인 환경 Hook &mdash; 모든 프로젝트에 적용</p>
                     </div>
-                    <div style="text-align: center; font-size: 1.2em; color: var(--ev-text-muted);">&uarr; 우선순위</div>
-                    <div class="priority-box fragment fade-up" style="opacity: 0.7;">
+                    <div class="fragment fade-up" data-fragment-index="0" style="text-align: center; font-size: 0.9em; color: #ef4444; font-weight: bold;">&uarr; <span style="color: #ef4444;">우선순위</span></div>
+                    <div class="priority-box fragment fade-up" data-fragment-index="0" style="opacity: 0.7;">
                         <h4 style="color: var(--ev-text-muted);">3. 엔터프라이즈 설정</h4>
                         <p>관리자가 배포하는 조직 전체 설정</p>
                     </div>
@@ -326,7 +326,7 @@ Hooks:   이벤트 발생 시 자동으로 실행 (암시적)
                 <p style="font-size: 0.85em; margin-bottom: 0.5em;">
                     파일 수정 후 자동으로 <strong>코드 포매팅</strong> 실행
                 </p>
-                <pre><code class="language-json" data-trim>
+                <pre><code class="language-json" style="font-size: 0.8em;">
 {
   "hooks": {
     "PostToolUse": [
@@ -335,15 +335,15 @@ Hooks:   이벤트 발생 시 자동으로 실행 (암시적)
         "hooks": [
           {
             "type": "command",
-            "command": "cd $CLAUDE_PROJECT_DIR && black $CLAUDE_FILE_PATH && isort $CLAUDE_FILE_PATH"
+            "command": "cat | jq -r '.tool_input.file_path' | xargs sh -c 'black \"$1\" && isort \"$1\"' _"
           }
         ]
       }
     ]
   }
 }
-                </code></pre>
-                <div class="hook-card fragment fade-up">
+</code></pre>
+                <div class="hook-card fragment fade-up" style="font-size: 0.85em;">
                     <h4>동작 흐름</h4>
                     <p>
                         Claude Code가 파일 수정 (Write/Edit)
@@ -370,7 +370,7 @@ Hooks:   이벤트 발생 시 자동으로 실행 (암시적)
                 <p style="font-size: 0.85em; margin-bottom: 0.5em;">
                     위험한 명령을 <strong>사전에 차단</strong>하는 안전 장치
                 </p>
-                <pre><code class="language-json" data-trim>
+                <pre><code class="language-json" style="font-size: 0.8em;">
 {
   "hooks": {
     "PreToolUse": [
@@ -379,7 +379,7 @@ Hooks:   이벤트 발생 시 자동으로 실행 (암시적)
         "hooks": [
           {
             "type": "command",
-            "command": "echo $CLAUDE_TOOL_INPUT | grep -qE '(rm -rf|drop table|DELETE FROM)' && echo 'BLOCK: 위험한 명령이 감지되었습니다' && exit 2 || exit 0"
+            "command": "cat | jq -r '.tool_input.command' | grep -qE '(rm -rf|drop table|DELETE FROM)' && echo 'BLOCK: 위험한 명령이 감지되었습니다' && exit 2 || exit 0"
           }
         ]
       }
@@ -387,7 +387,7 @@ Hooks:   이벤트 발생 시 자동으로 실행 (암시적)
   }
 }
                 </code></pre>
-                <div class="hook-card fragment fade-up">
+                <div class="hook-card fragment fade-up" style="font-size: 0.85em;">
                     <h4>동작 흐름</h4>
                     <p>
                         Claude Code가 Bash 명령 실행 시도
@@ -412,18 +412,35 @@ Hooks:   이벤트 발생 시 자동으로 실행 (암시적)
             <section>
                 <h2>Skills + Agents + Hooks 통합</h2>
                 <p style="font-size: 0.85em; margin-bottom: 0.8em;">세 가지 확장 체계를 <strong>조합</strong>하여 강력한 워크플로우 구성</p>
-                <div class="diagram">
-<pre style="background: transparent; border: none; box-shadow: none; text-align: center; font-size: 0.85em;">
-  /slide-deck 호출        @validator 검증        자동 포매팅
- ┌──────────────┐      ┌──────────────┐      ┌──────────────┐
- │   Skills     │ ───▶ │   Agents     │      │    Hooks     │
- │              │      │              │      │              │
- │  슬라이드    │      │  품질 검증   │      │  PostToolUse │
- │  자동 생성   │      │  보고서 작성 │      │  코드 포매팅 │
- └──────────────┘      └──────────────┘      └──────┬───────┘
-                                                    │
-                                               자동 실행!
-</pre>
+                <div style="display: flex; align-items: flex-start; justify-content: center; gap: 1.2em; font-size: 0.8em;">
+                    <!-- Skills -->
+                    <div style="text-align: center;">
+                        <div style="margin-bottom: 0.4em; color: #ccc;">/slide-deck 호출</div>
+                        <div style="border: 2px solid #888; border-radius: 6px; padding: 0.6em 1.2em; min-width: 140px;">
+                            <div style="font-weight: bold; font-size: 1.1em; margin-bottom: 0.3em;">Skills</div>
+                            <div style="color: #ccc; font-size: 0.9em;">슬라이드<br>자동 생성</div>
+                        </div>
+                    </div>
+                    <!-- Arrow -->
+                    <div style="display: flex; align-items: center; padding-top: 2em; font-size: 1.3em; color: #888;">──▶</div>
+                    <!-- Agents -->
+                    <div style="text-align: center;">
+                        <div style="margin-bottom: 0.4em; color: #ccc;">@validator 검증</div>
+                        <div style="border: 2px solid #888; border-radius: 6px; padding: 0.6em 1.2em; min-width: 140px;">
+                            <div style="font-weight: bold; font-size: 1.1em; margin-bottom: 0.3em;">Agents</div>
+                            <div style="color: #ccc; font-size: 0.9em;">품질 검증<br>보고서 작성</div>
+                        </div>
+                    </div>
+                    <!-- Hooks -->
+                    <div style="text-align: center;">
+                        <div style="margin-bottom: 0.4em; color: #ccc;">자동 포매팅</div>
+                        <div style="border: 2px solid #888; border-radius: 6px; padding: 0.6em 1.2em; min-width: 140px; position: relative;">
+                            <div style="font-weight: bold; font-size: 1.1em; margin-bottom: 0.3em;">Hooks</div>
+                            <div style="color: #ccc; font-size: 0.9em;">PostToolUse<br>코드 포매팅</div>
+                        </div>
+                        <div style="margin-top: 0.3em; color: #888;">│</div>
+                        <div style="color: #ccc; font-size: 0.95em;">자동 실행!</div>
+                    </div>
                 </div>
                 <div class="fragment fade-up" style="margin-top: 0.5em;">
                     <table style="font-size: 0.75em;">
@@ -447,78 +464,103 @@ Hooks:   이벤트 발생 시 자동으로 실행 (암시적)
                 </aside>
             </section>
 
-            <!-- Slide 11: 실습 -->
+            <!-- Slide 11: 실습 Step 1 - Hook 설정 만들기 -->
             <section>
-                <h2>실습: Hook 설정하기 <span class="badge">Hands-on</span></h2>
-                <div class="columns">
-                    <div>
-                        <div class="exercise-box fragment fade-up">
-                            <h4>Exercise 1: Auto-format Hook (10분)</h4>
-                            <ol style="font-size: 0.8em;">
-                                <li><code>.claude/settings.json</code>에 PostToolUse Hook 추가</li>
-                                <li>Write/Edit 후 자동으로 <code>black</code> 실행되도록 설정</li>
-                                <li>Python 파일을 수정하여 Hook 동작 확인</li>
-                            </ol>
-                            <p style="font-size: 0.75em; color: var(--ev-text-muted); margin-top: 0.5em;">
-                                <code style="color: var(--ev-accent-light);">&gt; .claude/settings.json에 Python auto-format Hook을 추가해줘</code>
-                            </p>
-                        </div>
-                        <div class="exercise-box fragment fade-up">
-                            <h4>Exercise 2: Safety Hook (10분)</h4>
-                            <ol style="font-size: 0.8em;">
-                                <li>PreToolUse Hook으로 위험 명령 차단 설정</li>
-                                <li><code>rm -rf</code>, <code>drop table</code> 등 패턴 차단</li>
-                                <li>테스트: 위험 명령 실행 시도 &rarr; 차단 확인</li>
-                            </ol>
-                            <p style="font-size: 0.75em; color: var(--ev-text-muted); margin-top: 0.5em;">
-                                <code style="color: var(--ev-accent-light);">&gt; .claude/settings.json에 위험 명령 차단 Hook을 추가해줘</code>
-                            </p>
-                        </div>
-                    </div>
-                    <div class="fragment fade-up">
-                        <h3>체크리스트</h3>
-                        <ul style="font-size: 0.8em;">
-                            <li>settings.json의 JSON 문법이 올바른가?</li>
-                            <li>matcher 패턴이 의도한 도구와 매칭되는가?</li>
-                            <li>command가 실행 가능한 쉘 명령인가?</li>
-                            <li>PreToolUse Hook에서 차단 시 exit 2를 반환하는가?</li>
-                            <li>Hook이 의도대로 트리거되는가?</li>
-                        </ul>
-                    </div>
+                <h2>실습 Step 1: Hook 설정 만들기 </h2>
+                <p style="font-size: 0.75em; color: var(--ev-text-muted); margin-bottom: 0.3em;">터미널에 아래 명령어를 붙여넣으면 바로 완료!</p>
+                <div class="exercise-box" style="padding: 0.6em 0.8em;">
+                    <p style="font-size: 0.65em; margin: 0 0 0.3em 0;">
+                        터미널에서 아래 명령어를 그대로 붙여넣으세요:
+                    </p>
+                    <pre style="background: var(--ev-code-bg); border: 1px solid #444; border-radius: 6px; padding: 0.4em 0.6em; margin: 0; font-size: 0.45em; cursor: text; user-select: all;"><code class="language-bash">python3 << 'PYEOF'
+import json, os
+path = ".claude/settings.local.json"
+os.makedirs(".claude", exist_ok=True)
+cfg = json.load(open(path)) if os.path.exists(path) else {}
+cfg["hooks"] = {
+    "PostToolUse": [{"matcher": "Write|Edit", "hooks": [{"type": "command",
+        "command": "FILE_PATH=$(cat | jq -r '.tool_input.file_path'); if [[ \"$FILE_PATH\" == *.py ]]; then black \"$FILE_PATH\"; fi"}]}],
+    "PreToolUse": [{"matcher": "Bash", "hooks": [{"type": "command",
+        "command": "CMD=$(cat | jq -r '.tool_input.command // empty'); if echo \"$CMD\" | grep -qiE 'rm\\s+-rf|drop\\s+table|drop\\s+database|mkfs\\.'; then echo '🚫 위험한 명령이 감지되어 차단되었습니다.' >&2; exit 2; fi"}]}]
+}
+json.dump(cfg, open(path, "w"), indent=2, ensure_ascii=False)
+print("Hook 설정 완료!")
+PYEOF</code></pre>
+                </div>
+                <div class="fragment fade-up" style="margin-top: 0.4em; font-size: 0.7em;">
+                    <ul style="margin: 0;">
+                        <li><strong style="color: var(--ev-accent-light);">PostToolUse</strong>: Write/Edit 후 <code>.py</code> 파일이면 <code>black</code> 자동 실행</li>
+                        <li><strong style="color: var(--ev-accent-light);">PreToolUse</strong>: <code>rm -rf</code>, <code>drop table</code> 등 위험 명령 감지 시 차단 (exit 2)</li>
+                    </ul>
                 </div>
                 <aside class="notes">
-                    실습 시간입니다. 두 가지 Exercise를 진행합니다.
-                    Exercise 1은 Auto-format Hook을 설정하는 것입니다.
-                    settings.json에 PostToolUse Hook을 추가하고, Python 파일을 수정하여 자동 포매팅이 동작하는지 확인합니다.
-                    Exercise 2는 Safety Hook을 설정하는 것입니다.
-                    PreToolUse Hook으로 위험한 명령을 차단하고, 실제로 차단이 되는지 테스트합니다.
-                    체크리스트를 참고하여 Hook이 올바르게 동작하는지 검증하세요.
+                    실습 Step 1입니다. 터미널에 명령어를 붙여넣기만 하면 .claude/settings.local.json에 hooks가 추가됩니다.
+                    Python 스크립트가 기존 설정을 읽고 hooks 키만 추가하므로 기존 설정이 유지됩니다.
+                    PostToolUse Hook은 Write/Edit 후 .py 파일에 대해 black을 자동 실행합니다.
+                    PreToolUse Hook은 rm -rf, drop table 등 위험한 명령을 감지하면 exit 2로 차단합니다.
                 </aside>
             </section>
 
-            <!-- Slide 12: 정리 -->
+            <!-- Slide 12: 실습 Step 2 - Hook 동작 확인 -->
             <section>
-                <h2>정리</h2>
-                <div class="emphasis-box">
-                    <h3>핵심 정리</h3>
-                    <ul style="font-size: 0.9em;">
-                        <li class="fragment fade-up">
-                            <strong>Hooks</strong> &mdash; 이벤트 기반으로 자동 실행되는 쉘 명령어
+                <h2>실습 Step 2: Hook 동작 확인 </h2>
+                <p style="font-size: 0.75em; color: var(--ev-text-muted); margin-bottom: 0.3em;">설정한 Hook이 실제로 동작하는지 테스트 (10분)</p>
+                <div class="exercise-box" style="padding: 0.8em 1em;">
+                    <ol style="font-size: 0.7em; margin: 0;">
+                        <li>
+                            Claude Code를 <strong style="color: var(--ev-accent);">재시작</strong>합니다 (Hook 설정 반영):
+                            <pre style="margin: 0.3em 0; font-size: 0.85em;"><code class="language-bash">exit
+claude</code></pre>
                         </li>
-                        <li class="fragment fade-up">
-                            <strong>4가지 이벤트</strong> &mdash; PreToolUse, PostToolUse, Notification, Stop
+                        <li style="margin-top: 0.3em;">
+                            <strong style="color: var(--ev-accent-light);">Auto-format Hook 테스트</strong> &mdash; Python 파일 수정 요청:
+                            <pre style="background: var(--ev-code-bg); border: 1px solid #444; border-radius: 6px; padding: 0.4em 0.6em; margin: 0.3em 0; font-size: 0.85em; white-space: pre-wrap; cursor: text; user-select: all;"><code>test.py 파일을 만들어서 포매팅이 안 된 Python 코드를 작성해줘</code></pre>
+                            <p style="font-size: 0.85em; color: var(--ev-text-muted); margin: 0.2em 0 0 0;">
+                                &rarr; 터미널에 <code style="color: var(--ev-accent-light);">N PostToolUse hooks ran</code> 메시지가 표시되는지 확인<br>
+                                &rarr; 파일 내용이 <code>black</code> 스타일로 자동 포매팅되었는지 확인
+                            </p>
                         </li>
-                        <li class="fragment fade-up">
-                            <strong>설정 위치</strong> &mdash; settings.json (프로젝트 &gt; 사용자 &gt; 엔터프라이즈)
+                        <li style="margin-top: 0.3em;">
+                            <strong style="color: var(--ev-accent-light);">Safety Hook 테스트</strong> &mdash; 위험 명령 실행 시도:
+                            <pre style="background: var(--ev-code-bg); border: 1px solid #444; border-radius: 6px; padding: 0.4em 0.6em; margin: 0.3em 0; font-size: 0.85em; white-space: pre-wrap; cursor: text; user-select: all;"><code>rm -rf test.py 실행해줘</code></pre>
+                            <p style="font-size: 0.85em; color: var(--ev-text-muted); margin: 0.2em 0 0 0;">
+                                &rarr; <code style="color: var(--ev-accent);">Error: PreToolUse:Bash hook error</code> 메시지가 표시되는지 확인<br>
+                                &rarr; 명령이 실행되지 않고 차단되었는지 확인
+                            </p>
                         </li>
-                        <li class="fragment fade-up">
-                            <strong>주요 활용</strong> &mdash; 자동 포매팅 (PostToolUse) + 안전 가드레일 (PreToolUse)
-                        </li>
-                        <li class="fragment fade-up">
-                            <strong>확장 체계 완성</strong> &mdash; Skills (How) + Agents (Who) + Hooks (When)
-                        </li>
-                    </ul>
+                    </ol>
                 </div>
+                <div class="fragment fade-up emphasis-box" style="margin-top: 0.5em;">
+                    <p style="font-size: 0.85em; margin: 0; text-align: center;">
+                        두 Hook 모두 정상 동작하면 <strong style="color: var(--ev-accent);">실습 완료!</strong>
+                    </p>
+                </div>
+                <aside class="notes">
+                    실습 Step 2입니다. Step 1에서 설정한 Hook이 실제로 동작하는지 테스트합니다.
+                    먼저 Claude Code를 재시작해야 새 Hook 설정이 반영됩니다.
+                    Auto-format Hook 테스트: Python 파일을 수정하면 터미널에 "N PostToolUse hooks ran" 메시지가 나타나고,
+                    파일 내용이 black 스타일로 자동 포매팅되었는지 확인합니다.
+                    Safety Hook 테스트: rm -rf test.py를 실행하면 "Error: PreToolUse:Bash hook error" 메시지와 함께 차단되는지 확인합니다.
+                    두 Hook 모두 정상 동작하면 실습이 완료됩니다.
+                </aside>
+            </section>
+
+            <!-- Slide 13: 정리 & Q&A -->
+            <section>
+                <h2>정리 &amp; Q&amp;A</h2>
+                <ul>
+                    <li><strong>Hooks</strong> &mdash; 이벤트 기반으로 자동 실행되는 쉘 명령어</li>
+                    <li><strong>4가지 이벤트</strong> &mdash; PreToolUse, PostToolUse, Notification, Stop</li>
+                    <li><strong>설정 위치</strong> &mdash; settings.json (프로젝트 &gt; 사용자 &gt; 엔터프라이즈)</li>
+                    <li><strong>주요 활용</strong> &mdash; 자동 포매팅 (PostToolUse) + 안전 가드레일 (PreToolUse)</li>
+                    <li><strong>확장 체계 완성</strong> &mdash; Skills (How) + Agents (Who) + Hooks (When)</li>
+                </ul>
+                <div class="emphasis-box" style="margin-top: 1.5em;">
+                    <strong>다음 섹션:</strong> AI Dev Kit &mdash; Databricks AI Dev Kit, ChatAgent 인터페이스, MLflow Tracing
+                </div>
+                <p style="margin-top: 1.5em; text-align: center; font-size: 1.2em; color: var(--ev-accent);">
+                    질문이 있으신가요?
+                </p>
                 <aside class="notes">
                     정리하겠습니다.
                     Hooks는 이벤트 기반으로 자동 실행되는 쉘 명령어입니다.
@@ -527,18 +569,6 @@ Hooks:   이벤트 발생 시 자동으로 실행 (암시적)
                     자동 포매팅과 안전 가드레일이 가장 대표적인 활용 사례입니다.
                     이것으로 Claude Code의 세 가지 확장 체계를 모두 배웠습니다.
                     Skills는 How, Agents는 Who, Hooks는 When에 초점을 맞춥니다.
-                </aside>
-            </section>
-
-            <!-- Slide 13: Q&A -->
-            <section>
-                <h1>Q&amp;A</h1>
-                <p>질문이 있으신가요?</p>
-                <div style="margin-top: 2em; font-size: 0.85em; color: var(--ev-text-muted);">
-                    <p>다음: <strong>Section 08 &mdash; AI Dev Kit</strong></p>
-                    <p style="font-size: 0.8em;">Databricks AI Dev Kit, ChatAgent 인터페이스, MLflow Tracing</p>
-                </div>
-                <aside class="notes">
                     질문을 받겠습니다.
                     예상 질문들:
                     - Q: Hook이 실패하면 어떻게 되나요? A: Hook 자체의 실패는 Claude Code 동작에 영향을 주지 않습니다. 단, PreToolUse에서 exit 2를 반환하면 도구 실행이 차단됩니다.

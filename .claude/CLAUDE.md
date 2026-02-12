@@ -9,7 +9,7 @@ Vibe Coding 핸즈온 세션(반나절, 3-4시간) 교육 자료 — 슬라이�
 
 ```
 enable-your-vibe/
-├── sections/                    # 10개 교육 섹션 (00-home + 01-10)
+├── sections/                    # 8개 교육 섹션 (00-home + 01-08)
 │   └── XX-section-name/
 │       ├── index.html           # reveal.js 슬라이드
 │       └── section.yaml         # 섹션 메타데이터
@@ -33,8 +33,6 @@ enable-your-vibe/
 | 06 | agents | Custom Agents: 나만의 에이전트 만들기 | 강의+실습 |
 | 07 | hooks | Hooks: 이벤트 기반 자동화 | 강의+실습 |
 | 08 | ai-dev-kit | Databricks AI Dev Kit | 강의+데모 |
-| 09 | build-ui | UI 만들기 | 실습 |
-| 10 | deploy-to-databricks | Databricks 배포 | 실습 |
 
 ## 컨벤션
 

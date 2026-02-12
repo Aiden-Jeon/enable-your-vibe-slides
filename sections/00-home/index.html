@@ -155,19 +155,19 @@
                 </div>
                 <div class="goal-item fragment fade-up" data-fragment-index="0">
                     <span class="goal-icon">3.</span>
-                    <span><strong>실전 구현</strong> 경험 &mdash; Genie MCP 서버부터 웹 UI까지 전체 파이프라인 구축</span>
+                    <span><strong>AI Dev Kit</strong> 개발 워크플로우 &mdash; Genie MCP 서버부터 에이전트까지 전체 파이프라인 구축</span>
                 </div>
                 <div class="goal-item fragment fade-up" data-fragment-index="0">
                     <span class="goal-icon">4.</span>
-                    <span><strong>배포</strong>까지 완성 &mdash; Databricks Apps로 실제 서비스 배포 경험</span>
+                    <span><strong>프로덕션 도구</strong> 이해 &mdash; AI Dev Kit으로 프로덕션 수준의 도구와 워크플로우 경험</span>
                 </div>
                 <aside class="notes">
                     오늘 세션의 네 가지 목표입니다.
                     첫째, AI와 협업하기 위한 기초 개념을 이해합니다.
                     둘째, Claude Code, MCP, Skills 등 실제 도구를 직접 사용해봅니다.
-                    셋째, 자연어로 데이터를 조회하는 MCP 서버부터 웹 UI까지 전체를 구현합니다.
-                    넷째, 만든 것을 Databricks에 배포하여 실제 서비스로 만듭니다.
-                    기초부터 배포까지 전체 흐름을 하루에 경험하는 것이 핵심입니다.
+                    셋째, Genie MCP 서버부터 에이전트까지 AI Dev Kit 개발 워크플로우를 구축합니다.
+                    넷째, AI Dev Kit으로 프로덕션 수준의 도구와 워크플로우를 경험합니다.
+                    기초부터 프로덕션 도구까지 전체 흐름을 하루에 경험하는 것이 핵심입니다.
                 </aside>
             </section>
 
@@ -175,7 +175,7 @@
             <section>
                 <h2>무엇을 만드나요?</h2>
                 <p style="font-size: 0.85em; margin-bottom: 0.8em;">
-                    자연어로 데이터를 조회하는 <strong>AI 에이전트 웹 앱</strong>을 만들고 배포합니다
+                    자연어로 데이터를 조회하는 <strong>AI 에이전트</strong>를 만들고 프로덕션 도구를 경험합니다
                 </p>
                 <div class="flow-diagram">
                     <div class="flow-step">
@@ -189,13 +189,8 @@
                     </div>
                     <span class="flow-arrow">&rarr;</span>
                     <div class="flow-step">
-                        <strong>Web UI</strong>
-                        결과 시각화
-                    </div>
-                    <span class="flow-arrow">&rarr;</span>
-                    <div class="flow-step">
-                        <strong>Databricks</strong>
-                        서비스 배포
+                        <strong>AI Dev Kit</strong>
+                        프로덕션 배포
                     </div>
                 </div>
                 <div class="emphasis-box fragment fade-up" style="margin-top: 1em;">
@@ -207,9 +202,8 @@
                 <aside class="notes">
                     오늘 만들 것의 전체 그림입니다.
                     사용자가 자연어로 데이터 관련 질문을 하면,
-                    Genie MCP 서버가 SQL을 생성하고 실행해서 데이터를 가져오고,
-                    웹 UI에서 결과를 보여주는 앱을 만듭니다.
-                    그리고 이것을 Databricks에 배포하여 실제로 접근 가능한 서비스로 만듭니다.
+                    Genie MCP 서버가 SQL을 생성하고 실행해서 데이터를 가져옵니다.
+                    그리고 AI Dev Kit으로 프로덕션 수준의 배포 워크플로우를 경험합니다.
                     중요한 점은 이 모든 과정을 Vibe Coding으로 진행한다는 것입니다.
                 </aside>
             </section>
@@ -301,7 +295,7 @@ uv run python -c "import fastmcp; print('Ready!')"</code></pre>
             <!-- Slide 7: 로드맵 Part 2 -->
             <section>
                 <h2>로드맵: Part 2 &mdash; 실전 구현</h2>
-                <p style="font-size: 0.8em; color: var(--ev-text-muted); margin-bottom: 0.6em;">170분 | 실습 중심</p>
+                <p style="font-size: 0.8em; color: var(--ev-text-muted); margin-bottom: 0.6em;">140분 | 실습 중심</p>
                 <div class="roadmap-card fragment fade-up" data-fragment-index="1">
                     <span class="rm-num">04</span>
                     <span class="rm-title"><strong>Genie MCP</strong> &mdash; Databricks Genie API, MCP 서버 래핑</span>
@@ -324,28 +318,17 @@ uv run python -c "import fastmcp; print('Ready!')"</code></pre>
                 </div>
                 <div class="roadmap-card fragment fade-up" data-fragment-index="1">
                     <span class="rm-num">08</span>
-                    <span class="rm-title"><strong>AI Dev Kit</strong> &mdash; ChatAgent, MLflow Tracing, 배포 파이프라인</span>
-                    <span class="rm-meta">15분 &middot; 강의+데모</span>
-                </div>
-                <div class="roadmap-card fragment fade-up" data-fragment-index="1">
-                    <span class="rm-num">09</span>
-                    <span class="rm-title"><strong>Build UI</strong> &mdash; FastAPI 웹 서버, Genie 채팅 UI 구축</span>
-                    <span class="rm-meta">30분 &middot; 실습</span>
-                </div>
-                <div class="roadmap-card fragment fade-up" data-fragment-index="1">
-                    <span class="rm-num">10</span>
-                    <span class="rm-title"><strong>Deploy</strong> &mdash; Databricks Apps로 서비스 배포</span>
-                    <span class="rm-meta">15분 &middot; 실습</span>
+                    <span class="rm-title"><strong>AI Dev Kit</strong> &mdash; 5대 구성 요소, MCP 서버, Skills, ChatAgent, 배포</span>
+                    <span class="rm-meta">30분 &middot; 강의+데모</span>
                 </div>
                 <aside class="notes">
-                    Part 2는 실전 구현입니다. 총 170분으로 실습 중심입니다.
+                    Part 2는 실전 구현입니다. 총 140분으로 실습 중심입니다.
                     섹션 4에서 Genie MCP 서버를 만들어 자연어 데이터 조회를 구현하고,
                     섹션 5에서 Skills 개념을 배우고 직접 Custom Skill을 만들어봅니다.
                     섹션 6에서 Custom Agents를 만들고, 섹션 7에서 Hooks로 이벤트 기반 자동화를 설정합니다.
-                    섹션 8에서 Databricks AI Dev Kit을 알아보고,
-                    섹션 9에서 웹 UI를 만들어 프론트엔드와 백엔드를 통합합니다.
-                    마지막으로 섹션 10에서 Databricks Apps에 배포합니다.
-                    Part 2가 끝나면 실제로 동작하는 AI 웹 앱이 완성됩니다.
+                    마지막 섹션 8에서 Databricks AI Dev Kit을 심층적으로 알아봅니다.
+                    5대 구성 요소, MCP 서버, Skills, ChatAgent, 배포 파이프라인까지 전체를 다룹니다.
+                    Part 2가 끝나면 프로덕션 수준의 AI 에이전트 개발 워크플로우를 이해하게 됩니다.
                 </aside>
             </section>
 
@@ -373,15 +356,10 @@ uv run python -c "import fastmcp; print('Ready!')"</code></pre>
                                    │            └────┬─────┘
                                    │                 │
                                    ▼                 ▼
-                              ┌──────────┐   ┌──────────┐
-                              │ 08.AI    │──▶│ 09.Build │
-                              │ Dev Kit  │   │   UI     │
-                              └──────────┘   └────┬─────┘
-                                                   │
-                                                   ▼
-                                              ┌──────────┐
-                                              │ 10.Deploy│
-                                              └──────────┘
+                              ┌─────────────────────────┐
+                              │    08. AI Dev Kit       │
+                              │  (프로덕션 통합 도구)    │
+                              └─────────────────────────┘
 </pre>
                 </div>
                 <p class="fragment fade-up" style="font-size: 0.75em; color: var(--ev-text-muted); margin-top: 0.5em; text-align: center;">
@@ -393,7 +371,7 @@ uv run python -c "import fastmcp; print('Ready!')"</code></pre>
                     MCP 아키텍처 이해가 Part 2의 핵심 기반이 됩니다.
                     Part 2에서는 MCP 지식을 바탕으로 Genie MCP 서버를 만들고,
                     Skills, Agents, Hooks 순서로 Claude Code 확장 체계를 완성합니다.
-                    그 다음 AI Dev Kit과 UI를 거쳐 최종 배포까지 이어집니다.
+                    마지막으로 AI Dev Kit에서 이 모든 것이 프로덕션 수준으로 통합되는 것을 확인합니다.
                     순서대로 따라가면 자연스러운 흐름이지만, 필요한 섹션만 참고하셔도 됩니다.
                 </aside>
             </section>
@@ -407,8 +385,8 @@ uv run python -c "import fastmcp; print('Ready!')"</code></pre>
                 </p>
                 <div class="emphasis-box" style="text-align: center; margin: 1em auto; max-width: 80%;">
                     <p style="font-size: 1em; margin: 0;">
-                        <strong style="color: var(--ev-accent);">자연어로 데이터를 조회하는 AI 웹 앱</strong>을<br>
-                        직접 만들고 배포한 경험을 가지게 됩니다
+                        <strong style="color: var(--ev-accent);">자연어로 데이터를 조회하는 AI 에이전트</strong>를<br>
+                        직접 만들고 프로덕션 도구를 경험하게 됩니다
                     </p>
                 </div>
                 <br>
@@ -420,8 +398,8 @@ uv run python -c "import fastmcp; print('Ready!')"</code></pre>
                 </p>
                 <aside class="notes">
                     자, 그럼 시작하겠습니다!
-                    오늘 세션이 끝나면 여러분은 자연어로 데이터를 조회하는 AI 웹 앱을
-                    직접 만들고 배포한 경험을 가지게 됩니다.
+                    오늘 세션이 끝나면 여러분은 자연어로 데이터를 조회하는 AI 에이전트를
+                    직접 만들고 프로덕션 도구를 경험하게 됩니다.
                     코드를 직접 작성하는 것이 아니라, AI에게 의도를 전달하여 만드는 경험입니다.
                     바로 다음 섹션인 AI Foundation으로 넘어가겠습니다.
                     AI Fluency와 4D Framework부터 시작합니다.

@@ -1,9 +1,11 @@
 number: "08"
 title: "AI Dev Kit: Databricks AI Dev Kit"
-duration_minutes: 15
+duration_minutes: 30
 type: "lecture+demo"
 objectives:
-  - "Databricks AI Dev Kit의 구성 요소 이해"
+  - "Databricks AI Dev Kit의 5대 구성 요소(tools-core, mcp-server, skills, builder-app, ai-dev-project) 이해"
+  - "databricks-mcp MCP 서버 아키텍처와 50+ 도구 카테고리 파악"
+  - "databricks-skills의 구조와 Claude Code 연동 방법 학습"
   - "databricks-agents 프레임워크의 ChatAgent 인터페이스 학습"
   - "MLflow Tracing을 활용한 에이전트 모니터링 방법 파악"
 slides: "index.html"

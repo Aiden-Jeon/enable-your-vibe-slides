@@ -1,4 +1,4 @@
-# 11개 섹션 마스터 스펙
+# 9개 섹션 마스터 스펙
 
 ## Section 01: AI Foundation - Claude AI 기초
 - **시간**: 15분 | **유형**: 강의
@@ -99,42 +99,18 @@
   - `exercise_02_skill_with_refs/`: 레퍼런스 활용 Skill 예제
 
 ## Section 09: AI Dev Kit - Databricks AI Dev Kit
-- **시간**: 15분 | **유형**: 강의+데모
-- **목표**: Databricks AI Dev Kit의 소개와 databricks-agents 활용법 이해
+- **시간**: 30분 | **유형**: 강의+데모
+- **목표**: Databricks AI Dev Kit의 5대 구성 요소, MCP 서버, Skills, ChatAgent 인터페이스 이해
 - **내용**:
-  - Databricks AI Dev Kit 소개
-  - databricks-agents 프레임워크
-  - MLflow Tracing 연동
+  - AI Dev Kit 전체 그림 (5대 구성 요소)
+  - 5대 구성 요소 상세: tools-core, mcp-server, skills, builder-app, ai-dev-project
+  - databricks-mcp 서버 아키텍처 (Claude Code → FastMCP → tools-core → SDK)
+  - 50+ 도구 카테고리 (SQL, Compute, Jobs, Files, Serving, Pipelines, Genie 등)
+  - databricks-skills: 6개 카테고리, 25+ 스킬
+  - Skills + MCP Tools 통합: 지식(Skills) + 실행(MCP Tools)
+  - 설치 방법: 원라인 설치, 스타터 킷, Skills만 설치
+  - databricks-agents 프레임워크의 ChatAgent 인터페이스
+  - MLflow Tracing 연동 (데코레이터, autolog, 트레이스 UI)
   - 로컬 개발 → Databricks 배포 워크플로우
-- **코드**: 데모용 간단한 예제 (선택)
-
-## Section 10: Build UI - UI 만들기
-- **시간**: 30분 | **유형**: 실습
-- **목표**: FastAPI + 정적 프론트엔드로 Genie 챗봇 UI 구현
-- **내용**:
-  - FastAPI 기본 구조
-  - 정적 HTML/CSS/JS 프론트엔드
-  - Genie API 연동 백엔드
-  - 채팅 UI 구현
-  - 실시간 응답 스트리밍 (SSE)
-- **코드**:
-  - `exercise_01_fastapi_basic.py`: FastAPI 기본 서버
-  - `exercise_02_genie_chatbot/`: 완성된 Genie 챗봇 앱
-    - `app.py`: FastAPI 백엔드
-    - `static/index.html`: 채팅 UI
-    - `static/style.css`: 스타일
-    - `static/app.js`: 프론트엔드 로직
-
-## Section 11: Deploy to Databricks - Databricks 배포
-- **시간**: 15분 | **유형**: 실습
-- **목표**: Databricks Apps로 애플리케이션 배포
-- **내용**:
-  - Databricks Apps 소개
-  - app.yaml 설정
-  - databricks CLI로 배포
-  - 배포 후 확인 및 모니터링
-  - 트러블슈팅 팁
-- **코드**:
-  - `exercise_01_app_yaml.py`: app.yaml 생성 스크립트
-  - `app.yaml`: Databricks Apps 설정 예시
-  - 배포 가이드 README
+  - 워크숍 학습 내용과 AI Dev Kit 매핑
+- **코드**: 데모용 ChatAgent 예제 (선택)

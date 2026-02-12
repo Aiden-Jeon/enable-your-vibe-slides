@@ -8,9 +8,7 @@
     { number: '05', dir: '05-skills', title: 'Skills', subtitle: '개념에서 실전까지', type: 'lecture+hands-on' },
     { number: '06', dir: '06-agents', title: 'Custom Agents', subtitle: '나만의 에이전트 만들기', type: 'lecture+hands-on' },
     { number: '07', dir: '07-hooks', title: 'Hooks', subtitle: '이벤트 기반 자동화', type: 'lecture+hands-on' },
-    { number: '08', dir: '08-ai-dev-kit', title: 'AI Dev Kit', subtitle: 'Databricks AI Dev Kit', type: 'lecture+demo' },
-    { number: '09', dir: '09-build-ui', title: 'Build UI', subtitle: 'UI 만들기', type: 'hands-on' },
-    { number: '10', dir: '10-deploy-to-databricks', title: 'Deploy to Databricks', subtitle: 'Databricks 배포', type: 'hands-on' }
+    { number: '08', dir: '08-ai-dev-kit', title: 'AI Dev Kit', subtitle: 'Databricks AI Dev Kit', type: 'lecture+demo' }
   ];
 
   function detectCurrentSection() {

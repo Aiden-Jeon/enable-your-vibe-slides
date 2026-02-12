@@ -12,7 +12,7 @@
 - MCP(Model Context Protocol)로 AI 도구 확장하기
 - Databricks Genie MCP 서버를 직접 구현하기
 - Skills/Agents를 활용한 워크플로우 자동화
-- FastAPI로 채팅 UI를 만들고 Databricks Apps로 배포하기
+- AI Dev Kit으로 프로덕션 수준의 개발 워크플로우 이해하기
 
 ### 대상
 
@@ -25,7 +25,7 @@
 
 **[enable-your-vibe-code](https://github.com/aiden-jeon/enable-your-vibe-code)** — 클론 후 `uv sync`로 환경을 설정하세요.
 
-## 커리큘럼 (총 240분)
+## 커리큘럼 (총 210분)
 
 ### Part 1: 기초 다지기 (70분)
 
@@ -35,7 +35,7 @@
 | 02 | [Claude Code Features](sections/02-claude-code-features/) | 20분 | 강의+데모 | CLI 사용법, CLAUDE.md, 핵심 기능 4가지 |
 | 03 | [MCP Architecture](sections/03-mcp-architecture/) | 25분 | 강의+실습 | MCP 프로토콜, FastMCP로 첫 MCP 서버 만들기 |
 
-### Part 2: 실전 구현 (170분)
+### Part 2: 실전 구현 (140분)
 
 | # | 섹션 | 시간 | 유형 | 설명 |
 |---|------|------|------|------|
@@ -43,9 +43,7 @@
 | 05 | [Skills](sections/05-skills/) | 30분 | 강의+실습 | Skills/Agents 개념, Custom Skill 작성, 레퍼런스 활용 |
 | 06 | [Custom Agents](sections/06-agents/) | 25분 | 강의+실습 | agent.md 구조, Skills vs Agents, 에이전트 만들기 |
 | 07 | [Hooks](sections/07-hooks/) | 25분 | 강의+실습 | 이벤트 기반 자동화, 안전 가드레일, Auto-format |
-| 08 | [AI Dev Kit](sections/08-ai-dev-kit/) | 15분 | 강의+데모 | ChatAgent, MLflow Tracing, 배포 파이프라인 |
-| 09 | [Build UI](sections/09-build-ui/) | 30분 | 실습 | FastAPI + 채팅 UI 구현 |
-| 10 | [Deploy to Databricks](sections/10-deploy-to-databricks/) | 15분 | 실습 | Databricks Apps 배포 |
+| 08 | [AI Dev Kit](sections/08-ai-dev-kit/) | 30분 | 강의+데모 | 5대 구성 요소, MCP 서버, Skills, ChatAgent, 배포 파이프라인 |
 
 ### 학습 경로
 
@@ -57,7 +55,7 @@ Part 1: 기초                               Part 2: 실전
                                                    │
                                           05 Skills ──→ 06 Agents ──→ 07 Hooks
                                                    │
-                                          08 AI Dev Kit ──→ 09 UI 만들기 ──→ 10 배포
+                                          08 AI Dev Kit (프로덕션 통합)
 ```
 
 ## 슬라이드 보기
@@ -98,9 +96,7 @@ enable-your-vibe/
 │   ├── 05-skills/             # 강의+실습: Skills 개념에서 실전까지
 │   ├── 06-agents/             # 강의+실습: Custom Agents
 │   ├── 07-hooks/              # 강의+실습: Hooks 이벤트 기반 자동화
-│   ├── 08-ai-dev-kit/         # 강의+데모: AI Dev Kit
-│   ├── 09-build-ui/           # 실습: UI 만들기
-│   └── 10-deploy-to-databricks/ # 실습: Databricks 배포
+│   └── 08-ai-dev-kit/         # 강의+데모: AI Dev Kit
 ├── shared/
 │   ├── assets/theme.css       # 커스텀 reveal.js 테마
 │   └── scripts/
