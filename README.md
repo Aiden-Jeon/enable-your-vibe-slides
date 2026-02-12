@@ -23,17 +23,18 @@
 
 실습 코드는 별도 레포에서 관리됩니다:
 
-**[enable-your-vibe-code](https://github.com/aiden-jeon/enable-your-vibe-code)** — 클론 후 `uv sync`로 환경을 설정하세요.
+**[enable-your-vibe-exercise](https://github.com/Aiden-Jeon/enable-your-vibe-exercise)** — 클론 후 `uv sync`로 환경을 설정하세요.
 
-## 커리큘럼 (총 210분)
+## 커리큘럼 (총 220분)
 
-### Part 1: 기초 다지기 (70분)
+### Part 1: 기초 다지기 (80분)
 
 | # | 섹션 | 시간 | 유형 | 설명 |
 |---|------|------|------|------|
-| 01 | [AI Foundation](sections/01-ai-foundation/) | 15분 | 강의 | Vibe Coding 개념, Claude AI 차별점, 에이전틱 코딩 |
-| 02 | [Claude Code Features](sections/02-claude-code-features/) | 20분 | 강의+데모 | CLI 사용법, CLAUDE.md, 핵심 기능 4가지 |
-| 03 | [MCP Architecture](sections/03-mcp-architecture/) | 25분 | 강의+실습 | MCP 프로토콜, FastMCP로 첫 MCP 서버 만들기 |
+| 00 | [Welcome](sections/00-home/) | 10분 | 강의 | 세션 소개, 전체 흐름 안내, 사전 준비 확인 |
+| 01 | [AI Foundation](sections/01-ai-foundation/) | 15분 | 강의+데모 | Vibe Coding 개념, Claude AI 차별점, 에이전틱 코딩 |
+| 02 | [Claude Code Features](sections/02-claude-code-features/) | 25분 | 강의+실습 | CLI 사용법, CLAUDE.md, 핵심 기능 4가지 |
+| 03 | [MCP Architecture](sections/03-mcp-architecture/) | 30분 | 강의+실습 | MCP 프로토콜, FastMCP로 첫 MCP 서버 만들기 |
 
 ### Part 2: 실전 구현 (140분)
 
@@ -48,14 +49,14 @@
 ### 학습 경로
 
 ```
-Part 1: 기초                               Part 2: 실전
-┌──────────────┐                          ┌──────────────────┐
-│ 01 AI 기초    │──→ 02 Claude Code ──→ 03 MCP 아키텍처 ──→ 04 Genie MCP
-└──────────────┘                          └──────────────────┘
-                                                   │
-                                          05 Skills ──→ 06 Agents ──→ 07 Hooks
-                                                   │
-                                          08 AI Dev Kit (프로덕션 통합)
+Part 1: 기초                                          Part 2: 실전
+┌──────────────────────────────────────────┐         ┌──────────────────┐
+│ 00 Welcome ──→ 01 AI 기초 ──→ 02 Claude Code ──→ 03 MCP 아키텍처 ──→ 04 Genie MCP
+└──────────────────────────────────────────┘         └──────────────────┘
+                                                              │
+                                                     05 Skills ──→ 06 Agents ──→ 07 Hooks
+                                                              │
+                                                     08 AI Dev Kit (프로덕션 통합)
 ```
 
 ## 슬라이드 보기
@@ -89,8 +90,9 @@ uv run --with pyyaml shared/scripts/validate-section.py sections/04-genie-mcp
 enable-your-vibe/
 ├── index.html                 # 마스터 인덱스 (전체 섹션 네비게이션)
 ├── sections/
-│   ├── 01-ai-foundation/      # 강의: Claude AI 기초
-│   ├── 02-claude-code-features/ # 강의+데모: Claude Code 사용법
+│   ├── 00-home/               # 강의: Welcome 세션 소개
+│   ├── 01-ai-foundation/      # 강의+데모: Claude AI 기초
+│   ├── 02-claude-code-features/ # 강의+실습: Claude Code 사용법
 │   ├── 03-mcp-architecture/   # 강의+실습: MCP 아키텍처
 │   ├── 04-genie-mcp/          # 실습: Genie MCP 서버
 │   ├── 05-skills/             # 강의+실습: Skills 개념에서 실전까지
@@ -100,8 +102,11 @@ enable-your-vibe/
 ├── shared/
 │   ├── assets/theme.css       # 커스텀 reveal.js 테마
 │   └── scripts/
+│       ├── copy-code.js       # 코드 복사 유틸리티
+│       ├── sidebar.js         # 사이드바 네비게이션
 │       ├── serve-slides.py    # 슬라이드 프리뷰 서버
 │       └── validate-section.py # 섹션 구조 검증
+├── enable-your-vibe-exercise/ # 실습 코드 (git submodule)
 └── .claude/
     ├── CLAUDE.md              # 프로젝트 컨벤션 가이드
     ├── skills/                # Claude Code Skills (3개)
