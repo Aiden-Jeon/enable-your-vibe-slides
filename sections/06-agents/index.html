@@ -497,129 +497,240 @@ sql_snippets를 작성합니다.
                 </aside>
             </section>
 
-            <!-- Slide 12: 실습 Step 1 -->
+            <!-- Slide 12: 사전 준비 - Unity Catalog MCP -->
             <section>
-                <h2>실습 Step 1: <code>@genie-space-designer</code> 만들기 <span class="badge">Hands-on</span></h2>
-                <p style="font-size: 0.85em; color: var(--ev-text-muted);">Space 설계 전문 에이전트 (10분)</p>
+                <h2>사전 준비: Unity Catalog MCP 서버</h2>
+                <p style="font-size: 0.85em; color: var(--ev-text-muted);">
+                    <code>@genie-space-designer</code>가 테이블 스키마를 분석하려면 메타데이터 조회 도구가 필요합니다
+                </p>
+                <table style="font-size: 0.75em; margin-top: 0.8em;">
+                    <thead>
+                        <tr><th>Tool</th><th>설명</th><th>예시</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>list_schemas</code></td>
+                            <td>카탈로그 내 스키마 목록 조회</td>
+                            <td><code>list_schemas("main")</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>list_tables</code></td>
+                            <td>스키마 내 테이블 목록 조회</td>
+                            <td><code>list_tables("main", "default")</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>describe_table</code></td>
+                            <td>테이블 상세 메타데이터 조회</td>
+                            <td><code>describe_table("main.default.t1")</code></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="fragment fade-up" style="margin-top: 0.8em;">
+                    <pre><code class="language-bash" data-trim style="font-size: 0.85em;">
+claude mcp add -s project unity-catalog -- \
+  uv run python 06-agents/exercise_unity_catalog_mcp.py
+                    </code></pre>
+                </div>
+                <aside class="notes">
+                    실습에 앞서 Unity Catalog MCP 서버를 설정합니다.
+                    이 서버는 테이블 메타데이터를 조회하는 3개 도구를 제공합니다.
+                    list_schemas로 스키마 목록, list_tables로 테이블 목록, describe_table로 컬럼 상세 정보를 조회할 수 있습니다.
+                    이 도구들이 있어야 genie-space-designer 에이전트가 테이블 스키마를 분석할 수 있습니다.
+                    exercise_unity_catalog_mcp.py는 완성 코드로 제공되므로 .mcp.json에 설정만 추가하면 됩니다.
+                </aside>
+            </section>
+
+            <!-- Slide 13: 실습 - 에이전트 만들기 -->
+            <section>
+                <h2>실습: 3개 에이전트 만들기</h2>
+                <p style="font-size: 0.85em; color: var(--ev-text-muted);">템플릿 TODO를 채워 에이전트 완성 (15분)</p>
                 <div class="exercise-box">
-                    <ol style="font-size: 0.85em;">
-                        <li class="fragment fade-up"><code>exercise_genie_agents/genie-space-designer.md</code> 템플릿 확인</li>
+                    <ol style="font-size: 0.8em;">
                         <li class="fragment fade-up">
-                            Claude Code에게 에이전트 작성 요청
-                            <pre style="margin-top: 0.4em;"><code class="language-text" data-trim style="font-size: 1em;">
-exercise_genie_agents/genie-space-designer.md 템플릿의 TODO를 채워서
-  genie-space-designer 에이전트를 완성해줘.
-  테이블 스키마를 분석하고 Space 구성을 설계하는 역할이야.
-  완성되면 .claude/agents/genie-space-designer.md에 배치해줘.
+                            <strong style="color: #4ade80;">genie-space-designer</strong> &mdash; Space 설계 전문
+                            <pre style="margin-top: 0.3em;"><code class="language-text" data-trim style="font-size: 0.95em;">
+@06-agents/exercise_genie_agents/genie-space-designer.md 템플릿의 TODO를 채워서
+genie-space-designer 에이전트를 완성해줘.
+테이블 스키마를 분석하고 Space 구성을 설계하는 역할이야.
+완성되면 .claude/agents/genie-space-designer.md에 배치해줘.
                             </code></pre>
                         </li>
                         <li class="fragment fade-up">
-                            완성된 파일을 <code>.claude/agents/</code>에 복사
-                            <pre style="margin-top: 0.4em;"><code class="language-bash" data-trim style="font-size: 1em;">
-cp exercise_genie_agents/genie-space-designer.md .claude/agents/
+                            <strong style="color: #4ade80;">genie-instructor</strong> &mdash; Instructions 작성 전문
+                            <pre style="margin-top: 0.3em;"><code class="language-text" data-trim style="font-size: 0.95em;">
+@06-agents/exercise_genie_agents/genie-instructor.md 템플릿의 TODO를 채워줘.
+@06-agents/exercise_genie_agents/references/serialized-space-instructions.md를 참고해서
+instructions 블록을 작성하는 에이전트를 만들어줘.
+완성되면 .claude/agents/genie-instructor.md에 배치해줘.
                             </code></pre>
                         </li>
                         <li class="fragment fade-up">
-                            <code>@genie-space-designer</code>로 실행
-                            <pre style="margin-top: 0.4em;"><code class="language-text" data-trim style="font-size: 1em;">
-@genie-space-designer catalog.schema의 테이블을 분석해서 Space를 설계해줘
+                            <strong style="color: #4ade80;">genie-tester</strong> &mdash; 품질 테스트 전문
+                            <pre style="margin-top: 0.3em;"><code class="language-text" data-trim style="font-size: 0.95em;">
+@06-agents/exercise_genie_agents/genie-tester.md 템플릿의 TODO를 채워서
+genie-tester 에이전트를 완성해줘.
+@ask_genie로 질의하고 응답 품질을 평가하는 역할이야.
+완성되면 .claude/agents/genie-tester.md에 배치해줘.
                             </code></pre>
                         </li>
                     </ol>
                 </div>
                 <aside class="notes">
-                    실습 Step 1입니다. genie-space-designer 에이전트를 만듭니다.
-                    먼저 exercise_genie_agents 디렉토리의 템플릿 파일을 확인합니다.
-                    작성 요청 프롬프트를 그대로 입력하면 Claude Code가 TODO를 채워줍니다.
-                    완성된 파일을 .claude/agents/에 복사하면 바로 @genie-space-designer로 호출할 수 있습니다.
-                    핵심은 역할을 명확히 정의하고, 스키마 분석만 수행하도록 제약하는 것입니다.
+                    먼저 3개 에이전트를 모두 만듭니다.
+                    exercise_genie_agents 디렉토리의 템플릿 파일을 확인하고, Claude Code에게 TODO를 채워달라고 요청합니다.
+                    genie-space-designer는 테이블 스키마를 분석하고 Space 구성을 설계합니다.
+                    genie-instructor는 references의 serialized-space-instructions 가이드를 참고하여 instructions 블록을 작성합니다.
+                    genie-tester는 ask_genie 도구로 질의하고 응답 품질을 평가합니다.
+                    각 에이전트가 완성되면 .claude/agents/ 디렉토리에 배치합니다.
                 </aside>
             </section>
 
-            <!-- Slide 13: 실습 Step 2 -->
+            <!-- Slide 14: 실습 Step 1 - designer 실행 -->
             <section>
-                <h2>실습 Step 2: <code>@genie-instructor</code> 만들기 <span class="badge">Hands-on</span></h2>
-                <p style="font-size: 0.85em; color: var(--ev-text-muted);">Instructions 작성 전문 에이전트 (15분)</p>
+                <h2>실습 Step 1: <code>@genie-space-designer</code> 실행</h2>
+                <p style="font-size: 0.85em; color: var(--ev-text-muted);">테이블 스키마 분석 &amp; Space 설계 (5분)</p>
                 <div class="exercise-box">
                     <ol style="font-size: 0.85em;">
-                        <li class="fragment fade-up"><code>references/serialized-space-instructions.md</code> 확인</li>
                         <li class="fragment fade-up">
-                            Claude Code에게 에이전트 작성 요청
+                            <code>@genie-space-designer</code>로 실행
                             <pre style="margin-top: 0.4em;"><code class="language-text" data-trim style="font-size: 1em;">
-exercise_genie_agents/genie-instructor.md 템플릿의 TODO를 채워줘.
-  references/serialized-space-instructions.md를 참고해서
-  instructions 블록을 작성하는 에이전트를 만들어줘.
-  완성되면 .claude/agents/genie-instructor.md에 배치해줘.
+@genie-space-designer shared.fashion_recommendations 테이블을 분석해서 Space를 설계해줘
                             </code></pre>
                         </li>
                         <li class="fragment fade-up">
-                            완성된 파일을 <code>.claude/agents/</code>에 복사
-                            <pre style="margin-top: 0.4em;"><code class="language-bash" data-trim style="font-size: 1em;">
-cp exercise_genie_agents/genie-instructor.md .claude/agents/
-                            </code></pre>
+                            결과 확인: 추천 테이블 구성, Sample Questions, Space 방향성
                         </li>
+                    </ol>
+                </div>
+                <div class="fragment fade-up emphasis-box" style="margin-top: 0.8em;">
+                    <p style="font-size: 0.85em; margin: 0;">
+                        <strong>다음 단계:</strong> designer의 분석 결과가 instructor의 <strong>입력</strong>이 됩니다
+                    </p>
+                    <div class="flow-chain" style="margin-top: 0.5em; margin-bottom: 0;">
+                        <div class="chain-step" style="border-color: #4ade80; background: rgba(74, 222, 128, 0.15);">
+                            <span class="step-name">designer</span>
+                            <span class="step-label">설계 결과 출력</span>
+                        </div>
+                        <span class="chain-arrow">&rarr;</span>
+                        <div class="chain-step" style="opacity: 0.5;">
+                            <span class="step-name">instructor</span>
+                            <span class="step-label">다음 Step</span>
+                        </div>
+                        <span class="chain-arrow" style="opacity: 0.5;">&rarr;</span>
+                        <div class="chain-step" style="opacity: 0.5;">
+                            <span class="step-name">tester</span>
+                            <span class="step-label">다음 Step</span>
+                        </div>
+                    </div>
+                </div>
+                <aside class="notes">
+                    이제 만든 에이전트를 순서대로 실행합니다.
+                    먼저 genie-space-designer를 호출하여 테이블 스키마를 분석하고 Space 구성을 설계합니다.
+                    Unity Catalog MCP의 list_tables, describe_table 도구를 활용하여 메타데이터를 분석합니다.
+                    결과로 추천 테이블 구성, Sample Questions, Space 방향성이 출력됩니다.
+                    이 결과가 다음 단계인 genie-instructor의 입력이 되므로, 결과를 잘 확인해두세요.
+                </aside>
+            </section>
+
+            <!-- Slide 15: 실습 Step 2 - instructor 실행 -->
+            <section>
+                <h2>실습 Step 2: <code>@genie-instructor</code> 실행</h2>
+                <p style="font-size: 0.85em; color: var(--ev-text-muted);">designer 결과 기반 Instructions 작성 (10분)</p>
+                <div class="exercise-box">
+                    <ol style="font-size: 0.85em;">
                         <li class="fragment fade-up">
-                            <code>@genie-instructor</code>로 실행
+                            <code>@genie-instructor</code>로 실행 &mdash; <strong>designer 결과를 전달</strong>
                             <pre style="margin-top: 0.4em;"><code class="language-text" data-trim style="font-size: 1em;">
 @genie-instructor designer 결과를 기반으로 instructions를 작성해줘
                             </code></pre>
                         </li>
+                        <li class="fragment fade-up">
+                            결과 확인: text_instructions, example_question_sqls, sql_snippets
+                        </li>
                     </ol>
                 </div>
+                <div class="fragment fade-up emphasis-box" style="margin-top: 0.8em;">
+                    <p style="font-size: 0.85em; margin: 0;">
+                        <strong>핵심:</strong> designer의 설계 결과가 <strong>컨텍스트에 남아있으므로</strong> instructor가 자연스럽게 활용합니다
+                    </p>
+                    <div class="flow-chain" style="margin-top: 0.5em; margin-bottom: 0;">
+                        <div class="chain-step" style="opacity: 0.5;">
+                            <span class="step-name">designer</span>
+                            <span class="step-label">완료</span>
+                        </div>
+                        <span class="chain-arrow">&rarr;</span>
+                        <div class="chain-step" style="border-color: #4ade80; background: rgba(74, 222, 128, 0.15);">
+                            <span class="step-name">instructor</span>
+                            <span class="step-label">instructions 출력</span>
+                        </div>
+                        <span class="chain-arrow" style="opacity: 0.5;">&rarr;</span>
+                        <div class="chain-step" style="opacity: 0.5;">
+                            <span class="step-name">tester</span>
+                            <span class="step-label">다음 Step</span>
+                        </div>
+                    </div>
+                </div>
                 <aside class="notes">
-                    실습 Step 2입니다. genie-instructor 에이전트를 만듭니다.
-                    먼저 references의 serialized-space-instructions 가이드를 확인합니다.
-                    작성 요청 시 레퍼런스 파일을 명시적으로 언급하는 것이 포인트입니다.
-                    완성된 파일을 .claude/agents/에 복사하면 바로 @genie-instructor로 호출할 수 있습니다.
-                    Step 1의 designer 결과를 입력으로 활용하여 instructions를 작성하는 것이 핵심입니다.
+                    Step 2에서는 genie-instructor를 실행합니다.
+                    핵심은 designer의 분석 결과가 같은 대화 컨텍스트에 남아있으므로, instructor가 자연스럽게 활용한다는 점입니다.
+                    instructor는 serialized-space-instructions 레퍼런스를 참고하여 text_instructions, example_question_sqls, sql_snippets를 작성합니다.
+                    이렇게 에이전트 간 결과가 순차적으로 전달되는 것이 라이프사이클의 핵심 패턴입니다.
                 </aside>
             </section>
 
-            <!-- Slide 14: 실습 Step 3 -->
+            <!-- Slide 16: 실습 Step 3 - tester 실행 -->
             <section>
-                <h2>실습 Step 3: <code>@genie-tester</code> 만들기 <span class="badge">Hands-on</span></h2>
-                <p style="font-size: 0.85em; color: var(--ev-text-muted);">Space 품질 테스트 에이전트 (10분)</p>
+                <h2>실습 Step 3: <code>@genie-tester</code> 실행</h2>
+                <p style="font-size: 0.85em; color: var(--ev-text-muted);">Space 품질 테스트 &amp; 검증 (5분)</p>
                 <div class="exercise-box">
                     <ol style="font-size: 0.85em;">
-                        <li class="fragment fade-up"><code>exercise_genie_agents/genie-tester.md</code> 템플릿 확인</li>
-                        <li class="fragment fade-up">
-                            Claude Code에게 에이전트 작성 요청
-                            <pre style="margin-top: 0.4em;"><code class="language-text" data-trim style="font-size: 1em;">
-exercise_genie_agents/genie-tester.md 템플릿의 TODO를 채워서
-  genie-tester 에이전트를 완성해줘.
-  ask_genie로 질의하고 응답 품질을 평가하는 역할이야.
-  완성되면 .claude/agents/genie-tester.md에 배치해줘.
-                            </code></pre>
-                        </li>
-                        <li class="fragment fade-up">
-                            완성된 파일을 <code>.claude/agents/</code>에 복사
-                            <pre style="margin-top: 0.4em;"><code class="language-bash" data-trim style="font-size: 1em;">
-cp exercise_genie_agents/genie-tester.md .claude/agents/
-                            </code></pre>
-                        </li>
                         <li class="fragment fade-up">
                             <code>@genie-tester</code>로 실행
                             <pre style="margin-top: 0.4em;"><code class="language-text" data-trim style="font-size: 1em;">
 @genie-tester Space에 sample questions를 질의하고 응답 품질을 평가해줘
                             </code></pre>
                         </li>
+                        <li class="fragment fade-up">
+                            결과 확인: 응답 정확성, 완전성 평가 리포트
+                        </li>
                     </ol>
                 </div>
+                <div class="fragment fade-up emphasis-box" style="margin-top: 0.8em;">
+                    <p style="font-size: 0.85em; margin: 0;">
+                        <strong>라이프사이클 완성:</strong> designer &rarr; instructor &rarr; tester 순서로 실행하여 전 과정을 커버
+                    </p>
+                    <div class="flow-chain" style="margin-top: 0.5em; margin-bottom: 0;">
+                        <div class="chain-step" style="opacity: 0.5;">
+                            <span class="step-name">designer</span>
+                            <span class="step-label">완료</span>
+                        </div>
+                        <span class="chain-arrow">&rarr;</span>
+                        <div class="chain-step" style="opacity: 0.5;">
+                            <span class="step-name">instructor</span>
+                            <span class="step-label">완료</span>
+                        </div>
+                        <span class="chain-arrow">&rarr;</span>
+                        <div class="chain-step" style="border-color: #4ade80; background: rgba(74, 222, 128, 0.15);">
+                            <span class="step-name">tester</span>
+                            <span class="step-label">품질 리포트 출력</span>
+                        </div>
+                    </div>
+                </div>
                 <aside class="notes">
-                    실습 Step 3입니다. genie-tester 에이전트를 만듭니다.
-                    ask_genie 도구로 sample questions를 질의하고, 응답의 정확성과 완전성을 평가하는 역할입니다.
-                    완성된 파일을 .claude/agents/에 복사하면 바로 @genie-tester로 호출할 수 있습니다.
+                    마지막 Step 3에서는 genie-tester를 실행합니다.
                     designer가 설계하고 instructor가 instructions를 작성한 Space의 품질을 검증하는 마지막 단계입니다.
+                    ask_genie 도구로 sample questions를 질의하고, 응답의 정확성과 완전성을 평가합니다.
+                    이렇게 3개 에이전트를 순서대로 실행하면 Genie Space 라이프사이클 전 과정을 커버합니다.
                 </aside>
             </section>
 
-            <!-- Slide 15: 실습 - 워크플로우 자동화 -->
+            <!-- Slide 17: 실습 - 워크플로우 자동화 -->
             <section>
-                <h2>실습: 워크플로우 자동화 <span class="badge">Hands-on</span></h2>
+                <h2>실습: 워크플로우 자동화</h2>
                 <p style="font-size: 0.85em; margin-bottom: 0.5em;"><code>@</code> 없이 자연어로 지시하면 Claude Code가 <strong style="color: #4ade80;">전체 라이프사이클</strong>을 수행합니다</p>
                 <div class="exercise-box fragment fade-up">
                     <pre><code class="language-text" data-trim style="font-size: 1em;">
-catalog.schema의 테이블을 분석해서 Genie Space를 설계하고,
+shared.fashion_recommendations 테이블을 분석해서 Genie Space를 설계하고,
 그 결과를 기반으로 instructions를 작성한 뒤,
 sample questions로 응답 품질까지 테스트해줘.
 
@@ -659,44 +770,27 @@ sample questions로 응답 품질까지 테스트해줘.
                 </aside>
             </section>
 
-            <!-- Slide 16: 정리 -->
+            <!-- Slide: 정리 & Q&A -->
             <section>
-                <h2>정리</h2>
-                <div class="emphasis-box">
-                    <h3>핵심 정리</h3>
-                    <ul style="font-size: 0.9em;">
-                        <li class="fragment fade-up">
-                            <strong>Custom Agents</strong> &mdash; <code>agent.md</code>로 정의하는 역할 기반 AI 에이전트
-                        </li>
-                        <li class="fragment fade-up">
-                            <strong>핵심 구조</strong> &mdash; 역할 + 제약 조건 + 출력 형식
-                        </li>
-                        <li class="fragment fade-up">
-                            <strong>Skills vs Agents</strong> &mdash; 절차 중심 vs 역할 중심, 실무에서는 조합 사용
-                        </li>
-                        <li class="fragment fade-up">
-                            <strong>설계 원칙</strong> &mdash; 명확한 역할, 적절한 제약, 구조화된 출력, 단일 책임
-                        </li>
-                    </ul>
+                <h2>정리 &amp; Q&amp;A</h2>
+                <ul>
+                    <li><strong>Custom Agents</strong>: <code>agent.md</code>로 정의하는 역할 기반 AI 에이전트</li>
+                    <li><strong>핵심 구조</strong>: 역할 + 제약 조건 + 출력 형식</li>
+                    <li><strong>Skills vs Agents</strong>: 절차 중심 vs 역할 중심, 실무에서는 조합 사용</li>
+                    <li><strong>설계 원칙</strong>: 명확한 역할, 적절한 제약, 구조화된 출력, 단일 책임</li>
+                </ul>
+                <div class="emphasis-box" style="margin-top: 1.5em;">
+                    <strong>다음 섹션:</strong> Hooks &mdash; 이벤트 기반 자동화, settings.json 설정, 안전 가드레일
                 </div>
+                <p style="margin-top: 1.5em; text-align: center; font-size: 1.2em; color: var(--ev-accent);">
+                    질문이 있으신가요?
+                </p>
                 <aside class="notes">
                     정리하겠습니다.
-                    Custom Agents는 agent.md 파일 하나로 역할 기반 AI 에이전트를 정의합니다.
+                    Custom Agents는 agent.md로 역할 기반 AI 에이전트를 정의합니다.
                     핵심 구조는 역할, 제약 조건, 출력 형식 세 가지입니다.
-                    Skills는 절차 중심, Agents는 역할 중심으로, 실무에서는 둘을 조합해서 사용합니다.
-                    Genie Space 라이프사이클처럼 designer, instructor, tester 각각이 단일 책임을 갖고 협력합니다.
-                </aside>
-            </section>
-
-            <!-- Slide 17: Q&A -->
-            <section>
-                <h1>Q&amp;A</h1>
-                <p>질문이 있으신가요?</p>
-                <div style="margin-top: 2em; font-size: 0.85em; color: var(--ev-text-muted);">
-                    <p>다음: <strong>Section 07 &mdash; Hooks</strong></p>
-                    <p style="font-size: 0.8em;">이벤트 기반 자동화, settings.json 설정, 안전 가드레일</p>
-                </div>
-                <aside class="notes">
+                    Skills는 절차 중심, Agents는 역할 중심이며 실무에서는 조합하여 사용합니다.
+                    설계 원칙은 명확한 역할, 적절한 제약, 구조화된 출력, 단일 책임입니다.
                     질문을 받겠습니다.
                     예상 질문들:
                     - Q: Agent가 여러 개일 때 서로 호출할 수 있나요? A: 직접 호출은 불가능하지만, 사용자가 한 Agent의 결과를 다른 Agent에게 전달할 수 있습니다. designer → instructor처럼 순서대로 호출하면 됩니다.
