@@ -122,14 +122,14 @@
                 <ul>
                     <li class="fragment fade-up" data-fragment-index="0">Custom Agent 개념과 <code>agent.md</code> 구조를 이해한다</li>
                     <li class="fragment fade-up" data-fragment-index="0"><strong>Skills vs Agents</strong> 차이점을 파악한다</li>
-                    <li class="fragment fade-up" data-fragment-index="0">실제 에이전트(<code>researcher</code>, <code>validator</code>)를 분석한다</li>
+                    <li class="fragment fade-up" data-fragment-index="0">실제 에이전트(<code>data-analyst</code>, <code>sql-reviewer</code>)를 분석한다</li>
                     <li class="fragment fade-up" data-fragment-index="0">직접 <strong>Custom Agent</strong>를 만들어본다</li>
                 </ul>
                 <aside class="notes">
                     네 가지 학습 목표입니다.
                     첫째, Custom Agent가 무엇이고 agent.md 파일이 어떤 구조인지 이해합니다.
                     둘째, 이전 섹션에서 배운 Skills와 Agents의 차이를 명확히 파악합니다.
-                    셋째, 이 프로젝트에서 실제로 사용 중인 에이전트를 분석합니다.
+                    셋째, 데이터 분석과 SQL 검증에 활용할 수 있는 실제 에이전트를 분석합니다.
                     넷째, 실습을 통해 직접 Custom Agent를 만들어봅니다.
                 </aside>
             </section>
@@ -182,15 +182,15 @@
                 <div class="fragment fade-up" style="margin-top: 0.8em;">
                     <pre><code class="language-text" data-trim>
 # Claude Code에서 에이전트 호출
-> @researcher 최신 MCP 프로토콜 변경사항을 조사해줘
-> @validator 이 슬라이드 섹션을 검증해줘
+> @data-analyst fashion_recommendations 테이블의 브랜드별 추천 분포를 분석해줘
+> @sql-reviewer 이 SQL 쿼리를 리뷰해줘
                     </code></pre>
                 </div>
                 <aside class="notes">
                     Custom Agents의 핵심 개념을 설명합니다.
                     agent.md는 마크다운 파일로, Claude Code에게 특정 역할의 전문가처럼 행동하도록 지시합니다.
                     Skills가 작업 절차를 정의한다면, Agents는 역할과 관점을 정의합니다.
-                    예를 들어 researcher 에이전트는 조사 전문가로, validator 에이전트는 검증 전문가로 동작합니다.
+                    예를 들어 data-analyst 에이전트는 데이터 분석 전문가로, sql-reviewer 에이전트는 SQL 품질 검증 전문가로 동작합니다.
                     골뱅이(@) 기호로 호출하면 해당 역할에 맞는 응답을 받을 수 있습니다.
                 </aside>
             </section>
@@ -244,76 +244,73 @@
                 </aside>
             </section>
 
-            <!-- Slide 6: 실제 예시: researcher.md -->
+            <!-- Slide 6: 실제 예시: data-analyst.md -->
             <section>
-                <h2>실제 예시: researcher 에이전트</h2>
-                <p style="color: var(--ev-text-muted); font-size: 0.85em;">이 프로젝트에서 실제 사용 중인 에이전트</p>
+                <h2>실제 예시: data-analyst 에이전트</h2>
+                <p style="color: var(--ev-text-muted); font-size: 0.85em;">Genie Space 데이터 분석 전문 에이전트</p>
                 <pre><code class="language-markdown" data-trim data-line-numbers="1-3|5-9|11-15|17-22">
-# researcher
+# data-analyst
 
-교육 콘텐츠 리서치 전문 에이전트
+Genie Space 데이터 분석 전문 에이전트
 
 ## 역할
-당신은 AI/ML 및 개발 도구 분야의 리서치 전문가입니다.
-교육 자료 제작에 필요한 최신 정보를 수집하고,
-정확하고 실용적인 내용을 정리합니다.
+당신은 Databricks SQL과 Genie Space를 활용하는
+데이터 분석 전문가입니다.
 
 ## 제약 조건
-- 공식 문서와 신뢰할 수 있는 소스만 참조
-- 추측이나 불확실한 정보는 명시적으로 표시
-- 코드 예시는 반드시 동작 가능한 것만 포함
+- Genie MCP 서버의 ask_genie, continue_conversation만 사용
+- 기존 Space에서 분석 (새 Space 생성 금지)
+- 분석 결과에 사용된 SQL 반드시 포함
 - 한국어로 결과물 작성
 
 ## 출력 형식
-### 조사 결과
-- **주제**: [조사 주제]
-- **핵심 내용**: 불릿 포인트로 정리
-- **참고 소스**: URL 목록
-- **교육 자료 반영 포인트**: 슬라이드에 활용할 내용
+- **분석 주제**: [주제]
+- **사용 SQL**: 생성된 쿼리
+- **핵심 인사이트**: 불릿 포인트
+- **추천 후속 분석**: 추가 분석 방향
                 </code></pre>
                 <aside class="notes">
-                    이 프로젝트에서 실제로 사용 중인 researcher 에이전트입니다.
-                    역할에서 AI/ML 및 개발 도구 분야의 리서치 전문가로 정의했습니다.
-                    제약 조건에서 공식 문서만 참조하고, 불확실한 정보는 명시하도록 했습니다.
-                    출력 형식에서 주제, 핵심 내용, 참고 소스, 교육 자료 반영 포인트를 구조화했습니다.
-                    이런 구조 덕분에 누가 @researcher를 호출해도 동일한 형식의 조사 결과를 받을 수 있습니다.
+                    Genie Space 데이터 분석에 특화된 data-analyst 에이전트입니다.
+                    역할에서 Databricks SQL과 Genie Space를 활용하는 데이터 분석 전문가로 정의했습니다.
+                    제약 조건에서 Genie MCP 서버의 도구만 사용하고, 기존 Space에서만 분석하도록 제한했습니다.
+                    출력 형식에서 분석 주제, 사용 SQL, 핵심 인사이트, 추천 후속 분석을 구조화했습니다.
+                    이런 구조 덕분에 누가 @data-analyst를 호출해도 동일한 형식의 분석 결과를 받을 수 있습니다.
                 </aside>
             </section>
 
-            <!-- Slide 7: 실제 예시: validator.md -->
+            <!-- Slide 7: 실제 예시: sql-reviewer.md -->
             <section>
-                <h2>실제 예시: validator 에이전트</h2>
-                <pre><code class="language-markdown" data-trim data-line-numbers="1-3|5-8|10-16|18-24">
-# validator
+                <h2>실제 예시: sql-reviewer 에이전트</h2>
+                <p style="color: var(--ev-text-muted); font-size: 0.85em;">SQL 쿼리 품질 검증 에이전트</p>
+                <pre><code class="language-markdown" data-trim data-line-numbers="1-3|5-7|9-15|17-21">
+# sql-reviewer
 
-슬라이드 및 코드 품질 검증 에이전트
+SQL 쿼리 품질 검증 에이전트
 
 ## 역할
-당신은 교육 콘텐츠 품질 검증 전문가입니다.
-슬라이드의 정확성, 일관성, 완성도를
-체계적으로 검증합니다.
+당신은 Databricks SQL 성능 및 품질 검증
+전문가입니다.
 
 ## 체크리스트
-- [ ] 섹션 번호와 제목이 section.yaml과 일치
-- [ ] 모든 슬라이드에 스피커 노트 포함
-- [ ] 코드 블록에 language 속성 지정
-- [ ] 다크 테마 색상 컨벤션 준수
-- [ ] 이전/다음 섹션 참조가 올바른지
-- [ ] reveal.js CDN 링크가 최신 버전인지
+- [ ] SELECT *를 사용하지 않고 필요한 컬럼만 선택
+- [ ] WHERE 절에 파티션 키 활용 여부
+- [ ] JOIN 조건이 올바르고 불필요한 CROSS JOIN 없음
+- [ ] GROUP BY와 집계 함수 매칭
+- [ ] 데이터 타입 변환이 명시적
+- [ ] LIMIT 절 포함 여부
 
 ## 출력 형식
-### 검증 결과
-- **통과 항목**: [체크 표시 목록]
-- **수정 필요**: [이슈와 수정 방안]
-- **경고**: [주의사항]
-- **종합 평가**: PASS / FAIL (사유)
+- **정확성**: [쿼리 로직 검토]
+- **성능**: [최적화 포인트]
+- **개선 제안**: [구체적 수정 방안]
+- **종합 평가**: PASS / NEEDS_IMPROVEMENT
                 </code></pre>
                 <aside class="notes">
-                    validator 에이전트는 품질 검증에 특화되어 있습니다.
-                    역할에서 교육 콘텐츠 품질 검증 전문가로 정의했습니다.
-                    체크리스트 섹션이 핵심인데, 검증해야 할 항목을 구체적으로 나열합니다.
-                    출력 형식에서 통과 항목, 수정 필요, 경고, 종합 평가를 구조화했습니다.
-                    이 에이전트를 사용하면 슬라이드를 만든 후 일관된 기준으로 품질을 검증할 수 있습니다.
+                    sql-reviewer 에이전트는 SQL 품질 검증에 특화되어 있습니다.
+                    역할에서 Databricks SQL 성능 및 품질 검증 전문가로 정의했습니다.
+                    체크리스트 섹션이 핵심인데, SQL 최적화 관점에서 검증해야 할 항목을 구체적으로 나열합니다.
+                    출력 형식에서 정확성, 성능, 개선 제안, 종합 평가를 구조화했습니다.
+                    이 에이전트를 사용하면 SQL 쿼리를 작성한 후 일관된 기준으로 품질을 검증할 수 있습니다.
                 </aside>
             </section>
 
@@ -330,7 +327,7 @@
                         <tr><td><strong>위치</strong></td><td>.claude/skills/</td><td>.claude/agents/</td></tr>
                         <tr><td><strong>호출</strong></td><td><code>/skill-name</code></td><td><code>@agent-name</code></td></tr>
                         <tr><td><strong>초점</strong></td><td>"무엇을, 어떻게"</td><td>"누가, 어떤 범위에서"</td></tr>
-                        <tr><td><strong>예시</strong></td><td>/slide-deck, /api-endpoint</td><td>@researcher, @validator</td></tr>
+                        <tr><td><strong>예시</strong></td><td>/genie-space, /data-summary</td><td>@data-analyst, @sql-reviewer</td></tr>
                     </tbody>
                 </table>
                 <div class="emphasis-box fragment fade-up" style="margin-top: 1em;">
@@ -347,7 +344,7 @@
                     선택 기준은 간단합니다.
                     동일한 작업을 반복적으로 수행해야 한다면 Skill을 만듭니다.
                     특정 전문가의 관점이 필요하다면 Agent를 만듭니다.
-                    실무에서는 둘을 조합해서 사용합니다. 예를 들어 @researcher에게 조사를 요청한 후, /slide-deck으로 슬라이드를 생성할 수 있습니다.
+                    실무에서는 둘을 조합해서 사용합니다. 예를 들어 @data-analyst에게 분석을 요청한 후, @sql-reviewer로 쿼리를 검증할 수 있습니다.
                 </aside>
             </section>
 
@@ -387,8 +384,8 @@
                         <div class="tree-diagram">
                             <span class="dir">.claude/</span><br>
                             <span class="file">&boxvr;&boxh;&boxh; <span class="dir">agents/</span></span> <span class="desc">&larr; Agent 정의</span><br>
-                            <span class="file">&boxvr;&ensp;&ensp; &boxvr;&boxh;&boxh; researcher.md</span> <span class="desc">&larr; 리서치 전문가</span><br>
-                            <span class="file">&boxvr;&ensp;&ensp; &boxur;&boxh;&boxh; validator.md</span> <span class="desc">&larr; 검증 전문가</span><br>
+                            <span class="file">&boxvr;&ensp;&ensp; &boxvr;&boxh;&boxh; data-analyst.md</span> <span class="desc">&larr; 데이터 분석 전문가</span><br>
+                            <span class="file">&boxvr;&ensp;&ensp; &boxur;&boxh;&boxh; sql-reviewer.md</span> <span class="desc">&larr; SQL 검증 전문가</span><br>
                             <span class="file">&boxvr;&boxh;&boxh; <span class="dir">skills/</span></span> <span class="desc">&larr; Skill 정의</span><br>
                             <span class="file">&boxvr;&ensp;&ensp; &boxvr;&boxh;&boxh; <span class="dir">slide-deck/</span></span><br>
                             <span class="file">&boxvr;&ensp;&ensp; &boxvr;&boxh;&boxh; <span class="dir">hands-on-code/</span></span><br>
@@ -420,7 +417,7 @@
                     Skills와 비교하면 구조가 훨씬 단순합니다.
                     Skills는 디렉토리 안에 SKILL.md와 references를 가지지만,
                     Agents는 .md 파일 하나로 완성됩니다.
-                    파일명이 곧 호출명이 됩니다. researcher.md → @researcher로 호출합니다.
+                    파일명이 곧 호출명이 됩니다. data-analyst.md → @data-analyst로 호출합니다.
                 </aside>
             </section>
 
@@ -430,27 +427,25 @@
                 <div class="columns">
                     <div>
                         <div class="exercise-box fragment fade-up">
-                            <h4>Exercise 1: 간단한 Agent (10분)</h4>
+                            <h4>Step 1: <code>@data-analyst</code> 에이전트 만들기 (10분)</h4>
                             <ol style="font-size: 0.8em;">
-                                <li><code>exercise_01_simple_agent/agent.md</code> 템플릿 확인</li>
-                                <li>Claude Code에게 <code>code-reviewer</code> 에이전트 작성 요청</li>
-                                <li><code>@code-reviewer</code>로 호출하여 테스트</li>
+                                <li><code>exercise_genie_analyst/data-analyst.md</code> 템플릿 확인</li>
+                                <li>Claude Code에게 <code>data-analyst</code> 에이전트 작성 요청</li>
+                                <li><code>.claude/agents/</code>에 배치 후 <code>@data-analyst</code>로 테스트</li>
                             </ol>
                             <p style="font-size: 0.75em; color: var(--ev-text-muted); margin-top: 0.5em;">
-                                <code style="color: var(--ev-accent-light);">&gt; exercise_01_simple_agent/agent.md에 code-reviewer 에이전트를 작성해줘</code>
+                                <code style="color: var(--ev-accent-light);">&gt; @data-analyst fashion_recommendations 테이블의 브랜드별 추천 분포를 분석해줘</code>
                             </p>
                         </div>
                         <div class="exercise-box fragment fade-up">
-                            <h4>Exercise 2: 프로젝트용 Agent (10분)</h4>
+                            <h4>Step 2: <code>@sql-reviewer</code> 에이전트 만들기 (15분)</h4>
                             <ol style="font-size: 0.8em;">
-                                <li>팀에서 필요한 역할을 정의</li>
-                                <li>Claude Code에게 해당 에이전트 작성 요청</li>
-                                <li>에이전트를 호출하여 실제 업무에 적용</li>
+                                <li><code>references/databricks-sql-best-practices.md</code> 확인</li>
+                                <li>Claude Code에게 <code>sql-reviewer</code> 에이전트 작성 요청</li>
+                                <li><code>.claude/agents/</code>에 배치 후 <code>@sql-reviewer</code>로 SQL 검토 테스트</li>
                             </ol>
                             <p style="font-size: 0.75em; color: var(--ev-text-muted); margin-top: 0.5em;">
-                                예: <code style="color: var(--ev-accent-light);">@data-analyst</code>,
-                                <code style="color: var(--ev-accent-light);">@sql-optimizer</code>,
-                                <code style="color: var(--ev-accent-light);">@doc-writer</code>
+                                <code style="color: var(--ev-accent-light);">&gt; @sql-reviewer SELECT * FROM fashion_recommendations 쿼리를 리뷰해줘</code>
                             </p>
                         </div>
                     </div>
@@ -466,12 +461,12 @@
                     </div>
                 </div>
                 <aside class="notes">
-                    실습 시간입니다. 두 가지 Exercise를 진행합니다.
-                    Exercise 1은 간단한 code-reviewer 에이전트를 만드는 것입니다.
-                    템플릿 파일을 확인한 후 Claude Code에게 작성을 요청하고, 실제로 호출하여 테스트합니다.
-                    Exercise 2는 좀 더 자유롭게, 팀에서 실제로 필요한 역할의 에이전트를 만들어봅니다.
-                    data-analyst, sql-optimizer, doc-writer 등 자신의 업무에 맞는 에이전트를 설계해보세요.
-                    체크리스트를 참고하여 품질을 검증합니다.
+                    실습 시간입니다. 두 단계로 진행합니다.
+                    Step 1은 data-analyst 에이전트를 만드는 것입니다.
+                    템플릿 파일의 TODO를 확인한 후 Claude Code에게 작성을 요청하고, .claude/agents/에 배치하여 테스트합니다.
+                    Step 2는 sql-reviewer 에이전트를 만드는 것입니다.
+                    먼저 references의 SQL 최적화 가이드를 확인한 후, 이를 기반으로 체크리스트를 작성합니다.
+                    체크리스트를 참고하여 완성된 에이전트의 품질을 검증합니다.
                 </aside>
             </section>
 

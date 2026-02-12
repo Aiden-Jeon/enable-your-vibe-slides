@@ -5,7 +5,7 @@ type: "lecture+hands-on"
 objectives:
   - "Custom Agent 개념과 agent.md 구조 이해"
   - "Skills vs Agents 차이점 파악"
-  - "실제 에이전트(researcher, validator) 분석"
+  - "실제 에이전트(data-analyst, sql-reviewer) 분석"
   - "직접 Custom Agent 만들기"
 slides: "index.html"
 prerequisites:
