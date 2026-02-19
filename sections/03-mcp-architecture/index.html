@@ -185,21 +185,21 @@
                 <div style="border: 2px solid var(--ev-accent); border-radius: 12px; padding: 1em 1.5em; width: 85%; background: rgba(233, 69, 96, 0.05);">
                     <div style="text-align: center; font-weight: bold; color: var(--ev-accent); margin-bottom: 0.5em;">Transport Layer (외부)</div>
                     <div style="display: flex; gap: 1em; justify-content: center; font-size: 0.8em; margin-bottom: 0.8em;">
-                        <span class="fragment">연결 수립</span>
-                        <span class="fragment" style="color: var(--ev-text-muted);">&middot;</span>
-                        <span class="fragment">메시지 프레이밍</span>
-                        <span class="fragment" style="color: var(--ev-text-muted);">&middot;</span>
-                        <span class="fragment">인증</span>
+                        <span class="fragment" data-fragment-index="0">연결 수립</span>
+                        <span class="fragment" data-fragment-index="0" style="color: var(--ev-text-muted);">&middot;</span>
+                        <span class="fragment" data-fragment-index="0">메시지 프레이밍</span>
+                        <span class="fragment" data-fragment-index="0" style="color: var(--ev-text-muted);">&middot;</span>
+                        <span class="fragment" data-fragment-index="0">인증</span>
                     </div>
                     <!-- Inner: Data Layer -->
                     <div style="border: 2px solid #4ade80; border-radius: 8px; padding: 1em 1.5em; background: rgba(74, 222, 128, 0.05);">
                         <div style="text-align: center; font-weight: bold; color: #4ade80; margin-bottom: 0.5em;">Data Layer (내부)</div>
                         <div style="display: flex; gap: 1em; justify-content: center; font-size: 0.8em;">
-                            <span class="fragment">Lifecycle 관리</span>
-                            <span class="fragment" style="color: var(--ev-text-muted);">&middot;</span>
-                            <span class="fragment">Primitives</span>
-                            <span class="fragment" style="color: var(--ev-text-muted);">&middot;</span>
-                            <span class="fragment">Notifications</span>
+                            <span class="fragment" data-fragment-index="1">Lifecycle 관리</span>
+                            <span class="fragment" data-fragment-index="1" style="color: var(--ev-text-muted);">&middot;</span>
+                            <span class="fragment" data-fragment-index="1">Primitives</span>
+                            <span class="fragment" data-fragment-index="1" style="color: var(--ev-text-muted);">&middot;</span>
+                            <span class="fragment" data-fragment-index="1">Notifications</span>
                         </div>
                     </div>
                 </div>
@@ -361,6 +361,55 @@
                 Shutdown 단계에서는 정리 작업 후 연결을 종료합니다.
                 특히 Initialize 단계에서의 Capabilities 교환이 중요한데,
                 이를 통해 서버가 어떤 프리미티브를 지원하는지 클라이언트가 알 수 있습니다.
+            </aside>
+        </section>
+
+        <!-- Slide: MCP는 언제 종료되는가? (신규) -->
+        <section>
+            <h2>MCP는 언제 종료되는가?</h2>
+            <div class="columns">
+                <div>
+                    <h3>Local Server (STDIO)</h3>
+                    <div style="background: rgba(0,0,0,0.3); border-radius: 8px; padding: 1em;">
+                        <ul style="font-size: 0.8em;">
+                            <li class="fragment" data-fragment-index="0">Host가 프로세스 lifecycle 관리</li>
+                            <li class="fragment" data-fragment-index="0">Claude Code <strong>종료 시 함께 종료</strong></li>
+                            <li class="fragment" data-fragment-index="0">Host와 Server의 수명이 동일</li>
+                        </ul>
+                        <div class="fragment" data-fragment-index="1" style="text-align: center; margin-top: 0.8em; font-size: 0.85em;">
+                            <span style="color: var(--ev-accent);">Host 종료</span>
+                            <span style="color: var(--ev-text-muted);"> → </span>
+                            <span style="color: var(--ev-accent);">Server 종료</span>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <h3>Remote Server (HTTP)</h3>
+                    <div style="background: rgba(0,0,0,0.3); border-radius: 8px; padding: 1em;">
+                        <ul style="font-size: 0.8em;">
+                            <li class="fragment" data-fragment-index="2">Client 연결만 끊어짐</li>
+                            <li class="fragment" data-fragment-index="2">Server는 <strong>독립적으로 계속 실행</strong></li>
+                            <li class="fragment" data-fragment-index="2">다른 Client가 다시 연결 가능</li>
+                        </ul>
+                        <div class="fragment" data-fragment-index="3" style="text-align: center; margin-top: 0.8em; font-size: 0.85em;">
+                            <span style="color: #4ade80;">Host 종료</span>
+                            <span style="color: var(--ev-text-muted);"> → </span>
+                            <span style="color: #4ade80;">Server 계속 실행</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="fragment emphasis-box" style="margin-top: 1em;">
+                <p><strong>STDIO</strong>: Host와 수명 동일 &nbsp;/&nbsp; <strong>HTTP</strong>: Server는 독립 운영</p>
+            </div>
+            <aside class="notes">
+                Lifecycle의 Shutdown 단계에서 MCP가 언제 종료되는지는 전송 방식에 따라 다릅니다.
+                STDIO 기반 Local Server는 Host가 프로세스를 직접 관리하기 때문에,
+                Claude Code를 종료하면 MCP Server 프로세스도 함께 종료됩니다.
+                반면 HTTP 기반 Remote Server는 독립적인 서버 프로세스이므로,
+                Client의 연결이 끊어져도 Server는 계속 실행됩니다.
+                다른 Client가 나중에 다시 연결할 수도 있습니다.
+                이 차이를 이해하면 운영 환경에서 MCP Server를 어떻게 배포할지 판단하는 데 도움이 됩니다.
             </aside>
         </section>
 
