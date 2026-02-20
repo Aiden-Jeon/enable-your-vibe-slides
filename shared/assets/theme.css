@@ -424,3 +424,42 @@
         left: -280px;
     }
 }
+
+/* Section navigation buttons */
+.reveal .nav-btn-group {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 1.5em;
+}
+
+.reveal .nav-btn {
+    display: inline-block;
+    padding: 0.5em 1.4em;
+    border: 2px solid var(--ev-accent);
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 0.7em;
+    font-weight: 600;
+    transition: box-shadow 0.2s;
+}
+
+.reveal .nav-btn-primary {
+    background: var(--ev-accent);
+    color: #fff;
+}
+
+.reveal .nav-btn-primary:hover {
+    box-shadow: 0 4px 16px rgba(233, 69, 96, 0.3);
+    color: #fff;
+}
+
+.reveal .nav-btn-secondary {
+    background: transparent;
+    color: var(--ev-accent-light);
+}
+
+.reveal .nav-btn-secondary:hover {
+    background: rgba(233, 69, 96, 0.1);
+    color: var(--ev-accent-light);
+}
