@@ -150,15 +150,15 @@
             <section>
                 <h2>학습 목표</h2>
                 <ul>
+                    <li class="fragment fade-up" data-fragment-index="0"><strong>Skills vs Agents</strong> 차이점을 우리 프로젝트 예시로 파악한다</li>
                     <li class="fragment fade-up" data-fragment-index="0">Custom Agent 개념과 <code>agent.md</code> 구조를 이해한다</li>
-                    <li class="fragment fade-up" data-fragment-index="0"><strong>Skills vs Agents</strong> 차이점을 파악한다</li>
                     <li class="fragment fade-up" data-fragment-index="0">실제 에이전트(<code>genie-space-designer</code>, <code>genie-instructor</code>, <code>genie-tester</code>)를 분석한다</li>
                     <li class="fragment fade-up" data-fragment-index="0">직접 <strong>Custom Agent</strong>를 만들어본다</li>
                 </ul>
                 <aside class="notes">
                     네 가지 학습 목표입니다.
-                    첫째, Custom Agent가 무엇이고 agent.md 파일이 어떤 구조인지 이해합니다.
-                    둘째, 이전 섹션에서 배운 Skills와 Agents의 차이를 명확히 파악합니다.
+                    첫째, 우리 프로젝트의 실제 예시를 통해 Skills와 Agents의 차이를 명확히 파악합니다.
+                    둘째, Custom Agent가 무엇이고 agent.md 파일이 어떤 구조인지 이해합니다.
                     셋째, Genie Space 라이프사이클을 담당하는 세 가지 에이전트를 분석합니다.
                     넷째, 실습을 통해 직접 Custom Agent를 만들어봅니다.
                 </aside>
@@ -225,7 +225,149 @@
                 </aside>
             </section>
 
-            <!-- Slide 5: agent.md 구조 -->
+            <!-- Slide 5: Skills vs Agents 비교 (핵심 개념) -->
+            <section>
+                <h2>Skills vs Agents 비교</h2>
+                <p style="font-size: 0.85em; margin-bottom: 0.8em;">Agent를 배우기 전에, 이전 섹션의 <strong style="color: var(--ev-accent);">Skills</strong>와 어떻게 다른지 먼저 짚어봅니다</p>
+                <table style="font-size: 0.75em;">
+                    <thead>
+                        <tr><th></th><th style="color: var(--ev-accent);">Skills</th><th style="color: #4ade80;">Agents</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><strong>정의</strong></td><td>작업 절차 (How)</td><td>역할과 관점 (Who)</td></tr>
+                        <tr><td><strong>파일</strong></td><td>SKILL.md</td><td>agent.md</td></tr>
+                        <tr><td><strong>위치</strong></td><td>.claude/skills/</td><td>.claude/agents/</td></tr>
+                        <tr><td><strong>호출</strong></td><td><code>/skill-name</code></td><td><code>@agent-name</code></td></tr>
+                        <tr><td><strong>초점</strong></td><td>"무엇을, 어떻게"</td><td>"누가, 어떤 범위에서"</td></tr>
+                        <tr><td><strong>구조</strong></td><td>디렉토리 + references/</td><td>.md 파일 하나</td></tr>
+                    </tbody>
+                </table>
+                <div class="emphasis-box fragment fade-up" style="margin-top: 0.8em;">
+                    <strong>선택 가이드:</strong><br>
+                    <span style="font-size: 0.9em;">
+                        반복적인 <strong>작업 절차</strong>가 있다 &rarr; <span style="color: var(--ev-accent);">Skill</span> |
+                        특정 <strong>전문가 관점</strong>이 필요하다 &rarr; <span style="color: #4ade80;">Agent</span>
+                    </span>
+                </div>
+                <aside class="notes">
+                    Agent를 본격적으로 배우기 전에, Skills와의 차이를 먼저 명확히 하겠습니다.
+                    Skills는 작업의 절차, 즉 How를 정의합니다. "이 작업은 이 순서대로 해줘."
+                    Agents는 역할과 관점, 즉 Who를 정의합니다. "이 전문가처럼 행동해줘."
+                    구조적으로도 차이가 있습니다. Skills는 디렉토리에 SKILL.md와 references를 가지지만, Agents는 .md 파일 하나로 완성됩니다.
+                    선택 기준은 간단합니다. 동일한 작업을 반복적으로 수행해야 한다면 Skill, 특정 전문가의 관점이 필요하다면 Agent를 만듭니다.
+                </aside>
+            </section>
+
+            <!-- Slide 6: 우리 프로젝트의 Skills vs Agents 실제 예시 -->
+            <section>
+                <h2>우리 프로젝트의 실제 예시</h2>
+                <p style="font-size: 0.85em; margin-bottom: 0.6em;">이 프로젝트에서 실제 사용 중인 Skills와 Agents를 비교합니다</p>
+                <div style="display: flex; gap: 1.5em;">
+                    <!-- Skills 예시 -->
+                    <div style="flex: 1;" class="fragment fade-up">
+                        <h3 style="color: var(--ev-accent); font-size: 0.95em; margin-bottom: 0.5em;">Skills &mdash; 작업 절차</h3>
+                        <div class="principle-box" style="border-left-color: var(--ev-accent);">
+                            <h4 style="font-size: 0.85em;">/slide-deck</h4>
+                            <p style="font-size: 0.75em;">reveal.js 슬라이드를 <strong>정해진 절차</strong>로 생성<br>
+                            1. conventions 읽기 &rarr; 2. 템플릿 기반 생성 &rarr; 3. 저장</p>
+                        </div>
+                        <div class="principle-box" style="border-left-color: var(--ev-accent);">
+                            <h4 style="font-size: 0.85em;">/hands-on-code</h4>
+                            <p style="font-size: 0.75em;">실습 코드를 <strong>컨벤션에 맞게</strong> 생성<br>
+                            1. 코드 컨벤션 확인 &rarr; 2. 파일 생성 &rarr; 3. README 작성</p>
+                        </div>
+                        <div class="principle-box" style="border-left-color: var(--ev-accent);">
+                            <h4 style="font-size: 0.85em;">/genie-space</h4>
+                            <p style="font-size: 0.75em;">Genie Space를 <strong>MCP 도구 조합</strong>으로 생성<br>
+                            1. 스키마 분석 &rarr; 2. instructions 작성 &rarr; 3. Space 생성</p>
+                        </div>
+                    </div>
+                    <!-- Agents 예시 -->
+                    <div style="flex: 1;" class="fragment fade-up">
+                        <h3 style="color: #4ade80; font-size: 0.95em; margin-bottom: 0.5em;">Agents &mdash; 전문가 역할</h3>
+                        <div class="principle-box" style="border-left-color: #4ade80;">
+                            <h4 style="font-size: 0.85em; color: #4ade80;">@researcher</h4>
+                            <p style="font-size: 0.75em;"><strong>리서치 전문가</strong> 관점으로 정보 수집<br>
+                            읽기 전용 &mdash; 문서/API/코드 탐색만 수행</p>
+                        </div>
+                        <div class="principle-box" style="border-left-color: #4ade80;">
+                            <h4 style="font-size: 0.85em; color: #4ade80;">@validator</h4>
+                            <p style="font-size: 0.75em;"><strong>QA 전문가</strong> 관점으로 품질 검증<br>
+                            읽기 전용 &mdash; 파일 구조/코드/HTML 검증만 수행</p>
+                        </div>
+                        <div class="principle-box" style="border-left-color: #4ade80;">
+                            <h4 style="font-size: 0.85em; color: #4ade80;">@genie-space-designer</h4>
+                            <p style="font-size: 0.75em;"><strong>Space 아키텍트</strong> 관점으로 설계<br>
+                            스키마 분석만 &mdash; 생성은 하지 않음</p>
+                        </div>
+                    </div>
+                </div>
+                <aside class="notes">
+                    우리 프로젝트에서 실제 사용 중인 Skills와 Agents를 비교해봅시다.
+                    왼쪽 Skills를 보면, slide-deck은 슬라이드를 정해진 절차로 생성합니다. 누가 실행해도 같은 스타일의 결과가 나옵니다.
+                    hands-on-code는 실습 코드를 컨벤션에 맞게 생성합니다. genie-space는 MCP 도구를 조합하여 Space를 만듭니다.
+                    오른쪽 Agents를 보면, researcher는 리서치 전문가로 정보 수집만 합니다. 파일 수정은 절대 하지 않습니다.
+                    validator는 QA 전문가로 품질 검증만 합니다. 역시 읽기 전용입니다.
+                    genie-space-designer는 Space 아키텍트로 설계만 합니다. 실제 생성은 하지 않습니다.
+                    핵심 차이가 보이시나요? Skills는 절차를 따라 결과물을 만들고, Agents는 특정 관점에서 분석하거나 검증합니다.
+                </aside>
+            </section>
+
+            <!-- Slide 7: 같은 작업, 다른 접근 -->
+            <section>
+                <h2>같은 작업, 다른 접근</h2>
+                <p style="font-size: 0.85em; margin-bottom: 0.6em;"><strong>Genie Space 만들기</strong>를 Skill과 Agent로 각각 어떻게 접근하는지 비교합니다</p>
+                <div style="display: flex; gap: 1.5em;">
+                    <div style="flex: 1;" class="fragment fade-up">
+                        <div style="border: 2px solid var(--ev-accent); border-radius: 12px; padding: 1em; background: rgba(233, 69, 96, 0.05);">
+                            <h3 style="color: var(--ev-accent); font-size: 0.9em; margin-top: 0;">Skill 방식: /genie-space</h3>
+                            <pre style="font-size: 0.75em; margin: 0;"><code class="language-text">/genie-space "매출 분석" shared.sales
+
+→ 절차에 따라 자동으로:
+  1. 스키마 분석
+  2. instructions 작성
+  3. Space 생성
+  4. 테스트 질의
+→ 완성된 Space 출력</code></pre>
+                            <p style="font-size: 0.75em; color: var(--ev-text-muted); margin: 0.5em 0 0 0;">
+                                <strong>특징:</strong> 전 과정을 한 번에 자동 수행
+                            </p>
+                        </div>
+                    </div>
+                    <div style="flex: 1;" class="fragment fade-up">
+                        <div style="border: 2px solid #4ade80; border-radius: 12px; padding: 1em; background: rgba(74, 222, 128, 0.05);">
+                            <h3 style="color: #4ade80; font-size: 0.9em; margin-top: 0;">Agent 방식: @designer → @instructor → @tester</h3>
+                            <pre style="font-size: 0.75em; margin: 0;"><code class="language-text">@genie-space-designer 스키마 분석해줘
+→ 설계 관점의 분석 리포트
+
+@genie-instructor instructions 작성해줘
+→ 전문가 관점의 instructions
+
+@genie-tester 품질 테스트해줘
+→ QA 관점의 평가 리포트</code></pre>
+                            <p style="font-size: 0.75em; color: var(--ev-text-muted); margin: 0.5em 0 0 0;">
+                                <strong>특징:</strong> 각 단계를 전문가가 개별 수행
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="emphasis-box fragment fade-up" style="margin-top: 0.8em;">
+                    <p style="font-size: 0.85em; margin: 0;">
+                        <strong>실무 팁:</strong> 빠르게 반복할 때는 <span style="color: var(--ev-accent);">Skill</span>,
+                        품질을 세밀하게 통제할 때는 <span style="color: #4ade80;">Agent</span>,
+                        실무에서는 <strong>둘을 조합</strong>하여 사용
+                    </p>
+                </div>
+                <aside class="notes">
+                    같은 Genie Space 만들기 작업을 Skill과 Agent로 각각 접근하는 방식을 비교합니다.
+                    Skill 방식은 /genie-space 명령 하나로 전 과정을 자동 수행합니다. 빠르고 일관적입니다.
+                    Agent 방식은 designer, instructor, tester 세 전문가가 각 단계를 개별 수행합니다. 각 단계에서 사람이 검토하고 피드백할 수 있습니다.
+                    실무에서는 상황에 따라 선택합니다. 빠르게 반복할 때는 Skill, 품질을 세밀하게 통제할 때는 Agent를 사용합니다.
+                    가장 좋은 방법은 둘을 조합하는 것입니다. 예를 들어 @researcher로 조사한 결과를 /genie-space Skill에 전달하는 식입니다.
+                </aside>
+            </section>
+
+            <!-- Slide 8: agent.md 구조 -->
             <section>
                 <h2>agent.md 파일 구조</h2>
                 <div class="columns">
@@ -389,41 +531,7 @@ sql_snippets를 작성합니다.
                 </aside>
             </section>
 
-            <!-- Slide 9: Skills vs Agents 비교 -->
-            <section>
-                <h2>Skills vs Agents 비교</h2>
-                <table style="font-size: 0.8em;">
-                    <thead>
-                        <tr><th></th><th style="color: var(--ev-accent);">Skills</th><th style="color: #4ade80;">Agents</th></tr>
-                    </thead>
-                    <tbody>
-                        <tr><td><strong>정의</strong></td><td>작업 절차 (How)</td><td>역할과 관점 (Who)</td></tr>
-                        <tr><td><strong>파일</strong></td><td>SKILL.md</td><td>agent.md</td></tr>
-                        <tr><td><strong>위치</strong></td><td>.claude/skills/</td><td>.claude/agents/</td></tr>
-                        <tr><td><strong>호출</strong></td><td><code>/skill-name</code></td><td><code>@agent-name</code></td></tr>
-                        <tr><td><strong>초점</strong></td><td>"무엇을, 어떻게"</td><td>"누가, 어떤 범위에서"</td></tr>
-                        <tr><td><strong>예시</strong></td><td>/genie-space, /data-summary</td><td>@genie-space-designer, @genie-instructor</td></tr>
-                    </tbody>
-                </table>
-                <div class="emphasis-box fragment fade-up" style="margin-top: 1em;">
-                    <strong>선택 가이드:</strong><br>
-                    <span style="font-size: 0.9em;">
-                        반복적인 <strong>작업 절차</strong>가 있다 &rarr; <span style="color: var(--ev-accent);">Skill</span> |
-                        특정 <strong>전문가 관점</strong>이 필요하다 &rarr; <span style="color: #4ade80;">Agent</span>
-                    </span>
-                </div>
-                <aside class="notes">
-                    Skills와 Agents의 핵심 차이를 비교합니다.
-                    Skills는 작업의 절차, 즉 How를 정의합니다. "이 작업은 이 순서대로 해줘."
-                    Agents는 역할과 관점, 즉 Who를 정의합니다. "이 전문가처럼 행동해줘."
-                    선택 기준은 간단합니다.
-                    동일한 작업을 반복적으로 수행해야 한다면 Skill을 만듭니다.
-                    특정 전문가의 관점이 필요하다면 Agent를 만듭니다.
-                    실무에서는 둘을 조합해서 사용합니다. 예를 들어 @genie-space-designer에게 설계를 요청한 후, @genie-instructor로 instructions를 작성할 수 있습니다.
-                </aside>
-            </section>
-
-            <!-- Slide 10: Agent 설계 원칙 -->
+            <!-- Slide 12: Agent 설계 원칙 -->
             <section>
                 <h2>Agent 설계 원칙</h2>
                 <div class="principle-box fragment fade-up">
@@ -776,7 +884,7 @@ sample questions로 응답 품질까지 테스트해줘.
                 <ul>
                     <li><strong>Custom Agents</strong>: <code>agent.md</code>로 정의하는 역할 기반 AI 에이전트</li>
                     <li><strong>핵심 구조</strong>: 역할 + 제약 조건 + 출력 형식</li>
-                    <li><strong>Skills vs Agents</strong>: 절차 중심 vs 역할 중심, 실무에서는 조합 사용</li>
+                    <li><strong>Skills vs Agents</strong>: 절차 중심 vs 역할 중심 &mdash; 빠른 반복은 Skill, 세밀한 통제는 Agent, 실무에서는 조합</li>
                     <li><strong>설계 원칙</strong>: 명확한 역할, 적절한 제약, 구조화된 출력, 단일 책임</li>
                 </ul>
                 <div class="emphasis-box" style="margin-top: 1.5em;">

@@ -58,39 +58,7 @@
             </aside>
         </section>
 
-        <!-- Slide 3: Databricks Genie Space란? -->
-        <section>
-            <h2>Databricks Genie Space란?</h2>
-            <div class="columns">
-                <div>
-                    <h3>자연어 데이터 질의 AI</h3>
-                    <ul>
-                        <li>자연어 질문을 SQL로 변환</li>
-                        <li>Databricks 테이블에서 데이터 조회</li>
-                        <li>결과를 자연어로 요약하여 반환</li>
-                        <li>대화형 인터페이스 지원</li>
-                    </ul>
-                </div>
-                <div>
-                    <h3>활용 사례</h3>
-                    <ul>
-                        <li>"이번 달 매출 합계는?"</li>
-                        <li>"가장 많이 팔린 상품 Top 5"</li>
-                        <li>"지난 분기 대비 성장률"</li>
-                        <li>"고객 이탈률 추이"</li>
-                    </ul>
-                </div>
-            </div>
-            <aside class="notes">
-                Genie Space는 Databricks에서 제공하는 자연어 데이터 질의 인터페이스입니다.
-                사용자가 자연어로 질문하면 내부적으로 SQL을 생성하고,
-                Databricks 테이블에서 데이터를 조회한 뒤 결과를 반환합니다.
-                웹 UI뿐 아니라 API를 통해서도 접근이 가능한데,
-                이 API를 MCP 서버로 만들면 Claude Code에서 직접 데이터를 질의할 수 있게 됩니다.
-            </aside>
-        </section>
-
-        <!-- Slide 4: Genie API 구조 -->
+        <!-- Slide 3: Genie API 구조 -->
         <section>
             <h2>Genie API 구조</h2>
             <table>
@@ -127,6 +95,9 @@
             <div class="emphasis-box fragment" style="margin-top: 1em;">
                 <strong>인증:</strong> Bearer 토큰 &mdash; <code>Authorization: Bearer {token}</code>
             </div>
+            <p class="fragment" style="margin-top: 0.8em; font-size: 0.7em;">
+                📖 OpenAPI 스펙: <a href="https://openapi.dev.databricks.com/api/workspace/genie" target="_blank" style="color: var(--ev-accent);">openapi.dev.databricks.com/api/workspace/genie</a>
+            </p>
             <aside class="notes">
                 Genie API는 크게 두 부분으로 나뉩니다.
                 먼저 Space 생성 API — POST /genie/spaces로 새 Space를 만듭니다.
@@ -690,14 +661,18 @@ uv run python 04-genie-mcp/exercise_02_genie_mcp_server.py
             <div style="display: flex; align-items: flex-start; gap: 1em;">
                 <div style="flex: 1;">
                     <h3>① .mcp.json 설정</h3>
-                    <pre><code class="language-bash" data-trim># 프로젝트 루트의 .mcp.json에 추가
+                    <pre style="font-size: 0.5em;"><code class="language-bash"># 프로젝트 루트의 .mcp.json에 추가
 cat > .mcp.json << 'EOF'
 {
   "mcpServers": {
     "genie": {
       "type": "stdio",
       "command": "uv",
-      "args": ["run", "python", "04-genie-mcp/exercise_02_genie_mcp_server.py"]
+      "args": [
+          "run",
+          "python",
+          "04-genie-mcp/exercise_02_genie_mcp_server.py"
+      ]
     }
   }
 }

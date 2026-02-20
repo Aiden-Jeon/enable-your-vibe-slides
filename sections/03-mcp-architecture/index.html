@@ -687,6 +687,54 @@ if __name__ == "__main__":
             </aside>
         </section>
 
+        <!-- Slide 18: MCP 설정 스코프 -->
+        <section>
+            <h2>MCP 설정 스코프</h2>
+            <table style="font-size: 0.75em; width: 100%;">
+                <thead>
+                    <tr>
+                        <th>스코프</th>
+                        <th>파일 위치</th>
+                        <th>공유 범위</th>
+                        <th>CLI 옵션</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Project</strong></td>
+                        <td><code>.mcp.json</code> (프로젝트 루트)</td>
+                        <td>팀 전체 (VCS 커밋)</td>
+                        <td><code>--scope project</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>User</strong></td>
+                        <td><code>~/.claude.json</code></td>
+                        <td>개인용, 모든 프로젝트</td>
+                        <td><code>--scope user</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Local</strong></td>
+                        <td><code>.claude/local.json</code></td>
+                        <td>개인용, 현재 프로젝트만</td>
+                        <td><code>--scope local</code></td>
+                    </tr>
+                </tbody>
+            </table>
+            <pre class="fragment"><code class="language-bash" data-trim>claude mcp add --scope project my-server uv run server.py</code></pre>
+            <p class="fragment" style="font-size: 0.75em; color: #e94560;">
+                ⚠️ <code>.claude/mcp.json</code>은 공식 지원되지 않습니다 — 반드시 프로젝트 루트의 <code>.mcp.json</code>을 사용하세요
+            </p>
+            <aside class="notes">
+                MCP 설정에는 3가지 스코프가 있습니다.
+                Project 스코프는 프로젝트 루트의 .mcp.json 파일을 사용하며, Git에 커밋하여 팀원과 공유할 수 있습니다.
+                User 스코프는 홈 디렉토리의 ~/.claude.json에 저장되어 모든 프로젝트에서 사용됩니다.
+                Local 스코프는 .claude/local.json에 저장되어 현재 프로젝트에서만 사용되지만, Git에 커밋되지 않아 개인 설정에 적합합니다.
+                CLI에서 claude mcp add 명령어로 서버를 추가할 때 --scope 옵션으로 스코프를 지정할 수 있습니다.
+                주의할 점은, .claude/mcp.json이라는 파일 경로는 공식적으로 지원되지 않습니다.
+                GitHub Issue #5037, #5350에서도 확인된 사항이니 반드시 프로젝트 루트의 .mcp.json을 사용하세요.
+            </aside>
+        </section>
+
         <!-- Slide 16: 실습 안내 -->
         <section>
             <h2>실습: Claude Code로 MCP 서버 만들기!</h2>

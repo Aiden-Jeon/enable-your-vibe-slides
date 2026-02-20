@@ -262,6 +262,9 @@
                 <div class="emphasis-box" style="margin-top: 1em;">
                     <strong>핵심 아이디어:</strong> "이 작업은 항상 이 절차대로 해줘"를 코드화한 것
                 </div>
+                <p style="font-size: 0.6em; margin-top: 1em; color: var(--ev-text-muted);">
+                    참고: <a href="https://resources.anthropic.com/hubfs/The-Complete-Guide-to-Building-Skill-for-Claude.pdf?hsLang=en" target="_blank" style="color: var(--ev-accent-light);">The Complete Guide to Building Skills for Claude (PDF)</a>
+                </p>
                 <aside class="notes">
                     Skills의 핵심 개념을 설명합니다.
                     SKILL.md는 마크다운 파일로, Claude Code에게 특정 작업의 수행 절차를 알려줍니다.
@@ -395,27 +398,27 @@ Genie MCP 서버를 활용하여 Genie Space를 생성합니다.
             <section>
                 <h2>레퍼런스 파일</h2>
                 <p>Skills가 참조하는 상세 가이드라인</p>
-                <div class="columns">
+                <div class="columns" style="font-size: 0.75em;">
                     <div>
                         <div class="diagram">
-<pre style="background: transparent; border: none; box-shadow: none; text-align: left; font-size: 0.85em;">
+<pre style="background: transparent; border: none; box-shadow: none; text-align: left; font-size: 0.75em;">
 .claude/skills/slide-deck/
 ├── SKILL.md                   ← 스킬 정의
 └── references/
     └── slide-conventions.md   ← 상세 스타일 가이드
 </pre>
                         </div>
-                        <div class="skill-card fragment fade-up" style="margin-top: 0.5em;">
-                            <h4>conventions (컨벤션)</h4>
-                            <p>코딩 스타일, 네이밍 규칙, 에러 처리 방식</p>
+                        <div class="skill-card fragment fade-up" data-fragment-index="0" style="margin-top: 0.5em; font-size: 0.85em;">
+                            <h4 style="font-size: 1em;">conventions (컨벤션)</h4>
+                            <p style="font-size: 0.9em;">코딩 스타일, 네이밍 규칙, 에러 처리 방식</p>
                         </div>
-                        <div class="skill-card fragment fade-up">
-                            <h4>templates (템플릿)</h4>
-                            <p>코드 생성의 기반이 되는 골격 코드</p>
+                        <div class="skill-card fragment fade-up" data-fragment-index="0" style="font-size: 0.85em;">
+                            <h4 style="font-size: 1em;">templates (템플릿)</h4>
+                            <p style="font-size: 0.9em;">코드 생성의 기반이 되는 골격 코드</p>
                         </div>
-                        <div class="skill-card fragment fade-up">
-                            <h4>examples (예시)</h4>
-                            <p>완성된 코드 예시로 AI가 패턴 학습</p>
+                        <div class="skill-card fragment fade-up" data-fragment-index="0" style="font-size: 0.85em;">
+                            <h4 style="font-size: 1em;">examples (예시)</h4>
+                            <p style="font-size: 0.9em;">완성된 코드 예시로 AI가 패턴 학습</p>
                         </div>
                     </div>
                     <div class="fragment fade-up">
@@ -508,7 +511,7 @@ Genie MCP 서버를 활용하여 Genie Space를 생성합니다.
                             </ul>
                         </div>
                         <div class="fragment fade-up emphasis-box">
-                            <p style="font-size: 0.85em; margin: 0;">
+                            <p style="font-size: 0.80em; margin: 0;">
                                 <strong>간단한 Skill</strong>: SKILL.md 하나만으로도 동작<br>
                                 <strong>고품질 Skill</strong>: 레퍼런스 파일로 일관성 보장
                             </p>
@@ -566,41 +569,41 @@ Genie MCP 서버를 활용하여 Genie Space를 생성합니다.
 
             <!-- Slide 12: Skill 체이닝 패턴 -->
             <section>
-                <h2>Skill 체이닝 패턴</h2>
-                <p style="font-size: 0.85em; margin-bottom: 0.5em;">
+                <h2 style="font-size: 1.4em;">Skill 체이닝 패턴</h2>
+                <p style="font-size: 0.7em; margin-bottom: 0.3em;">
                     Skill A의 출력을 Skill B의 입력으로 연결하여 <strong>복잡한 워크플로우</strong>를 구성합니다
                 </p>
-                <div class="flow-chain fragment fade-up">
-                    <div class="chain-step">
-                        <span class="step-label">Skill A</span>
-                        <span class="step-name">data-summary</span>
+                <div class="flow-chain fragment fade-up" style="flex-wrap:nowrap;overflow-x:auto;gap:0.2em;">
+                    <div class="chain-step" style="min-width:unset;padding:0.3em 0.6em;display:inline-block;">
+                        <span class="step-label" style="font-size:0.65em;">Skill A</span>
+                        <span class="step-name" style="font-size:0.75em;">api-endpoint</span>
                     </div>
-                    <span class="chain-arrow">&rarr;</span>
-                    <div class="chain-step">
-                        <span class="step-label">출력 &rarr; 입력</span>
-                        <span class="step-name">요약 보고서</span>
+                    <span class="chain-arrow" style="display:inline-block;font-size:0.8em;">&rarr;</span>
+                    <div class="chain-step" style="min-width:unset;padding:0.3em 0.6em;display:inline-block;">
+                        <span class="step-label" style="font-size:0.65em;">출력 &rarr; 입력</span>
+                        <span class="step-name" style="font-size:0.75em;">엔드포인트 코드</span>
                     </div>
-                    <span class="chain-arrow">&rarr;</span>
-                    <div class="chain-step">
-                        <span class="step-label">Skill B</span>
-                        <span class="step-name">api-endpoint</span>
+                    <span class="chain-arrow" style="display:inline-block;font-size:0.8em;">&rarr;</span>
+                    <div class="chain-step" style="min-width:unset;padding:0.3em 0.6em;display:inline-block;">
+                        <span class="step-label" style="font-size:0.65em;">Skill B</span>
+                        <span class="step-name" style="font-size:0.75em;">test-generator</span>
                     </div>
-                    <span class="chain-arrow">&rarr;</span>
-                    <div class="chain-step">
-                        <span class="step-label">Skill C</span>
-                        <span class="step-name">test-generator</span>
+                    <span class="chain-arrow" style="display:inline-block;font-size:0.8em;">&rarr;</span>
+                    <div class="chain-step" style="min-width:unset;padding:0.3em 0.6em;display:inline-block;">
+                        <span class="step-label" style="font-size:0.65em;">출력 &rarr; 입력</span>
+                        <span class="step-name" style="font-size:0.75em;">테스트 코드</span>
+                    </div>
+                    <span class="chain-arrow" style="display:inline-block;font-size:0.8em;">&rarr;</span>
+                    <div class="chain-step" style="min-width:unset;padding:0.3em 0.6em;display:inline-block;">
+                        <span class="step-label" style="font-size:0.65em;">Skill C</span>
+                        <span class="step-name" style="font-size:0.75em;">api-docs</span>
                     </div>
                 </div>
                 <div class="fragment fade-up" style="margin-top: 0.8em;">
                     <h3>체이닝 예시: 기능 개발 워크플로우</h3>
-                    <pre><code class="language-text">1. /api-endpoint "사용자 프로필 조회 API"
-   → 엔드포인트 코드 생성
-
-2. /test-generator "생성된 엔드포인트에 대한 테스트"
-   → 테스트 코드 자동 생성
-
-3. /api-docs "프로필 조회 API 문서화"
-   → API 문서 생성</code></pre>
+                    <pre><code class="language-text">1. /api-endpoint "사용자 프로필 조회 API"  → 엔드포인트 코드 생성
+2. /test-generator "생성된 엔드포인트에 대한 테스트"  → 테스트 코드 자동 생성
+3. /api-docs "프로필 조회 API 문서화"  → API 문서 생성</code></pre>
                 </div>
                 <div class="fragment fade-up emphasis-box" style="margin-top: 0.5em;">
                     <p style="font-size: 0.85em; margin: 0; text-align: center;">
@@ -754,10 +757,10 @@ references/genie-best-practices.md 문서를 만들고,
                         </li>
                     </ul>
                 </div>
-                <div class="emphasis-box" style="margin-top: 1.5em;">
+                <div class="emphasis-box fragment fade-up" style="margin-top: 1.5em;" data-fragment-index="1">
                     <strong>다음 섹션:</strong> Custom Agents &mdash; agent.md로 역할 기반 AI 에이전트를 정의합니다
                 </div>
-                <p class="fragment fade-up" style="margin-top: 1.5em; text-align: center; font-size: 1.2em; color: var(--ev-accent);">
+                <p class="fragment fade-up" style="margin-top: 1.5em; text-align: center; font-size: 1.2em; color: var(--ev-accent);" data-fragment-index="2">
                     질문이 있으신가요?
                 </p>
                 <aside class="notes">
