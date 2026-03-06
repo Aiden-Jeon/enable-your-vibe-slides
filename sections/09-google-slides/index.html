@@ -1,0 +1,422 @@
+<!doctype html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>09 - Google Slides - Enable Your Vibe</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reset.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/theme/black.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/monokai.css">
+    <link rel="stylesheet" href="../../shared/assets/theme.css">
+    <style>
+        /* Section-specific styles */
+        .reveal .subtitle {
+            color: var(--ev-accent-light);
+            font-size: 1.2em;
+            margin-top: 0.2em;
+        }
+        .reveal .section-number {
+            font-size: 0.5em;
+            color: var(--ev-text-muted);
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+        }
+        .reveal .objective-list li {
+            padding: 0.4em 0;
+            font-size: 0.95em;
+        }
+        .reveal .objective-list li::marker {
+            color: var(--ev-accent);
+        }
+        .reveal .workflow-step {
+            background: var(--ev-bg-alt);
+            border-radius: 10px;
+            padding: 0.8em 1em;
+            margin: 0.5em 0;
+            border: 1px solid #333;
+            text-align: left;
+        }
+        .reveal .workflow-step h4 {
+            color: var(--ev-accent-light);
+            margin: 0 0 0.3em 0;
+            font-size: 1em;
+        }
+        .reveal .workflow-step p {
+            margin: 0;
+            font-size: 0.85em;
+            color: var(--ev-text-muted);
+        }
+        .reveal .skill-card {
+            background: var(--ev-bg-alt);
+            border: 1px solid var(--ev-accent);
+            border-radius: 10px;
+            padding: 0.8em 1em;
+            margin: 0.4em 0;
+            text-align: left;
+        }
+        .reveal .skill-card h4 {
+            color: var(--ev-accent-light);
+            margin: 0 0 0.2em 0;
+            font-size: 0.95em;
+        }
+        .reveal .skill-card p {
+            margin: 0;
+            font-size: 0.8em;
+            color: var(--ev-text-muted);
+        }
+        .reveal .demo-flow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.6em;
+            margin: 1.2em 0;
+            flex-wrap: nowrap;
+        }
+        .reveal .demo-flow .flow-step {
+            background: var(--ev-bg-alt);
+            border: 1px solid var(--ev-accent);
+            border-radius: 10px;
+            padding: 0.6em 0.8em;
+            text-align: center;
+            min-width: 120px;
+        }
+        .reveal .demo-flow .flow-step .step-label {
+            font-size: 0.75em;
+            color: var(--ev-text-muted);
+            display: block;
+            margin-top: 0.2em;
+        }
+        .reveal .demo-flow .flow-arrow {
+            color: var(--ev-accent);
+            font-size: 1.5em;
+        }
+        .reveal .badge {
+            display: inline-block;
+            background: var(--ev-accent);
+            color: #fff;
+            padding: 0.15em 0.5em;
+            border-radius: 4px;
+            font-size: 0.6em;
+            vertical-align: middle;
+            margin-left: 0.3em;
+        }
+        .reveal .tip-list li {
+            padding: 0.3em 0;
+            font-size: 0.85em;
+        }
+        .reveal .emphasis-box {
+            background: var(--ev-bg-alt);
+            border: 2px solid var(--ev-accent);
+            border-radius: 12px;
+            padding: 1em 1.5em;
+            margin: 0.8em auto;
+            max-width: 800px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <button id="sidebar-toggle" class="sidebar-toggle" aria-label="Toggle navigation">&#9776;</button>
+    <div id="sidebar-overlay" class="sidebar-overlay"></div>
+    <nav id="sidebar" class="sidebar">
+        <div class="sidebar-header">
+            <h2>Enable Your Vibe</h2>
+        </div>
+        <ul class="sidebar-sections"></ul>
+    </nav>
+
+    <div class="reveal">
+        <div class="slides">
+
+            <!-- Slide 1: 타이틀 -->
+            <section>
+                <p class="section-number">Section 09</p>
+                <h1>Google Slides</h1>
+                <p class="subtitle">Vibe Coding으로 슬라이드 자동화</p>
+                <p style="font-size: 0.7em; color: var(--ev-text-muted); margin-top: 1em;">
+                    강의+데모 &middot; 15분
+                </p>
+                <aside class="notes">
+                    이번 섹션에서는 Claude Code의 Google Slides 스킬을 활용해서
+                    자연어만으로 프레젠테이션을 자동 생성하는 방법을 알아보겠습니다.
+                    실제로 이 교육 자료 자체도 Vibe Coding으로 만들어졌는데,
+                    Google Slides 역시 같은 방식으로 자동화할 수 있습니다.
+                </aside>
+            </section>
+
+            <!-- Slide 2: 학습 목표 -->
+            <section>
+                <h2>학습 목표</h2>
+                <ol class="objective-list">
+                    <li class="fragment fade-up">Claude Code에서 <strong>Google Slides 스킬</strong> 활용법 이해</li>
+                    <li class="fragment fade-up"><strong>자연어</strong>로 프레젠테이션을 생성하는 워크플로우 학습</li>
+                    <li class="fragment fade-up">Vibe Coding을 활용한 <strong>문서 자동화</strong>의 가능성 파악</li>
+                </ol>
+                <aside class="notes">
+                    이번 섹션의 학습 목표는 세 가지입니다.
+                    첫째, Claude Code에서 Google Slides 스킬을 어떻게 사용하는지 이해합니다.
+                    둘째, 자연어 명령만으로 프레젠테이션을 생성하는 전체 워크플로우를 학습합니다.
+                    셋째, 슬라이드를 넘어서 다양한 문서 자동화의 가능성을 살펴봅니다.
+                </aside>
+            </section>
+
+            <!-- Slide 3: 문서 자동화의 필요성 -->
+            <section>
+                <h2>왜 슬라이드를 코드로 만드는가?</h2>
+                <div class="fragment fade-up">
+                    <div class="workflow-step">
+                        <h4>기존 방식의 문제</h4>
+                        <p>슬라이드 디자인에 시간 소모 &bull; 반복적인 레이아웃 작업 &bull; 일관성 유지 어려움</p>
+                    </div>
+                </div>
+                <div class="fragment fade-up">
+                    <div class="workflow-step">
+                        <h4>Vibe Coding 방식</h4>
+                        <p>자연어로 내용 전달 &bull; AI가 디자인/구조화 &bull; 수정도 대화로 해결</p>
+                    </div>
+                </div>
+                <div class="fragment fade-up">
+                    <div class="workflow-step">
+                        <h4>결과</h4>
+                        <p>콘텐츠에 집중 &bull; 제작 시간 단축 &bull; 템플릿 기반 일관성 확보</p>
+                    </div>
+                </div>
+                <aside class="notes">
+                    왜 슬라이드를 자동화해야 할까요?
+                    기존에는 슬라이드를 만들 때 디자인에 많은 시간을 쓰고,
+                    반복적인 레이아웃 작업을 하고, 여러 사람이 만들면 일관성이 깨지기 쉽습니다.
+                    Vibe Coding 방식에서는 자연어로 내용만 전달하면 AI가 구조화하고 디자인합니다.
+                    수정이 필요하면 대화로 요청하면 됩니다.
+                    결과적으로 콘텐츠에 집중할 수 있고, 제작 시간이 크게 단축됩니다.
+                </aside>
+            </section>
+
+            <!-- Slide 4: Google Slides 스킬 소개 -->
+            <section>
+                <h2>Google Slides 스킬</h2>
+                <p style="font-size: 0.85em; margin-bottom: 0.6em;">
+                    Claude Code의 <code>/google-slides</code> 스킬이 제공하는 기능
+                </p>
+                <div class="fragment fade-up">
+                    <div class="skill-card">
+                        <h4>프레젠테이션 생성</h4>
+                        <p>새 Google Slides 프레젠테이션을 자동으로 생성</p>
+                    </div>
+                </div>
+                <div class="fragment fade-up">
+                    <div class="skill-card">
+                        <h4>템플릿 &amp; 서식</h4>
+                        <p>Databricks 템플릿 적용, 표, 차트, 이미지 삽입</p>
+                    </div>
+                </div>
+                <div class="fragment fade-up">
+                    <div class="skill-card">
+                        <h4>콘텐츠 관리</h4>
+                        <p>슬라이드 추가/수정/삭제, 텍스트 서식, 레이아웃 조정</p>
+                    </div>
+                </div>
+                <div class="fragment fade-up">
+                    <div class="skill-card">
+                        <h4>Google Workspace 연동</h4>
+                        <p>gcloud CLI + Google Slides API를 통한 직접 제어</p>
+                    </div>
+                </div>
+                <aside class="notes">
+                    Google Slides 스킬은 Claude Code에서 slash 명령어로 호출할 수 있습니다.
+                    프레젠테이션 생성, 템플릿 적용, 표와 차트 삽입,
+                    슬라이드 추가/수정/삭제 등 다양한 기능을 제공합니다.
+                    내부적으로는 gcloud CLI와 Google Slides API를 사용해서
+                    Google Workspace와 직접 연동됩니다.
+                </aside>
+            </section>
+
+            <!-- Slide 5: 데모 시나리오 설명 -->
+            <section>
+                <h2>데모 시나리오</h2>
+                <p style="font-size: 0.85em; margin-bottom: 0.8em;">
+                    자연어 명령 한 줄로 프레젠테이션을 만들어봅니다
+                </p>
+                <div class="demo-flow fragment fade-up">
+                    <div class="flow-step">
+                        <strong>프롬프트 작성</strong>
+                        <span class="step-label">자연어로<br>내용 전달</span>
+                    </div>
+                    <span class="flow-arrow">&rarr;</span>
+                    <div class="flow-step">
+                        <strong>스킬 실행</strong>
+                        <span class="step-label">Google Slides<br>API 호출</span>
+                    </div>
+                    <span class="flow-arrow">&rarr;</span>
+                    <div class="flow-step">
+                        <strong>결과 확인</strong>
+                        <span class="step-label">Google Slides<br>에서 열기</span>
+                    </div>
+                </div>
+                <div class="fragment fade-up" style="margin-top: 1em;">
+                    <pre><code class="language-bash"># Claude Code에서 이렇게 요청합니다
+> "Databricks Unity Catalog 소개 프레젠테이션을 5장으로 만들어줘.
+   각 슬라이드에는 제목, 핵심 내용, 스피커 노트를 포함해줘."</code></pre>
+                </div>
+                <aside class="notes">
+                    데모 시나리오를 설명드리겠습니다.
+                    워크플로우는 간단합니다. 자연어로 프롬프트를 작성하면,
+                    Claude Code가 Google Slides 스킬을 실행해서 API를 호출하고,
+                    완성된 프레젠테이션을 Google Slides에서 바로 확인할 수 있습니다.
+                    예를 들어, "Unity Catalog 소개 프레젠테이션을 5장으로 만들어줘"라고
+                    요청하면 됩니다.
+                </aside>
+            </section>
+
+            <!-- Slide 6: 데모 - 자연어로 슬라이드 생성 과정 -->
+            <section>
+                <h2>데모: 슬라이드 생성 <span class="badge">LIVE</span></h2>
+                <p style="font-size: 0.85em; margin-bottom: 0.6em;">
+                    Claude Code에서 자연어로 프레젠테이션을 생성합니다
+                </p>
+                <pre class="fragment fade-up"><code class="language-bash"># Step 1: Google 인증 확인
+$ gcloud auth list
+# 활성 계정이 표시되는지 확인</code></pre>
+                <pre class="fragment fade-up"><code class="language-bash"># Step 2: Claude Code에서 스킬 호출
+> /google-slides
+
+# "Databricks Unity Catalog 소개 프레젠테이션을 만들어줘.
+#  5장 구성으로, 각 슬라이드에 제목과 핵심 내용을 넣어줘.
+#  Databricks 템플릿을 적용해줘."</code></pre>
+                <pre class="fragment fade-up"><code class="language-bash"># Step 3: 생성된 프레젠테이션 URL 확인
+# https://docs.google.com/presentation/d/xxxxx/edit
+# 브라우저에서 바로 열어서 확인!</code></pre>
+                <aside class="notes">
+                    실제 데모를 진행합니다.
+                    먼저 gcloud auth로 Google 인증이 되어있는지 확인합니다.
+                    그 다음 Claude Code에서 /google-slides 스킬을 호출하고
+                    자연어로 프레젠테이션 내용을 설명합니다.
+                    Claude Code가 Google Slides API를 호출해서 프레젠테이션을 생성하면
+                    URL이 반환되고, 브라우저에서 바로 확인할 수 있습니다.
+                    [실제로 실행하여 결과를 보여주세요]
+                </aside>
+            </section>
+
+            <!-- Slide 7: 데모 결과 리뷰 -->
+            <section>
+                <h2>데모 결과 리뷰</h2>
+                <p style="font-size: 0.85em; margin-bottom: 0.6em;">
+                    자동 생성된 프레젠테이션의 구조를 살펴봅니다
+                </p>
+                <div class="fragment fade-up">
+                    <div class="workflow-step">
+                        <h4>자동으로 생성된 것</h4>
+                        <p>슬라이드 레이아웃 &bull; 제목/본문 텍스트 &bull; 서식 &amp; 색상 &bull; 스피커 노트</p>
+                    </div>
+                </div>
+                <div class="fragment fade-up">
+                    <div class="workflow-step">
+                        <h4>추가 수정도 자연어로</h4>
+                        <p>"3번째 슬라이드에 아키텍처 다이어그램 설명을 추가해줘"</p>
+                    </div>
+                </div>
+                <div class="fragment fade-up">
+                    <div class="workflow-step">
+                        <h4>핵심 포인트</h4>
+                        <p>콘텐츠만 전달하면 AI가 구조화 &rarr; 검토 &rarr; 수정 요청의 반복</p>
+                    </div>
+                </div>
+                <aside class="notes">
+                    생성된 결과를 리뷰해봅시다.
+                    슬라이드 레이아웃, 제목과 본문, 서식과 색상, 스피커 노트까지
+                    모두 자동으로 생성되었습니다.
+                    수정이 필요하면 역시 자연어로 요청하면 됩니다.
+                    예를 들어 "3번째 슬라이드에 내용을 추가해줘"라고 하면 됩니다.
+                    핵심은 콘텐츠에만 집중하고, 나머지는 AI에게 맡기는 것입니다.
+                </aside>
+            </section>
+
+            <!-- Slide 8: 활용 팁 & 확장 아이디어 -->
+            <section>
+                <h2>활용 팁 &amp; 확장 아이디어</h2>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.8em;">
+                    <div class="fragment fade-up">
+                        <div class="skill-card">
+                            <h4>효과적인 프롬프트</h4>
+                            <ul class="tip-list">
+                                <li>슬라이드 수를 명시</li>
+                                <li>각 슬라이드 주제 나열</li>
+                                <li>청중과 목적 설명</li>
+                                <li>원하는 톤/스타일 지정</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="fragment fade-up">
+                        <div class="skill-card">
+                            <h4>확장 활용</h4>
+                            <ul class="tip-list">
+                                <li>주간 리포트 자동 생성</li>
+                                <li>고객 미팅 자료 준비</li>
+                                <li>데이터 분석 결과 발표</li>
+                                <li>Google Sheets/Docs 연동</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="fragment fade-up" style="margin-top: 0.8em;">
+                    <div class="emphasis-box" style="font-size: 0.85em;">
+                        Section 05에서 배운 <strong style="color: var(--ev-accent);">Skills</strong>의 실전 활용 사례입니다
+                    </div>
+                </div>
+                <aside class="notes">
+                    활용 팁과 확장 아이디어를 공유합니다.
+                    효과적인 프롬프트를 작성하려면 슬라이드 수를 명시하고,
+                    각 슬라이드의 주제를 나열하고, 청중과 목적을 설명하는 것이 좋습니다.
+                    확장 활용으로는 주간 리포트 자동 생성, 고객 미팅 자료 준비,
+                    데이터 분석 결과를 슬라이드로 변환하는 것 등이 있습니다.
+                    Google Sheets나 Docs 스킬과 결합하면 더 강력한 자동화가 가능합니다.
+                    이것이 바로 Section 05에서 배운 Skills의 실전 활용 사례입니다.
+                </aside>
+            </section>
+
+            <!-- Slide 9: 요약 & 마무리 -->
+            <section>
+                <h2>요약</h2>
+                <div class="emphasis-box">
+                    <ul style="font-size: 0.85em;" class="fragment fade-up">
+                        <li>Google Slides 스킬로 <strong>자연어 &rarr; 프레젠테이션</strong> 자동 생성</li>
+                        <li>gcloud CLI + Google Slides API 기반의 <strong>직접 제어</strong></li>
+                        <li>콘텐츠에 집중하고 디자인은 AI에게 &rarr; <strong>생산성 향상</strong></li>
+                    </ul>
+                </div>
+                <div class="fragment fade-up" style="margin-top: 1em;">
+                    <p style="font-size: 0.9em;">
+                        Vibe Coding은 코드만이 아닙니다.<br>
+                        <strong style="color: var(--ev-accent);">문서, 슬라이드, 스프레드시트</strong> &mdash; 모든 것을 자동화할 수 있습니다.
+                    </p>
+                </div>
+                <div class="nav-btn-group">
+                    <a href="../08-ai-dev-kit/index.html" class="nav-btn">&larr; 이전: AI Dev Kit</a>
+                    <a href="../../index.html" class="nav-btn nav-btn-primary">&larr; 홈으로 돌아가기</a>
+                </div>
+                <aside class="notes">
+                    이번 섹션을 요약합니다.
+                    Google Slides 스킬을 사용하면 자연어만으로 프레젠테이션을 자동 생성할 수 있습니다.
+                    내부적으로 gcloud CLI와 Google Slides API를 사용해서 직접 제어합니다.
+                    핵심 메시지는, Vibe Coding은 코드에만 국한되지 않는다는 것입니다.
+                    문서, 슬라이드, 스프레드시트 등 모든 것을 자동화할 수 있습니다.
+                </aside>
+            </section>
+
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/notes/notes.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/highlight.js"></script>
+    <script>
+        Reveal.initialize({
+            hash: true,
+            slideNumber: true,
+            plugins: [ RevealNotes, RevealHighlight ]
+        });
+    </script>
+    <script src="../../shared/scripts/sidebar.js"></script>
+    <script src="../../shared/scripts/copy-code.js"></script>
+</body>
+</html>

@@ -1,0 +1,13 @@
+number: "09"
+title: "Google Slides: Vibe Coding으로 슬라이드 자동화"
+duration_minutes: 15
+type: "lecture+demo"
+objectives:
+  - "Claude Code에서 Google Slides 스킬 활용법 이해"
+  - "자연어로 프레젠테이션을 생성하는 워크플로우 학습"
+  - "Vibe Coding을 활용한 문서 자동화의 가능성 파악"
+slides: "index.html"
+code_files: []
+prerequisites:
+  - "02-claude-code-features"
+  - "05-skills"
