@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>03 - MCP Architecture - Enable Your Vibe</title>
+    <title>03 - MCP: Managed vs Custom MCP - Enable Your Vibe</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reset.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/theme/black.css">
@@ -24,17 +24,22 @@
 
     <div class="reveal"><div class="slides">
 
+        <!-- ============================================ -->
+        <!-- Part 1: MCP 도입부 (3장)                     -->
+        <!-- ============================================ -->
+
         <!-- Slide 1: Title -->
         <section>
-            <h1>MCP Architecture</h1>
-            <p>MCP 아키텍처</p>
+            <h1>MCP</h1>
+            <p>AI와 도구를 연결하는 표준</p>
             <p style="margin-top: 2em; font-size: 0.7em; color: var(--ev-text-muted);">
                 Section 03 &middot; Lecture + Hands-on &middot; 30분
             </p>
             <aside class="notes">
-                세 번째 섹션에서는 MCP(Model Context Protocol) 아키텍처를 다룹니다.
-                AI 모델이 외부 도구와 소통하는 표준 프로토콜인 MCP의 개념, 2계층 구조,
-                프리미티브와 Discovery 패턴, 그리고 FastMCP를 사용한 실습까지 진행합니다.
+                세 번째 섹션에서는 MCP(Model Context Protocol)를 다룹니다.
+                MCP의 개념부터 Managed MCP와 Custom MCP의 차이,
+                Databricks가 제공하는 MCP 생태계의 가치,
+                그리고 Custom MCP 서버를 만들고 Databricks Apps로 배포하는 것까지 진행합니다.
                 총 30분, 강의 20분 + 실습 10분 구성입니다.
             </aside>
         </section>
@@ -43,17 +48,17 @@
         <section>
             <h2>학습 목표</h2>
             <ol>
-                <li class="fragment" data-fragment-index="0">MCP(Model Context Protocol)의 <strong>개념과 필요성</strong> 이해</li>
-                <li class="fragment" data-fragment-index="0">MCP의 <strong>2계층 아키텍처</strong>(Data Layer / Transport Layer) 이해</li>
-                <li class="fragment" data-fragment-index="0">Server/Client <strong>프리미티브</strong>와 Discovery 패턴 이해</li>
-                <li class="fragment" data-fragment-index="0">FastMCP로 간단한 <strong>MCP 서버를 직접 만들기</strong></li>
+                <li class="fragment" data-fragment-index="0">MCP의 <strong>개념과 필요성</strong> 이해</li>
+                <li class="fragment" data-fragment-index="0"><strong>Managed MCP</strong> vs <strong>Custom MCP</strong> 차이 이해</li>
+                <li class="fragment" data-fragment-index="0">Databricks <strong>MCP 생태계</strong>의 가치 이해</li>
+                <li class="fragment" data-fragment-index="0">Custom MCP 서버를 <strong>직접 만들고 테스트</strong>하기</li>
             </ol>
             <aside class="notes">
                 이번 섹션의 학습 목표는 네 가지입니다.
                 첫째, MCP가 무엇이고 왜 필요한지를 이해합니다.
-                둘째, MCP의 2계층 아키텍처인 Data Layer와 Transport Layer를 알아봅니다.
-                셋째, Server와 Client의 프리미티브, 그리고 동적 Discovery 패턴을 이해합니다.
-                넷째, 실제로 Python FastMCP 라이브러리를 사용해 MCP 서버를 만들어봅니다.
+                둘째, Managed MCP와 Custom MCP의 차이를 알아봅니다.
+                셋째, Databricks가 제공하는 MCP 생태계의 가치를 이해합니다.
+                넷째, 실제로 Custom MCP 서버를 직접 만들고 테스트해봅니다.
             </aside>
         </section>
 
@@ -78,53 +83,15 @@
             </aside>
         </section>
 
-        <!-- Slide 4: 왜 MCP가 필요한가? -->
+        <!-- Slide 4: MCP 핵심 구조 (N×M + 아키텍처 압축) -->
         <section>
-            <h2>왜 MCP가 필요한가?</h2>
+            <h2>MCP 핵심 구조</h2>
             <div class="columns">
                 <div>
-                    <h3>Before MCP: N x M 문제</h3>
-                    <div style="display: flex; flex-direction: column; gap: 0.5em; padding: 1em; background: rgba(0,0,0,0.3); border-radius: 8px;">
-                        <div style="display: flex; align-items: center; gap: 0.5em;">
-                            <span style="width: 80px;">Claude</span>
-                            <span style="color: var(--ev-text-muted);">────</span>
-                            <span>Slack</span>
-                        </div>
-                        <div style="display: flex; align-items: center; gap: 0.5em;">
-                            <span style="width: 80px;">Claude</span>
-                            <span style="color: var(--ev-text-muted);">────</span>
-                            <span>GitHub</span>
-                        </div>
-                        <div style="display: flex; align-items: center; gap: 0.5em;">
-                            <span style="width: 80px;">Claude</span>
-                            <span style="color: var(--ev-text-muted);">────</span>
-                            <span>DB</span>
-                        </div>
-                        <div style="display: flex; align-items: center; gap: 0.5em;">
-                            <span style="width: 80px;">GPT</span>
-                            <span style="color: var(--ev-text-muted);">────</span>
-                            <span>Slack</span>
-                        </div>
-                        <div style="display: flex; align-items: center; gap: 0.5em;">
-                            <span style="width: 80px;">GPT</span>
-                            <span style="color: var(--ev-text-muted);">────</span>
-                            <span>GitHub</span>
-                        </div>
-                        <div style="display: flex; align-items: center; gap: 0.5em;">
-                            <span style="width: 80px;">GPT</span>
-                            <span style="color: var(--ev-text-muted);">────</span>
-                            <span>DB</span>
-                        </div>
-                        <div style="margin-top: 0.5em; text-align: center;">
-                            <span style="color: var(--ev-accent); font-weight: bold;">3 모델 x 3 도구 = 9개 통합</span>
-                        </div>
-                    </div>
-                </div>
-                <div>
-                    <h3>After MCP: N + M 해결</h3>
-                    <div style="display: flex; flex-direction: column; align-items: center; gap: 1em; padding: 1em; background: rgba(0,0,0,0.3); border-radius: 8px;">
+                    <h3>N x M 문제 해결</h3>
+                    <div style="display: flex; flex-direction: column; align-items: center; gap: 0.8em; padding: 1em; background: rgba(0,0,0,0.3); border-radius: 8px;">
                         <div style="display: flex; align-items: center; gap: 1em;">
-                            <div style="display: flex; flex-direction: column; gap: 0.5em; text-align: right;">
+                            <div style="display: flex; flex-direction: column; gap: 0.3em; text-align: right; font-size: 0.85em;">
                                 <span>Claude</span>
                                 <span>GPT</span>
                                 <span>Gemini</span>
@@ -134,452 +101,327 @@
                                 <strong>MCP</strong>
                             </div>
                             <div style="font-size: 1.5em; color: var(--ev-text-muted);">→</div>
-                            <div style="display: flex; flex-direction: column; gap: 0.5em;">
+                            <div style="display: flex; flex-direction: column; gap: 0.3em; font-size: 0.85em;">
                                 <span>Slack</span>
                                 <span>GitHub</span>
                                 <span>DB</span>
                             </div>
                         </div>
                         <div style="text-align: center;">
-                            <span style="color: #4ade80; font-weight: bold;">3 모델 + 3 도구 = 6개 통합</span>
+                            <span style="color: #4ade80; font-weight: bold;">N + M 통합으로 해결</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="fragment">
+                    <h3>Host / Client / Server</h3>
+                    <div style="display: flex; flex-direction: column; align-items: center; gap: 0.5em; padding: 1em; background: rgba(0,0,0,0.3); border-radius: 8px;">
+                        <div style="border: 2px solid var(--ev-accent); padding: 0.5em 1em; border-radius: 8px; background: rgba(233, 69, 96, 0.05); text-align: center; width: 80%;">
+                            <div style="font-weight: bold; color: var(--ev-accent); font-size: 0.85em;">Host (Claude Code)</div>
+                            <div style="display: flex; justify-content: center; gap: 0.5em; margin-top: 0.3em;">
+                                <span style="border: 1px solid var(--ev-text-muted); padding: 0.3em 0.6em; border-radius: 6px; font-size: 0.7em;">Client A</span>
+                                <span style="border: 1px solid var(--ev-text-muted); padding: 0.3em 0.6em; border-radius: 6px; font-size: 0.7em;">Client B</span>
+                            </div>
+                        </div>
+                        <div style="font-size: 1.2em; color: var(--ev-text-muted);">↕ JSON-RPC 2.0</div>
+                        <div style="display: flex; gap: 0.5em;">
+                            <span style="border: 2px solid #4ade80; padding: 0.3em 0.6em; border-radius: 6px; font-size: 0.7em; background: rgba(74, 222, 128, 0.1);">Server A</span>
+                            <span style="border: 2px solid #4ade80; padding: 0.3em 0.6em; border-radius: 6px; font-size: 0.7em; background: rgba(74, 222, 128, 0.1);">Server B</span>
                         </div>
                     </div>
                 </div>
             </div>
             <aside class="notes">
-                MCP가 왜 필요한지 이해하려면 N x M 문제를 알아야 합니다.
-                MCP가 없으면, 모델마다 각각의 도구에 맞는 통합을 별도로 만들어야 합니다.
-                모델 3개, 도구 3개면 9개의 통합이 필요하죠.
-                MCP를 사용하면 각 모델은 MCP만 지원하면 되고,
-                각 도구도 MCP 서버만 만들면 됩니다.
-                3 + 3 = 6개만 있으면 모든 조합이 가능해집니다.
-                도구와 모델이 늘어날수록 이 효과는 더 커집니다.
+                MCP의 핵심 구조를 두 가지 관점에서 봅시다.
+                왼쪽은 N x M 문제 해결입니다. MCP가 없으면 모델마다 각 도구에 맞는 통합을 별도로 만들어야 하지만,
+                MCP를 사용하면 N + M개의 통합만으로 모든 조합이 가능합니다.
+                오른쪽은 아키텍처입니다. Host(Claude Code) 안에 여러 Client가 있고,
+                각 Client는 하나의 Server와 1:1로 연결되어 JSON-RPC 2.0으로 통신합니다.
             </aside>
         </section>
 
-        <!-- Slide 5: MCP의 핵심 (신규) -->
-        <section>
-            <h2>MCP의 핵심</h2>
-            <div class="emphasis-box">
-                <p>Client와 Server 사이의 <strong>Schema</strong>와 <strong>Semantics</strong>를 정의하는 프로토콜</p>
-            </div>
-            <ul style="margin-top: 1em;">
-                <li class="fragment"><strong>무엇을 할 수 있는지</strong> — 도구, 리소스, 프롬프트를 표준 형식으로 선언</li>
-                <li class="fragment"><strong>어떻게 요청하는지</strong> — JSON-RPC 2.0 기반의 요청/응답 규약</li>
-                <li class="fragment"><strong>어떻게 연결하는지</strong> — STDIO 또는 HTTP 기반 전송 계층</li>
-            </ul>
-            <aside class="notes">
-                MCP의 핵심은 Client와 Server 사이의 Schema와 Semantics를 정의하는 것입니다.
-                첫째, 서버가 무엇을 할 수 있는지를 표준 형식으로 선언합니다.
-                둘째, 클라이언트가 어떻게 요청하는지를 JSON-RPC 2.0 규약으로 정의합니다.
-                셋째, 물리적으로 어떻게 연결하는지를 STDIO나 HTTP 같은 전송 계층으로 정의합니다.
-                이 세 가지가 결합되어 AI와 도구 간의 완전한 소통 표준이 됩니다.
-            </aside>
-        </section>
+        <!-- ============================================ -->
+        <!-- Part 2: Managed MCP vs Custom MCP (6장)      -->
+        <!-- ============================================ -->
 
-        <!-- Slide 6: 2계층 구조 (신규) -->
+        <!-- Slide 5: MCP 서버의 두 가지 접근 -->
         <section>
-            <h2>2계층 구조</h2>
-            <div style="display: flex; flex-direction: column; align-items: center; gap: 0;">
-                <!-- Outer: Transport Layer -->
-                <div style="border: 2px solid var(--ev-accent); border-radius: 12px; padding: 1em 1.5em; width: 85%; background: rgba(233, 69, 96, 0.05);">
-                    <div style="text-align: center; font-weight: bold; color: var(--ev-accent); margin-bottom: 0.5em;">Transport Layer (외부)</div>
-                    <div style="display: flex; gap: 1em; justify-content: center; font-size: 0.8em; margin-bottom: 0.8em;">
-                        <span class="fragment" data-fragment-index="0">연결 수립</span>
-                        <span class="fragment" data-fragment-index="0" style="color: var(--ev-text-muted);">&middot;</span>
-                        <span class="fragment" data-fragment-index="0">메시지 프레이밍</span>
-                        <span class="fragment" data-fragment-index="0" style="color: var(--ev-text-muted);">&middot;</span>
-                        <span class="fragment" data-fragment-index="0">인증</span>
-                    </div>
-                    <!-- Inner: Data Layer -->
-                    <div style="border: 2px solid #4ade80; border-radius: 8px; padding: 1em 1.5em; background: rgba(74, 222, 128, 0.05);">
-                        <div style="text-align: center; font-weight: bold; color: #4ade80; margin-bottom: 0.5em;">Data Layer (내부)</div>
-                        <div style="display: flex; gap: 1em; justify-content: center; font-size: 0.8em;">
-                            <span class="fragment" data-fragment-index="1">Lifecycle 관리</span>
-                            <span class="fragment" data-fragment-index="1" style="color: var(--ev-text-muted);">&middot;</span>
-                            <span class="fragment" data-fragment-index="1">Primitives</span>
-                            <span class="fragment" data-fragment-index="1" style="color: var(--ev-text-muted);">&middot;</span>
-                            <span class="fragment" data-fragment-index="1">Notifications</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <p class="fragment" style="text-align: center; margin-top: 1em; font-size: 0.85em; color: var(--ev-text-muted);">
-                모든 메시지는 <strong style="color: var(--ev-text);">JSON-RPC 2.0</strong> 형식으로 교환됩니다
-            </p>
-            <aside class="notes">
-                MCP는 크게 두 개의 계층으로 구성됩니다.
-                바깥쪽 Transport Layer는 연결 수립, 메시지 프레이밍, 인증을 담당합니다.
-                안쪽 Data Layer는 실제 프로토콜 로직인 Lifecycle 관리, Primitives, Notifications를 담당합니다.
-                Transport Layer가 "어떻게 연결할 것인가"라면, Data Layer는 "무엇을 주고받을 것인가"입니다.
-                모든 메시지는 JSON-RPC 2.0 형식으로 교환됩니다.
-            </aside>
-        </section>
-
-        <!-- Slide 7: MCP Server 유형 (신규) -->
-        <section>
-            <h2>MCP Server 유형</h2>
-            <div class="columns">
-                <div>
-                    <h3>Local Server (STDIO)</h3>
+            <h2>MCP 서버의 두 가지 접근</h2>
+            <div class="columns" style="margin-top: 1em;">
+                <div class="fragment" style="border: 2px solid #4ade80; border-radius: 12px; padding: 1.2em; background: rgba(74, 222, 128, 0.05);">
+                    <h3 style="color: #4ade80;">Managed MCP</h3>
+                    <p style="font-size: 0.85em;">이미 만들어진 MCP 서버를<br><strong>설치만 하면</strong> 바로 사용</p>
                     <ul style="font-size: 0.8em;">
-                        <li class="fragment" data-fragment-index="0">표준 입출력으로 통신</li>
-                        <li class="fragment" data-fragment-index="0">Host가 프로세스를 직접 관리</li>
-                        <li class="fragment" data-fragment-index="0">로컬 개발에 적합</li>
+                        <li>3rd-party 공식 서버</li>
+                        <li>Databricks 제공 서버</li>
                     </ul>
-                    <pre class="fragment" data-fragment-index="1"><code class="language-json" data-trim>{
-  "command": "uv",
-  "args": [
-    "run", "--with", "fastmcp",
-    "fastmcp", "run", "server.py"
-  ]
-}</code></pre>
                 </div>
-                <div>
-                    <h3>Remote Server (Streamable HTTP)</h3>
+                <div class="fragment" style="border: 2px solid var(--ev-accent); border-radius: 12px; padding: 1.2em; background: rgba(233, 69, 96, 0.05);">
+                    <h3>Custom MCP</h3>
+                    <p style="font-size: 0.85em;">비즈니스 요구에 맞게<br><strong>직접 개발</strong>하는 MCP 서버</p>
                     <ul style="font-size: 0.8em;">
-                        <li class="fragment" data-fragment-index="2">HTTP 기반 통신</li>
-                        <li class="fragment" data-fragment-index="2">별도 서버로 독립 운영</li>
-                        <li class="fragment" data-fragment-index="2">팀 공유 / 프로덕션 배포</li>
+                        <li>내부 API 연동</li>
+                        <li>도메인 특화 도구</li>
                     </ul>
-                    <pre class="fragment" data-fragment-index="3"><code class="language-json" data-trim>{
-  "url": "https://mcp.example.com/sse",
-  "headers": {
-    "Authorization": "Bearer token"
-  }
-}</code></pre>
                 </div>
             </div>
             <aside class="notes">
-                MCP Server는 크게 두 가지 유형이 있습니다.
-                Local Server는 STDIO 기반으로, Host가 프로세스를 직접 실행하고 표준 입출력으로 통신합니다.
-                개발 중이거나 로컬에서 사용할 때 적합합니다.
-                Remote Server는 Streamable HTTP 기반으로, 별도의 서버로 독립 운영됩니다.
-                팀원과 공유하거나 프로덕션에 배포할 때 사용합니다.
-                오늘 실습에서는 Local STDIO 방식을 사용합니다.
+                MCP 서버에는 크게 두 가지 접근 방식이 있습니다.
+                Managed MCP는 이미 만들어져 있는 MCP 서버를 설치만 하면 바로 사용할 수 있습니다.
+                3rd-party 벤더가 제공하는 공식 서버나 Databricks가 제공하는 서버가 여기에 해당합니다.
+                Custom MCP는 비즈니스 요구에 맞게 직접 개발하는 MCP 서버입니다.
+                내부 API 연동이나 도메인 특화 도구를 만들 때 필요합니다.
             </aside>
         </section>
 
-        <!-- Slide 8: MCP 아키텍처 다이어그램 (수정) -->
+        <!-- Slide 6: Managed MCP - 3rd-party -->
         <section>
-            <h2>MCP 아키텍처</h2>
-            <div style="display: flex; flex-direction: column; align-items: center; gap: 1.5em; padding: 1em;">
-                <!-- Host Layer -->
-                <div style="border: 2px solid var(--ev-accent); padding: 1.5em 2em; border-radius: 12px; background: rgba(233, 69, 96, 0.05); width: 80%;">
-                    <div style="text-align: center; margin-bottom: 1em; font-weight: bold; color: var(--ev-accent);">Host (Claude Code)</div>
-                    <div style="display: flex; justify-content: space-around; gap: 1em;">
-                        <div style="border: 2px solid var(--ev-text-muted); padding: 0.8em 1.2em; border-radius: 8px; background: rgba(255,255,255,0.05); text-align: center;">
-                            <div>MCP</div>
-                            <div style="font-size: 0.9em;">Client A</div>
-                        </div>
-                        <div style="border: 2px solid var(--ev-text-muted); padding: 0.8em 1.2em; border-radius: 8px; background: rgba(255,255,255,0.05); text-align: center;">
-                            <div>MCP</div>
-                            <div style="font-size: 0.9em;">Client B</div>
-                        </div>
-                        <div style="border: 2px solid var(--ev-text-muted); padding: 0.8em 1.2em; border-radius: 8px; background: rgba(255,255,255,0.05); text-align: center;">
-                            <div>MCP</div>
-                            <div style="font-size: 0.9em;">Client C</div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Arrows with transport labels -->
-                <div style="display: flex; justify-content: space-around; width: 80%; color: var(--ev-text-muted); font-size: 0.85em;">
-                    <div style="text-align: center;"><div style="font-size: 1.5em;">↓</div><span style="font-size: 0.8em;">STDIO</span></div>
-                    <div style="text-align: center;"><div style="font-size: 1.5em;">↓</div><span style="font-size: 0.8em;">STDIO</span></div>
-                    <div style="text-align: center;"><div style="font-size: 1.5em;">↓</div><span style="font-size: 0.8em;">HTTP</span></div>
-                </div>
-
-                <!-- Server Layer -->
-                <div style="display: flex; justify-content: space-around; gap: 2em; width: 80%;">
-                    <div style="display: flex; flex-direction: column; align-items: center; gap: 0.5em;">
-                        <div style="border: 2px solid #4ade80; padding: 0.8em 1.2em; border-radius: 8px; background: rgba(74, 222, 128, 0.1); text-align: center;">
-                            <div>MCP</div>
-                            <div style="font-size: 0.9em;">Server A</div>
-                        </div>
-                    </div>
-
-                    <div style="display: flex; flex-direction: column; align-items: center; gap: 0.5em;">
-                        <div style="border: 2px solid #4ade80; padding: 0.8em 1.2em; border-radius: 8px; background: rgba(74, 222, 128, 0.1); text-align: center;">
-                            <div>MCP</div>
-                            <div style="font-size: 0.9em;">Server B</div>
-                        </div>
-                    </div>
-
-                    <div style="display: flex; flex-direction: column; align-items: center; gap: 0.5em;">
-                        <div style="border: 2px solid #4ade80; padding: 0.8em 1.2em; border-radius: 8px; background: rgba(74, 222, 128, 0.1); text-align: center;">
-                            <div>MCP</div>
-                            <div style="font-size: 0.9em;">Server C</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <p style="text-align: center; font-size: 0.8em; color: var(--ev-text-muted);">
-                Client-Server 간 <strong style="color: var(--ev-text);">1:1 연결</strong> &middot; 모든 통신은 <strong style="color: var(--ev-text);">JSON-RPC 2.0</strong>
+            <h2>Managed MCP: 3rd-party</h2>
+            <p style="font-size: 0.85em;">주요 서비스들이 공식 MCP 서버를 제공합니다:</p>
+            <table style="margin-top: 0.8em;">
+                <thead>
+                    <tr>
+                        <th>서비스</th>
+                        <th>제공 기능</th>
+                        <th>사용 예시</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="fragment" data-fragment-index="1">
+                        <td><strong>GitHub</strong></td>
+                        <td>PR, Issue, 코드 검색</td>
+                        <td>"이 PR의 변경사항 요약해줘"</td>
+                    </tr>
+                    <tr class="fragment" data-fragment-index="1">
+                        <td><strong>Slack</strong></td>
+                        <td>메시지 읽기/쓰기</td>
+                        <td>"#general 채널에 배포 알림 보내줘"</td>
+                    </tr>
+                    <tr class="fragment" data-fragment-index="1">
+                        <td><strong>Sentry</strong></td>
+                        <td>에러 모니터링</td>
+                        <td>"최근 24시간 에러 분석해줘"</td>
+                    </tr>
+                    <tr class="fragment" data-fragment-index="1">
+                        <td><strong>Playwright</strong></td>
+                        <td>브라우저 자동화</td>
+                        <td>"이 페이지 스크린샷 찍어줘"</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p class="fragment" style="font-size: 0.8em; color: var(--ev-text-muted); margin-top: 0.5em;">
+                <code>claude mcp add</code> 명령으로 간단히 설치 → 바로 사용 가능
             </p>
             <aside class="notes">
-                MCP 아키텍처는 Host, Client, Server 세 가지 역할로 구성됩니다.
-                Host는 Claude Code 같은 AI 애플리케이션입니다.
-                Host 안에는 여러 MCP Client가 있고, 각 Client는 하나의 MCP Server와 1:1로 연결됩니다.
-                연결 방식은 STDIO 또는 HTTP를 사용할 수 있습니다.
-                Client와 Server 사이의 모든 통신은 JSON-RPC 2.0 프로토콜을 사용합니다.
-                이 구조 덕분에 Host는 여러 서버를 동시에 사용할 수 있습니다.
+                먼저 3rd-party Managed MCP를 살펴봅시다.
+                GitHub MCP 서버를 설치하면 PR이나 Issue를 자연어로 관리할 수 있고,
+                Slack MCP를 설치하면 Claude Code에서 직접 메시지를 보낼 수 있습니다.
+                Sentry로 에러를 분석하거나, Playwright로 브라우저를 자동화할 수도 있습니다.
+                이런 서버들은 claude mcp add 명령으로 간단히 설치하면 바로 사용할 수 있습니다.
+                직접 코드를 작성할 필요가 없다는 것이 Managed MCP의 큰 장점입니다.
             </aside>
         </section>
 
-        <!-- Slide 9: Lifecycle 관리 (신규) -->
+        <!-- Slide 7: Managed MCP - Databricks -->
         <section>
-            <h2>Lifecycle 관리</h2>
-            <div class="emphasis-box">
-                <p>MCP는 <strong>Stateful Protocol</strong> — 연결 상태를 유지하며 동작합니다</p>
-            </div>
-            <!-- Horizontal flow -->
-            <div style="display: flex; align-items: center; justify-content: center; gap: 0.8em; margin-top: 1.5em;">
-                <div class="fragment" style="border: 2px solid var(--ev-accent); padding: 0.8em 1.2em; border-radius: 8px; background: rgba(233, 69, 96, 0.1); text-align: center;">
-                    <div style="font-weight: bold;">Initialize</div>
-                    <div style="font-size: 0.7em; color: var(--ev-text-muted);">버전 협상<br>기능 교환</div>
-                </div>
-                <div class="fragment" style="font-size: 1.5em; color: var(--ev-text-muted);">→</div>
-                <div class="fragment" style="border: 2px solid #4ade80; padding: 0.8em 1.2em; border-radius: 8px; background: rgba(74, 222, 128, 0.1); text-align: center;">
-                    <div style="font-weight: bold;">Operation</div>
-                    <div style="font-size: 0.7em; color: var(--ev-text-muted);">요청/응답<br>알림 교환</div>
-                </div>
-                <div class="fragment" style="font-size: 1.5em; color: var(--ev-text-muted);">→</div>
-                <div class="fragment" style="border: 2px solid var(--ev-text-muted); padding: 0.8em 1.2em; border-radius: 8px; background: rgba(255,255,255,0.05); text-align: center;">
-                    <div style="font-weight: bold;">Shutdown</div>
-                    <div style="font-size: 0.7em; color: var(--ev-text-muted);">정리 작업<br>연결 종료</div>
-                </div>
-            </div>
-            <p class="fragment" style="text-align: center; margin-top: 1em; font-size: 0.8em; color: var(--ev-text-muted);">
-                Initialize 단계에서 Client와 Server가 지원하는 <strong style="color: var(--ev-text);">기능(Capabilities)</strong>을 교환합니다
+            <h2>Managed MCP: Databricks</h2>
+            <p style="font-size: 0.85em;">Databricks가 <strong>네이티브로 제공</strong>하는 Managed MCP 서버 — UC 권한이 자동 적용됩니다</p>
+            <table style="font-size: 0.75em; margin-top: 0.5em;">
+                <thead>
+                    <tr><th>서버</th><th>기능</th><th>접근</th></tr>
+                </thead>
+                <tbody>
+                    <tr class="fragment" data-fragment-index="1"><td><strong>UC Functions</strong></td><td>UC 함수를 MCP 도구로 실행</td><td>실행</td></tr>
+                    <tr class="fragment" data-fragment-index="1"><td><strong>Genie</strong></td><td>자연어 데이터 질의</td><td>읽기</td></tr>
+                    <tr class="fragment" data-fragment-index="1"><td><strong>SQL</strong></td><td>AI 생성 SQL 실행</td><td>읽기/쓰기</td></tr>
+                    <tr class="fragment" data-fragment-index="1"><td><strong>Vector Search</strong></td><td>벡터 인덱스 유사 문서 검색</td><td>읽기</td></tr>
+                </tbody>
+            </table>
+            <pre class="fragment" data-fragment-index="2" style="font-size: 0.42em; margin-top: 0.5em;"><code class="language-json" data-trim>// .mcp.json — Claude Code 연결 예시
+{ "databricks-sql": { "type": "streamable-http",
+    "url": "https://&lt;workspace&gt;/api/2.0/mcp/sql",
+    "headers": { "Authorization": "Bearer ..." } } }</code></pre>
+            <p class="fragment" style="font-size: 0.7em; margin-top: 0.3em; color: var(--ev-text-muted);">
+                <a href="https://docs.databricks.com/aws/en/generative-ai/mcp/managed-mcp" target="_blank">공식 문서</a>
+                &nbsp;|&nbsp; <a href="https://docs.databricks.com/aws/en/generative-ai/mcp/connect-external-services" target="_blank">외부 클라이언트 연결 가이드</a>
             </p>
             <aside class="notes">
-                MCP는 Stateful Protocol입니다. 즉, 연결 상태를 유지하며 동작합니다.
-                Lifecycle은 세 단계로 구성됩니다.
-                Initialize 단계에서는 프로토콜 버전을 협상하고 서로 지원하는 기능을 교환합니다.
-                Operation 단계에서는 실제 요청과 응답, 알림을 주고받습니다.
-                Shutdown 단계에서는 정리 작업 후 연결을 종료합니다.
-                특히 Initialize 단계에서의 Capabilities 교환이 중요한데,
-                이를 통해 서버가 어떤 프리미티브를 지원하는지 클라이언트가 알 수 있습니다.
+                Databricks가 네이티브로 제공하는 Managed MCP 서버는 현재 4가지입니다.
+                UC Functions는 Unity Catalog에 등록된 함수를 MCP 도구로 실행합니다.
+                Genie는 Genie Space를 통해 자연어로 데이터를 질의합니다. 읽기 전용입니다.
+                SQL은 AI가 생성한 SQL을 직접 실행할 수 있으며 Claude Code, Cursor 등과 연동됩니다.
+                Vector Search는 벡터 인덱스를 검색해 유사한 문서를 찾습니다. Managed Embeddings 필수입니다.
+                모든 서버에 Unity Catalog 권한이 자동 적용되어, 사용자나 에이전트가 허가된 데이터만 접근합니다.
+                Claude Code에서 연결하려면 .mcp.json에 streamable-http 타입으로 워크스페이스 URL을 지정하면 됩니다.
+                인증은 PAT 또는 OAuth를 사용할 수 있고, 프로덕션에서는 OAuth가 권장됩니다.
+                공식 문서 링크와 외부 클라이언트 연결 가이드를 참고하세요.
             </aside>
         </section>
 
-        <!-- Slide: MCP는 언제 종료되는가? (신규) -->
+        <!-- Slide 8: Custom MCP — 왜 필요한가? -->
         <section>
-            <h2>MCP는 언제 종료되는가?</h2>
-            <div class="columns">
-                <div>
-                    <h3>Local Server (STDIO)</h3>
-                    <div style="background: rgba(0,0,0,0.3); border-radius: 8px; padding: 1em;">
-                        <ul style="font-size: 0.8em;">
-                            <li class="fragment" data-fragment-index="0">Host가 프로세스 lifecycle 관리</li>
-                            <li class="fragment" data-fragment-index="0">Claude Code <strong>종료 시 함께 종료</strong></li>
-                            <li class="fragment" data-fragment-index="0">Host와 Server의 수명이 동일</li>
-                        </ul>
-                        <div class="fragment" data-fragment-index="1" style="text-align: center; margin-top: 0.8em; font-size: 0.85em;">
-                            <span style="color: var(--ev-accent);">Host 종료</span>
-                            <span style="color: var(--ev-text-muted);"> → </span>
-                            <span style="color: var(--ev-accent);">Server 종료</span>
-                        </div>
+            <h2>Custom MCP: 왜 필요한가?</h2>
+            <p style="font-size: 0.85em;">Managed MCP만으로는 커버할 수 없는 영역이 있습니다:</p>
+            <div style="display: flex; flex-direction: column; gap: 0.8em; margin-top: 1em;">
+                <div class="fragment" style="display: flex; align-items: center; gap: 1em; background: rgba(0,0,0,0.3); border-radius: 8px; padding: 0.8em 1em;">
+                    <span style="font-size: 1.5em; min-width: 2em; text-align: center;">1</span>
+                    <div>
+                        <strong>내부 API 연동</strong>
+                        <span style="font-size: 0.8em; color: var(--ev-text-muted);"> — 사내 시스템, 레거시 API, 커스텀 서비스</span>
                     </div>
                 </div>
-                <div>
-                    <h3>Remote Server (HTTP)</h3>
-                    <div style="background: rgba(0,0,0,0.3); border-radius: 8px; padding: 1em;">
-                        <ul style="font-size: 0.8em;">
-                            <li class="fragment" data-fragment-index="2">Client 연결만 끊어짐</li>
-                            <li class="fragment" data-fragment-index="2">Server는 <strong>독립적으로 계속 실행</strong></li>
-                            <li class="fragment" data-fragment-index="2">다른 Client가 다시 연결 가능</li>
-                        </ul>
-                        <div class="fragment" data-fragment-index="3" style="text-align: center; margin-top: 0.8em; font-size: 0.85em;">
-                            <span style="color: #4ade80;">Host 종료</span>
-                            <span style="color: var(--ev-text-muted);"> → </span>
-                            <span style="color: #4ade80;">Server 계속 실행</span>
-                        </div>
+                <div class="fragment" style="display: flex; align-items: center; gap: 1em; background: rgba(0,0,0,0.3); border-radius: 8px; padding: 0.8em 1em;">
+                    <span style="font-size: 1.5em; min-width: 2em; text-align: center;">2</span>
+                    <div>
+                        <strong>비즈니스 로직 캡슐화</strong>
+                        <span style="font-size: 0.8em; color: var(--ev-text-muted);"> — 승인 워크플로우, 데이터 검증, 규칙 엔진</span>
+                    </div>
+                </div>
+                <div class="fragment" style="display: flex; align-items: center; gap: 1em; background: rgba(0,0,0,0.3); border-radius: 8px; padding: 0.8em 1em;">
+                    <span style="font-size: 1.5em; min-width: 2em; text-align: center;">3</span>
+                    <div>
+                        <strong>도메인 특화 도구</strong>
+                        <span style="font-size: 0.8em; color: var(--ev-text-muted);"> — ML 파이프라인 관리, 데이터 품질 체크, ETL 오케스트레이션</span>
                     </div>
                 </div>
             </div>
             <div class="fragment emphasis-box" style="margin-top: 1em;">
-                <p><strong>STDIO</strong>: Host와 수명 동일 &nbsp;/&nbsp; <strong>HTTP</strong>: Server는 독립 운영</p>
+                <p>Managed MCP = <strong>범용 도구</strong> &nbsp;/&nbsp; Custom MCP = <strong>우리 팀만의 도구</strong></p>
             </div>
             <aside class="notes">
-                Lifecycle의 Shutdown 단계에서 MCP가 언제 종료되는지는 전송 방식에 따라 다릅니다.
-                STDIO 기반 Local Server는 Host가 프로세스를 직접 관리하기 때문에,
-                Claude Code를 종료하면 MCP Server 프로세스도 함께 종료됩니다.
-                반면 HTTP 기반 Remote Server는 독립적인 서버 프로세스이므로,
-                Client의 연결이 끊어져도 Server는 계속 실행됩니다.
-                다른 Client가 나중에 다시 연결할 수도 있습니다.
-                이 차이를 이해하면 운영 환경에서 MCP Server를 어떻게 배포할지 판단하는 데 도움이 됩니다.
+                그렇다면 Custom MCP는 왜 필요할까요?
+                첫째, 사내 시스템이나 레거시 API 등 내부 API를 연동해야 할 때입니다.
+                이런 시스템은 공식 MCP 서버가 존재하지 않습니다.
+                둘째, 승인 워크플로우나 데이터 검증 같은 비즈니스 로직을 캡슐화할 때입니다.
+                셋째, ML 파이프라인 관리나 데이터 품질 체크 같은 도메인 특화 도구가 필요할 때입니다.
+                Managed MCP가 범용 도구라면, Custom MCP는 우리 팀만의 맞춤 도구입니다.
             </aside>
         </section>
 
-        <!-- Slide 10: Server Primitives (수정) -->
+        <!-- Slide 9: Managed vs Custom 비교표 -->
         <section>
-            <h2>Server Primitives</h2>
+            <h2>Managed vs Custom 비교</h2>
             <table>
                 <thead>
                     <tr>
-                        <th>프리미티브</th>
-                        <th>설명</th>
-                        <th>Discovery</th>
-                        <th>실행</th>
+                        <th></th>
+                        <th style="color: #4ade80;">Managed MCP</th>
+                        <th style="color: var(--ev-accent);">Custom MCP</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr class="fragment">
-                        <td><strong>Tools</strong></td>
-                        <td>모델이 호출할 수 있는 <strong>함수</strong></td>
-                        <td><code>tools/list</code></td>
-                        <td><code>tools/call</code></td>
-                    </tr>
-                    <tr class="fragment">
-                        <td><strong>Resources</strong></td>
-                        <td>모델이 읽을 수 있는 <strong>데이터</strong></td>
-                        <td><code>resources/list</code></td>
-                        <td><code>resources/read</code></td>
-                    </tr>
-                    <tr class="fragment">
-                        <td><strong>Prompts</strong></td>
-                        <td>미리 정의된 <strong>프롬프트 템플릿</strong></td>
-                        <td><code>prompts/list</code></td>
-                        <td><code>prompts/get</code></td>
-                    </tr>
-                </tbody>
-            </table>
-            <div class="fragment emphasis-box" style="margin-top: 0.8em;">
-                <p><strong>동적 Discovery</strong>: Client가 먼저 <code>*/list</code>로 사용 가능한 항목을 조회한 뒤, AI 모델이 적절한 항목을 선택하여 실행합니다</p>
-            </div>
-            <aside class="notes">
-                MCP Server는 세 가지 프리미티브를 제공합니다.
-                Tools는 모델이 호출할 수 있는 함수로, tools/list로 조회하고 tools/call로 실행합니다.
-                Resources는 모델이 읽을 수 있는 데이터로, resources/list로 조회하고 resources/read로 읽습니다.
-                Prompts는 미리 정의된 프롬프트 템플릿으로, prompts/list로 조회하고 prompts/get으로 가져옵니다.
-                핵심은 동적 Discovery 패턴입니다. Client가 먼저 list로 사용 가능한 항목을 조회하고,
-                AI 모델이 상황에 맞는 적절한 항목을 선택하여 실행합니다.
-            </aside>
-        </section>
-
-        <!-- Slide 11: DB 예시 (신규) -->
-        <section>
-            <h2>예시: 데이터베이스 MCP 서버</h2>
-            <p style="font-size: 0.85em;">하나의 MCP 서버에서 세 가지 프리미티브를 모두 활용:</p>
-            <div class="columns" style="margin-top: 0.8em;">
-                <div class="fragment" style="background: rgba(0,0,0,0.3); border-radius: 8px; padding: 1em; text-align: center;">
-                    <h3>Tool</h3>
-                    <code style="font-size: 0.9em;">query_db</code>
-                    <p style="font-size: 0.75em; color: var(--ev-text-muted);">SQL 쿼리 실행</p>
-                </div>
-                <div class="fragment" style="background: rgba(0,0,0,0.3); border-radius: 8px; padding: 1em; text-align: center;">
-                    <h3>Resource</h3>
-                    <code style="font-size: 0.9em;">db://schema</code>
-                    <p style="font-size: 0.75em; color: var(--ev-text-muted);">테이블 스키마 정보</p>
-                </div>
-                <div class="fragment" style="background: rgba(0,0,0,0.3); border-radius: 8px; padding: 1em; text-align: center;">
-                    <h3>Prompt</h3>
-                    <code style="font-size: 0.9em;">sql_examples</code>
-                    <p style="font-size: 0.75em; color: var(--ev-text-muted);">SQL 작성 가이드</p>
-                </div>
-            </div>
-            <div class="fragment emphasis-box" style="margin-top: 0.8em;">
-                <p>AI가 <strong>스키마를 이해</strong>하고 + <strong>예제를 참고</strong>하여 + <strong>쿼리를 실행</strong></p>
-            </div>
-            <aside class="notes">
-                구체적인 예시로 데이터베이스 MCP 서버를 생각해봅시다.
-                Tool로 query_db를 제공하면 AI가 SQL 쿼리를 실행할 수 있습니다.
-                Resource로 db://schema를 제공하면 테이블 구조를 AI가 읽을 수 있습니다.
-                Prompt로 sql_examples를 제공하면 SQL 작성 가이드를 참고할 수 있습니다.
-                이 세 가지가 결합되면 AI가 스키마를 이해하고, 예제를 참고해서,
-                정확한 쿼리를 실행할 수 있게 됩니다.
-                오늘 실습에서는 Tools에 집중하지만, 이런 조합이 가능하다는 것을 기억해주세요.
-            </aside>
-        </section>
-
-        <!-- Slide 12: Tools 상세 -->
-        <section>
-            <h2>Tools 상세</h2>
-            <p>MCP Tool은 세 가지 요소로 구성됩니다:</p>
-            <div class="columns" style="margin-top: 1em;">
-                <div>
-                    <h3>구성 요소</h3>
-                    <ul>
-                        <li class="fragment"><strong>이름</strong> (name) - 도구 식별자</li>
-                        <li class="fragment"><strong>설명</strong> (description) - AI가 도구를 이해하는 핵심</li>
-                        <li class="fragment"><strong>입력 스키마</strong> (input schema) - JSON Schema 형태의 파라미터 정의</li>
-                    </ul>
-                </div>
-                <div class="fragment">
-                    <h3>JSON Schema 예시</h3>
-                    <pre><code class="language-json" data-trim>{
-  "name": "echo",
-  "description": "메시지를 그대로 반환",
-  "inputSchema": {
-    "type": "object",
-    "properties": {
-      "message": {
-        "type": "string",
-        "description": "반환할 메시지"
-      }
-    },
-    "required": ["message"]
-  }
-}</code></pre>
-                </div>
-            </div>
-            <aside class="notes">
-                Tools를 좀 더 자세히 알아봅시다.
-                MCP Tool은 이름, 설명, 입력 스키마 세 가지로 구성됩니다.
-                특히 description이 중요한데, AI 모델이 이 설명을 보고
-                어떤 도구를 언제 사용할지 판단하기 때문입니다.
-                입력 스키마는 JSON Schema 형태로 파라미터를 정의합니다.
-                오른쪽 예시처럼 echo 도구는 message라는 문자열 파라미터를 받습니다.
-            </aside>
-        </section>
-
-        <!-- Slide 13: Client Primitives (신규) -->
-        <section>
-            <h2>Client Primitives</h2>
-            <p style="font-size: 0.85em;">Server뿐 아니라 <strong>Client</strong>도 프리미티브를 제공합니다:</p>
-            <table style="margin-top: 0.8em;">
-                <thead>
                     <tr>
-                        <th>프리미티브</th>
-                        <th>방향</th>
-                        <th>설명</th>
+                        <td><strong>설치</strong></td>
+                        <td class="fragment" data-fragment-index="1"><code>claude mcp add</code></td>
+                        <td class="fragment" data-fragment-index="1">직접 개발 + 배포 후<br><code>claude mcp add</code></td>
                     </tr>
-                </thead>
-                <tbody>
-                    <tr class="fragment">
-                        <td><strong>Sampling</strong></td>
-                        <td>Server → Client → LLM</td>
-                        <td>서버가 <strong>LLM에게 질문</strong>을 요청</td>
+                    <tr>
+                        <td><strong>관리</strong></td>
+                        <td class="fragment" data-fragment-index="1">벤더가 업데이트</td>
+                        <td class="fragment" data-fragment-index="1">자체 유지보수</td>
                     </tr>
-                    <tr class="fragment">
-                        <td><strong>Elicitation</strong></td>
-                        <td>Server → Client → User</td>
-                        <td>서버가 <strong>사용자에게 입력</strong>을 요청</td>
+                    <tr>
+                        <td><strong>유연성</strong></td>
+                        <td class="fragment" data-fragment-index="1">제공된 기능만 사용</td>
+                        <td class="fragment" data-fragment-index="1">무한한 커스터마이징</td>
                     </tr>
-                    <tr class="fragment">
-                        <td><strong>Logging</strong></td>
-                        <td>Server → Client</td>
-                        <td>서버가 <strong>로그 메시지</strong>를 전송</td>
+                    <tr>
+                        <td><strong>보안</strong></td>
+                        <td class="fragment" data-fragment-index="1">벤더의 보안 정책</td>
+                        <td class="fragment" data-fragment-index="1">자체 보안 제어</td>
+                    </tr>
+                    <tr>
+                        <td><strong>적합한 경우</strong></td>
+                        <td class="fragment" data-fragment-index="1">범용 SaaS 연동</td>
+                        <td class="fragment" data-fragment-index="1">내부 시스템, 도메인 로직</td>
                     </tr>
                 </tbody>
             </table>
-            <p class="fragment" style="margin-top: 0.8em; font-size: 0.8em; color: var(--ev-text-muted);">
-                Client Primitives를 통해 Server가 <strong style="color: var(--ev-text);">양방향 소통</strong>이 가능합니다
+            <aside class="notes">
+                Managed와 Custom을 비교해봅시다.
+                설치 면에서 둘 다 claude mcp add로 연결하지만, Custom은 서버를 직접 개발하고 배포하는 과정이 추가됩니다.
+                관리 면에서 Managed는 벤더가 업데이트해주지만, Custom은 자체 유지보수가 필요합니다.
+                유연성에서는 Custom이 압도적으로 유리합니다. 원하는 기능을 자유롭게 만들 수 있습니다.
+                보안에서도 Custom은 자체 보안 정책을 적용할 수 있어 민감한 데이터 처리에 적합합니다.
+                실전에서는 둘 중 하나만 쓰는 게 아니라, Managed와 Custom을 조합해서 사용합니다.
+            </aside>
+        </section>
+
+        <!-- Slide 10: Databricks가 제공하는 가치 -->
+        <section>
+            <h2>Databricks가 제공하는 가치</h2>
+            <div style="display: flex; flex-direction: column; align-items: center; gap: 0.5em; margin-top: 1em;">
+                <div style="display: flex; gap: 1em; width: 90%;">
+                    <div class="fragment" style="flex: 1; border: 2px solid #4ade80; border-radius: 12px; padding: 1em; text-align: center; background: rgba(74, 222, 128, 0.05);">
+                        <h3 style="color: #4ade80; font-size: 0.9em;">데이터 거버넌스</h3>
+                        <p style="font-size: 0.75em; color: var(--ev-text-muted);">Unity Catalog<br>접근 제어 · 리니지</p>
+                    </div>
+                    <div class="fragment" style="flex: 1; border: 2px solid #60a5fa; border-radius: 12px; padding: 1em; text-align: center; background: rgba(96, 165, 250, 0.05);">
+                        <h3 style="color: #60a5fa; font-size: 0.9em;">AI 모델</h3>
+                        <p style="font-size: 0.75em; color: var(--ev-text-muted);">Foundation Models<br>Model Serving</p>
+                    </div>
+                    <div class="fragment" style="flex: 1; border: 2px solid var(--ev-accent); border-radius: 12px; padding: 1em; text-align: center; background: rgba(233, 69, 96, 0.05);">
+                        <h3 style="font-size: 0.9em;">인프라</h3>
+                        <p style="font-size: 0.75em; color: var(--ev-text-muted);">Databricks Apps<br>서버리스 배포</p>
+                    </div>
+                </div>
+                <div class="fragment" style="font-size: 1.5em; color: var(--ev-text-muted);">↓</div>
+                <div class="fragment" style="border: 2px solid var(--ev-accent); border-radius: 12px; padding: 0.8em 2em; background: rgba(233, 69, 96, 0.1); text-align: center;">
+                    <strong style="font-size: 1.1em;">MCP 서버를 만들고 → 거버넌스 아래에서 → 서버리스로 배포</strong>
+                </div>
+            </div>
+            <aside class="notes">
+                Databricks가 MCP 생태계에서 제공하는 가치는 세 가지가 결합된 것입니다.
+                첫째, Unity Catalog 기반의 데이터 거버넌스로 접근 제어와 리니지를 관리합니다.
+                둘째, Foundation Models와 Model Serving으로 AI 모델을 제공합니다.
+                셋째, Databricks Apps로 서버리스 인프라를 제공합니다.
+                이 세 가지가 결합되면, Custom MCP 서버를 만들어서
+                거버넌스 정책 아래에서 안전하게 서버리스로 배포할 수 있습니다.
+                다른 플랫폼에서는 이 세 가지를 각각 별도로 구축해야 합니다.
+            </aside>
+        </section>
+
+        <!-- Slide 10-1: 이런 MCP를 만들 수 있습니다 -->
+        <section>
+            <h2>이런 MCP를 만들 수 있습니다</h2>
+            <p style="font-size: 0.85em;">Databricks 위에서 Custom MCP로 만들면 효과적인 사례:</p>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.8em; margin-top: 1em;">
+                <div class="fragment" data-fragment-index="0" style="background: rgba(0,0,0,0.3); border-radius: 8px; padding: 0.8em 1em; border-left: 3px solid #4ade80;">
+                    <strong style="font-size: 0.9em;">파이프라인 모니터</strong>
+                    <p style="font-size: 0.7em; color: var(--ev-text-muted); margin: 0.3em 0 0;">"어제 실패한 ETL 잡 알려줘"<br>→ Jobs API 연동</p>
+                </div>
+                <div class="fragment" data-fragment-index="0" style="background: rgba(0,0,0,0.3); border-radius: 8px; padding: 0.8em 1em; border-left: 3px solid #60a5fa;">
+                    <strong style="font-size: 0.9em;">비용 트래커</strong>
+                    <p style="font-size: 0.7em; color: var(--ev-text-muted); margin: 0.3em 0 0;">"이번 달 팀 클러스터 비용 분석해줘"<br>→ system.billing 테이블 조회</p>
+                </div>
+                <div class="fragment" data-fragment-index="0" style="background: rgba(0,0,0,0.3); border-radius: 8px; padding: 0.8em 1em; border-left: 3px solid var(--ev-accent);">
+                    <strong style="font-size: 0.9em;">데이터 품질 체커</strong>
+                    <p style="font-size: 0.7em; color: var(--ev-text-muted); margin: 0.3em 0 0;">"주문 테이블 품질 체크해줘"<br>→ 검증 규칙 실행</p>
+                </div>
+                <div class="fragment" data-fragment-index="0" style="background: rgba(0,0,0,0.3); border-radius: 8px; padding: 0.8em 1em; border-left: 3px solid #c084fc;">
+                    <strong style="font-size: 0.9em;">모델 레지스트리</strong>
+                    <p style="font-size: 0.7em; color: var(--ev-text-muted); margin: 0.3em 0 0;">"프로덕션 모델 최근 성능 보여줘"<br>→ MLflow API 연동</p>
+                </div>
+            </div>
+            <p class="fragment" style="text-align: center; margin-top: 0.8em; font-size: 0.85em;">
+                모두 <strong>자연어 한 마디</strong>로 실행 — MCP가 복잡한 API 호출을 대신합니다
             </p>
             <aside class="notes">
-                MCP에서는 Server만 프리미티브를 제공하는 것이 아닙니다.
-                Client도 세 가지 프리미티브를 제공합니다.
-                Sampling은 서버가 클라이언트를 통해 LLM에게 질문을 요청하는 것입니다.
-                예를 들어, 서버가 복잡한 판단이 필요할 때 LLM의 도움을 받을 수 있습니다.
-                Elicitation은 서버가 사용자에게 직접 입력을 요청하는 것입니다.
-                Logging은 서버가 클라이언트에 로그 메시지를 보내는 것입니다.
-                이런 Client Primitives 덕분에 MCP는 단방향이 아닌 양방향 소통이 가능합니다.
+                Databricks 위에서 Custom MCP를 만들면 어떤 것들이 가능한지 구체적 사례를 봅시다.
+                파이프라인 모니터는 Jobs API를 연동해서 실패한 ETL 잡을 자연어로 조회합니다.
+                비용 트래커는 system.billing 시스템 테이블을 조회해서 클러스터 비용을 분석합니다.
+                데이터 품질 체커는 Great Expectations 같은 검증 규칙을 MCP 도구로 래핑합니다.
+                모델 레지스트리는 MLflow API를 연동해서 모델 성능 지표를 확인합니다.
+                이 모든 것들이 자연어 한 마디로 가능해집니다.
+                핵심은 복잡한 API 호출을 MCP가 추상화하고,
+                사용자는 자연어로만 요청하면 된다는 것입니다.
             </aside>
         </section>
 
-        <!-- Slide 14: FastMCP 소개 -->
+        <!-- ============================================ -->
+        <!-- Part 3: Custom MCP 만들기 (7장)              -->
+        <!-- ============================================ -->
+
+        <!-- Slide 11: FastMCP 소개 -->
         <section>
             <h2>FastMCP 소개</h2>
             <div class="emphasis-box">
@@ -613,7 +455,7 @@ uv sync</code></pre>
             </aside>
         </section>
 
-        <!-- Slide 15: FastMCP 핵심 패턴 -->
+        <!-- Slide 12: FastMCP 핵심 패턴 -->
         <section>
             <h2>FastMCP 핵심 패턴</h2>
             <pre><code class="language-python" data-trim data-line-numbers="1|3|5-8|10-11">from fastmcp import FastMCP
@@ -646,96 +488,7 @@ if __name__ == "__main__":
             </aside>
         </section>
 
-        <!-- Slide 17: Claude Code에서 MCP 서버 연결 -->
-        <section>
-            <h2>Claude Code에서 MCP 서버 연결</h2>
-            <p><code>.mcp.json</code> 파일에 설정을 추가합니다:</p>
-            <pre><code class="language-json" data-trim>{
-  "mcpServers": {
-    "hello-mcp": {
-      "type": "stdio",
-      "command": "uv",
-      "args": [
-        "run", "--with", "fastmcp",
-        "fastmcp", "run",
-        "03-mcp-architecture/exercise_01_hello_mcp.py"
-      ]
-    },
-    "calculator": {
-      "type": "stdio",
-      "command": "uv",
-      "args": [
-        "run", "--with", "fastmcp",
-        "fastmcp", "run",
-        "03-mcp-architecture/exercise_02_calculator_mcp.py"
-      ]
-    }
-  }
-}</code></pre>
-            <p class="fragment" style="font-size: 0.85em;">
-                <code>uv run --with fastmcp</code>: 별도 설치 없이 바로 실행!
-            </p>
-            <aside class="notes">
-                MCP 서버를 만들었으면 Claude Code에 연결해야 합니다.
-                프로젝트 루트의 .mcp.json 파일에 mcpServers 섹션을 추가합니다.
-                중요한 점은 경로가 프로젝트 루트 기준이라는 것입니다.
-                03-mcp-architecture/ 디렉토리를 포함한 전체 경로를 지정해야 합니다.
-                command는 uv를 사용하고, args에서 --with fastmcp로 의존성을 지정합니다.
-                uv run --with 패턴을 사용하면 별도의 패키지 설치 없이
-                바로 FastMCP 서버를 실행할 수 있어서 매우 편리합니다.
-                설정 후 Claude Code를 재시작하면 도구를 사용할 수 있습니다.
-            </aside>
-        </section>
-
-        <!-- Slide 18: MCP 설정 스코프 -->
-        <section>
-            <h2>MCP 설정 스코프</h2>
-            <table style="font-size: 0.75em; width: 100%;">
-                <thead>
-                    <tr>
-                        <th>스코프</th>
-                        <th>파일 위치</th>
-                        <th>공유 범위</th>
-                        <th>CLI 옵션</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><strong>Project</strong></td>
-                        <td><code>.mcp.json</code> (프로젝트 루트)</td>
-                        <td>팀 전체 (VCS 커밋)</td>
-                        <td><code>--scope project</code></td>
-                    </tr>
-                    <tr>
-                        <td><strong>User</strong></td>
-                        <td><code>~/.claude.json</code></td>
-                        <td>개인용, 모든 프로젝트</td>
-                        <td><code>--scope user</code></td>
-                    </tr>
-                    <tr>
-                        <td><strong>Local</strong></td>
-                        <td><code>.claude/local.json</code></td>
-                        <td>개인용, 현재 프로젝트만</td>
-                        <td><code>--scope local</code></td>
-                    </tr>
-                </tbody>
-            </table>
-            <pre class="fragment"><code class="language-bash" data-trim>claude mcp add --scope project my-server uv run server.py</code></pre>
-            <p class="fragment" style="font-size: 0.75em; color: #e94560;">
-                ⚠️ <code>.claude/mcp.json</code>은 공식 지원되지 않습니다 — 반드시 프로젝트 루트의 <code>.mcp.json</code>을 사용하세요
-            </p>
-            <aside class="notes">
-                MCP 설정에는 3가지 스코프가 있습니다.
-                Project 스코프는 프로젝트 루트의 .mcp.json 파일을 사용하며, Git에 커밋하여 팀원과 공유할 수 있습니다.
-                User 스코프는 홈 디렉토리의 ~/.claude.json에 저장되어 모든 프로젝트에서 사용됩니다.
-                Local 스코프는 .claude/local.json에 저장되어 현재 프로젝트에서만 사용되지만, Git에 커밋되지 않아 개인 설정에 적합합니다.
-                CLI에서 claude mcp add 명령어로 서버를 추가할 때 --scope 옵션으로 스코프를 지정할 수 있습니다.
-                주의할 점은, .claude/mcp.json이라는 파일 경로는 공식적으로 지원되지 않습니다.
-                GitHub Issue #5037, #5350에서도 확인된 사항이니 반드시 프로젝트 루트의 .mcp.json을 사용하세요.
-            </aside>
-        </section>
-
-        <!-- Slide 16: 실습 안내 -->
+        <!-- Slide 13: 실습 안내 -->
         <section>
             <h2>실습: Claude Code로 MCP 서버 만들기!</h2>
             <div class="emphasis-box">
@@ -767,254 +520,24 @@ uv run --with fastmcp fastmcp run \
                 대신 @를 사용해서 파일 컨텍스트를 직접 추가하면
                 프로젝트 설정이 유지되면서도 원하는 파일을 참조할 수 있습니다.
                 시간이 남으면 Exercise 02도 같은 방식으로 진행하세요.
-                막히는 부분이 있으면 언제든 질문해주세요!
             </aside>
         </section>
 
-        <!-- Slide: MCP 서버 등록하기 -->
-        <section>
-            <h2>MCP 서버 등록하기</h2>
-            <div style="display: flex; align-items: flex-start; gap: 1em;">
-                <div style="flex: 1;">
-                    <h3>① .mcp.json 생성</h3>
-                    <pre><code class="language-bash" data-trim># 프로젝트 루트에 설정 파일 생성
-cat > .mcp.json << 'EOF'
-{
-  "mcpServers": {
-    "hello-mcp": {
-      "type": "stdio",
-      "command": "uv",
-      "args": [
-        "run", "--with", "fastmcp",
-        "fastmcp", "run",
-        "03-mcp-architecture/exercise_01_hello_mcp.py"
-      ]
-    }
-  }
-}
-EOF</code></pre>
-                </div>
-                <div style="flex: 0.7;" class="fragment">
-                    <h3>② Claude Code 재시작</h3>
-                    <pre><code class="language-bash" data-trim># Claude Code 종료 후 다시 실행
-/exit
-claude</code></pre>
-                    <h3 style="margin-top: 1em;">③ 연결 확인</h3>
-                    <pre><code class="language-bash" data-trim>/mcp</code></pre>
-                    <p style="font-size: 0.8em; color: var(--ev-text-muted);">
-                        hello-mcp 서버가 목록에<br>표시되면 성공!
-                    </p>
-                </div>
-            </div>
-            <aside class="notes">
-                MCP 서버를 구현했으면 Claude Code에 등록하는 과정입니다.
-                먼저 프로젝트 루트의 .mcp.json 파일을 열어
-                mcpServers 섹션에 서버 정보를 추가합니다.
-                경로는 반드시 프로젝트 루트 기준으로 작성해야 합니다.
-                설정을 저장한 뒤 Claude Code를 재시작해야 새 서버가 로드됩니다.
-                /mcp 명령어를 실행하면 등록된 MCP 서버 목록과 연결 상태를 확인할 수 있습니다.
-                hello-mcp가 목록에 보이면 정상적으로 연결된 것입니다.
-            </aside>
-        </section>
+        <!-- ============================================ -->
+        <!-- Part 4: 정리 (1장)                           -->
+        <!-- ============================================ -->
 
-        <!-- Slide: MCP 서버 사용해보기 -->
-        <!-- Slide: MCP 서버 사용해보기 -->
-        <section>
-            <h2>MCP 서버 사용해보기</h2>
-            <div class="emphasis-box">
-                <p style="font-size: 1.1em;">등록된 MCP 서버에 자연어로 요청해보세요</p>
-            </div>
-            <div style="display: flex; gap: 1.5em; margin-top: 0.8em;">
-                <!-- 왼쪽: echo 도구 -->
-                <div style="flex: 1;">
-                    <pre style="font-size: 0.48em;"><code class="language-bash" data-trim>> echo 도구로 "Hello MCP!"를 보내줘</code></pre>
-                    <div class="fragment" data-fragment-index="0" style="background: var(--ev-code-bg); border: 1px solid #333; border-radius: 8px; padding: 0.6em 0.8em; margin-top: 0.3em; font-family: monospace; font-size: 0.38em; line-height: 1.6; text-align: left;">
-                        <div><span style="color: #a6e3a1;">⏺</span> <strong style="color: #cdd6f4;">hello-mcp - echo (MCP)</strong><span style="color: #9399b2;">(message: "Hello MCP!")</span></div>
-                        <div style="color: #585b70;">&nbsp;&nbsp;⎿&nbsp;&nbsp;{</div>
-                        <div style="color: #9399b2;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #89b4fa;">"result"</span>: <span style="color: #a6e3a1;">"Echo: Hello MCP!"</span></div>
-                        <div style="color: #585b70;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</div>
-                        <div style="margin-top: 0.5em;"><span style="color: #a6e3a1;">⏺</span> <span style="color: #cdd6f4;">hello-mcp MCP 서버의 echo 도구로 메시지를 보냈고,</span></div>
-                        <div><span style="color: #cdd6f4;">&nbsp;&nbsp;응답으로 <strong>"Echo: Hello MCP!"</strong>가 돌아왔습니다.</span></div>
-                    </div>
-                </div>
-                <!-- 오른쪽: greet 도구 -->
-                <div style="flex: 1;">
-                    <pre class="fragment" data-fragment-index="1" style="font-size: 0.48em;"><code class="language-bash" data-trim>> 내 이름은 홍길동이야, 인사해줘</code></pre>
-                    <div class="fragment" data-fragment-index="2" style="background: var(--ev-code-bg); border: 1px solid #333; border-radius: 8px; padding: 0.6em 0.8em; margin-top: 0.3em; font-family: monospace; font-size: 0.38em; line-height: 1.6; text-align: left;">
-                        <div><span style="color: #a6e3a1;">⏺</span> <strong style="color: #cdd6f4;">hello-mcp - greet (MCP)</strong><span style="color: #9399b2;">(name: "홍길동")</span></div>
-                        <div style="color: #585b70;">&nbsp;&nbsp;⎿&nbsp;&nbsp;{</div>
-                        <div style="color: #9399b2;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #89b4fa;">"result"</span>: <span style="color: #a6e3a1;">"안녕하세요, 홍길동님! 반갑습니다."</span></div>
-                        <div style="color: #585b70;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</div>
-                        <div style="margin-top: 0.5em;"><span style="color: #a6e3a1;">⏺</span> <span style="color: #cdd6f4;">hello-mcp MCP 서버의 greet 도구를 사용했습니다:</span></div>
-                        <div><span style="color: #cdd6f4;">&nbsp;&nbsp;"안녕하세요, 홍길동님! 반갑습니다." 🎉</span></div>
-                    </div>
-                </div>
-            </div>
-            <div class="fragment" data-fragment-index="3" style="margin-top: 0.8em; text-align: center;">
-                <p style="font-size: 0.9em;">
-                    <strong>Discovery</strong> → <strong>도구 선택</strong> → <strong>실행</strong> — 자연어만으로 MCP 도구가 호출됩니다!
-                </p>
-            </div>
-            <aside class="notes">
-                등록된 hello-mcp 서버를 실제로 사용해봅시다.
-                자연어로 요청하면 AI가 자동으로 처리합니다.
-                왼쪽: "echo 도구로 Hello MCP를 보내줘"라고 하면
-                AI가 echo 도구를 발견(Discovery)하고 호출합니다.
-                오른쪽: "내 이름은 홍길동이야, 인사해줘"라고 하면
-                greet 도구를 찾아서 이름을 인자로 전달합니다.
-                사용자가 도구 이름이나 파라미터를 직접 지정하지 않았는데도
-                AI가 자동으로 적절한 도구를 찾아서 호출하는 것이
-                MCP의 Discovery 메커니즘이자 핵심 가치입니다.
-            </aside>
-        </section>
-
-        <!-- Slide: 실습 02 - Calculator MCP -->
-        <section>
-            <h2>실습 02: Calculator MCP</h2>
-            <div class="emphasis-box">
-                <h3>실습 순서 (10분)</h3>
-                <ol>
-                    <li><strong>스켈레톤 확인</strong>: exercise 파일의 TODO 주석 확인</li>
-                    <li><strong>Claude Code로 구현</strong>: TODO를 구현해달라고 요청</li>
-                    <li><strong>테스트</strong>: MCP 서버 실행 및 Claude Code 연결</li>
-                </ol>
-            </div>
-            <div style="margin-top: 1em;">
-                <h3>Claude Code 워크플로우</h3>
-                <pre><code class="language-bash" data-trim># 1. @로 파일 컨텍스트 추가하여 구현 요청
-> @03-mcp-architecture/exercise_02_calculator_mcp.py 의 TODO를 구현해줘
-
-# 2. MCP 서버 테스트 실행
-uv run --with fastmcp fastmcp run \
-    03-mcp-architecture/exercise_02_calculator_mcp.py</code></pre>
-            </div>
-            <div class="fragment" style="margin-top: 0.5em;">
-                <p style="font-size: 0.85em; color: var(--ev-text-muted);">
-                    요구사항: <code>add</code>, <code>subtract</code>, <code>multiply</code>, <code>divide</code> 4개 도구<br>
-                    <code>divide</code>는 0 나누기 에러 처리 필수!
-                </p>
-            </div>
-            <aside class="notes">
-                두 번째 실습으로 Calculator MCP 서버를 만들어봅시다.
-                exercise_02_calculator_mcp.py 파일에 TODO가 있으니
-                Claude Code에 구현을 요청하면 됩니다.
-                add, subtract, multiply, divide 4개 도구를 만들어야 하고,
-                divide의 경우 0으로 나누는 경우의 에러 처리가 필요합니다.
-                hello-mcp와 동일한 방식으로 진행하면 됩니다.
-            </aside>
-        </section>
-
-        <!-- Slide: Calculator MCP 등록하기 -->
-        <section>
-            <h2>Calculator MCP 등록하기</h2>
-            <div style="display: flex; align-items: flex-start; gap: 1em;">
-                <div style="flex: 1;">
-                    <h3>① .mcp.json 업데이트</h3>
-                    <pre><code class="language-bash" data-trim># calculator 서버 추가
-cat > .mcp.json << 'EOF'
-{
-  "mcpServers": {
-    "hello-mcp": {
-      "type": "stdio",
-      "command": "uv",
-      "args": [
-        "run", "--with", "fastmcp",
-        "fastmcp", "run",
-        "03-mcp-architecture/exercise_01_hello_mcp.py"
-      ]
-    },
-    "calculator": {
-      "type": "stdio",
-      "command": "uv",
-      "args": [
-        "run", "--with", "fastmcp",
-        "fastmcp", "run",
-        "03-mcp-architecture/exercise_02_calculator_mcp.py"
-      ]
-    }
-  }
-}
-EOF</code></pre>
-                </div>
-                <div style="flex: 0.7;" class="fragment">
-                    <h3>② Claude Code 재시작</h3>
-                    <pre><code class="language-bash" data-trim># Claude Code 종료 후 다시 실행
-/exit
-claude</code></pre>
-                    <h3 style="margin-top: 1em;">③ 연결 확인</h3>
-                    <pre><code class="language-bash" data-trim>/mcp</code></pre>
-                    <p style="font-size: 0.8em; color: var(--ev-text-muted);">
-                        hello-mcp + calculator<br>두 서버가 표시되면 성공!
-                    </p>
-                </div>
-            </div>
-            <aside class="notes">
-                Calculator MCP를 구현했으면 .mcp.json에 등록합니다.
-                기존 hello-mcp 설정 아래에 calculator 항목을 추가하면 됩니다.
-                exercise_02_calculator_mcp.py 경로를 정확하게 지정해주세요.
-                설정 저장 후 Claude Code를 재시작하고
-                /mcp로 확인하면 두 서버가 모두 보여야 합니다.
-            </aside>
-        </section>
-
-        <!-- Slide: Claude vs MCP 도구 비교 -->
-        <section>
-            <h2>Claude vs MCP 도구 비교</h2>
-            <p style="font-size: 0.9em; color: var(--ev-text-muted);">같은 질문, 다른 처리 방식</p>
-            <div style="display: flex; gap: 1.5em; margin-top: 1em;">
-                <div style="flex: 1; background: rgba(255,255,255,0.05); border-radius: 12px; padding: 1em;">
-                    <h3 style="color: var(--ev-text-muted);">Claude 자체 계산</h3>
-                    <pre><code class="language-bash" data-trim>> 3 + 5를 계산해줘</code></pre>
-                    <p style="font-size: 0.9em; margin-top: 0.5em;">
-                        💬 "3 + 5는 <strong>8</strong>입니다"
-                    </p>
-                    <p style="font-size: 0.75em; color: var(--ev-text-muted);">
-                        모델이 직접 답변 생성
-                    </p>
-                </div>
-                <div style="flex: 1; background: rgba(233, 69, 96, 0.1); border: 1px solid var(--ev-accent); border-radius: 12px; padding: 1em;" class="fragment">
-                    <h3 style="color: var(--ev-accent);">MCP 도구 사용</h3>
-                    <pre><code class="language-bash" data-trim>> 3 + 5를 계산해줘</code></pre>
-                    <p style="font-size: 0.9em; margin-top: 0.5em;">
-                        🔧 <code>calculator.add(3, 5)</code> → <strong>8</strong>
-                    </p>
-                    <p style="font-size: 0.75em; color: var(--ev-text-muted);">
-                        외부 도구가 실행하고 결과 반환
-                    </p>
-                </div>
-            </div>
-            <div class="fragment emphasis-box" style="margin-top: 1em;">
-                <p style="font-size: 0.9em;">
-                    MCP 도구의 차별점: <strong>외부 시스템 연동</strong> · <strong>정확한 로직 실행</strong> · <strong>감사 추적(Audit Trail)</strong>
-                </p>
-            </div>
-            <aside class="notes">
-                여기서 중요한 질문을 해봅시다.
-                "3 + 5를 계산해줘"라고 하면 Claude는 MCP 없이도 답할 수 있습니다.
-                왼쪽처럼 모델이 직접 "8입니다"라고 답하죠.
-                하지만 오른쪽처럼 MCP 도구를 통하면 calculator의 add 함수가 실제로 실행됩니다.
-                단순 계산에서는 차이가 없어 보이지만,
-                실제 업무에서는 이 차이가 매우 중요합니다.
-                MCP 도구를 사용하면 외부 데이터베이스 조회, API 호출 등
-                모델이 직접 할 수 없는 작업을 수행할 수 있고,
-                누가 언제 어떤 도구를 호출했는지 감사 추적이 가능합니다.
-                즉, MCP는 AI를 실제 업무 시스템과 안전하게 연결하는 다리입니다.
-            </aside>
-        </section>
-
-        <!-- Slide 19: 정리 & Q&A (수정) -->
+        <!-- Slide 17: 정리 & Q&A -->
         <section>
             <h2>정리 & Q&A</h2>
             <div class="columns">
                 <div>
                     <h3>오늘 배운 것</h3>
                     <ul>
-                        <li><strong>MCP</strong>: AI와 도구의 표준 프로토콜</li>
-                        <li><strong>N x M → N + M</strong>: 통합 복잡도 해결</li>
-                        <li><strong>2계층</strong>: Data Layer + Transport Layer</li>
-                        <li><strong>Server 유형</strong>: Local(STDIO) / Remote(HTTP)</li>
-                        <li><strong>Server Primitives</strong>: Tools, Resources, Prompts</li>
-                        <li><strong>Client Primitives</strong>: Sampling, Elicitation, Logging</li>
+                        <li><strong>MCP</strong>: AI와 도구의 표준 프로토콜 (USB-C)</li>
+                        <li><strong>Managed MCP</strong>: 3rd-party + Databricks 제공</li>
+                        <li><strong>Custom MCP</strong>: 내부 API, 비즈니스 로직</li>
+                        <li><strong>Databricks 가치</strong>: 거버넌스 + AI + 인프라</li>
                         <li><strong>FastMCP</strong>: 데코레이터로 쉽게 서버 구현</li>
                     </ul>
                 </div>
@@ -1038,14 +561,12 @@ claude</code></pre>
             </div>
             <aside class="notes">
                 이번 섹션의 핵심 내용을 정리해봅시다.
-                MCP는 AI 모델과 도구 사이의 표준 프로토콜이며,
-                N x M 문제를 N + M으로 해결합니다.
-                MCP는 Data Layer와 Transport Layer의 2계층 구조를 가지며,
-                Server는 Local(STDIO)과 Remote(HTTP) 두 가지 유형이 있습니다.
-                Server Primitives로 Tools, Resources, Prompts를 제공하고,
-                Client Primitives로 Sampling, Elicitation, Logging을 지원합니다.
-                FastMCP를 사용하면 데코레이터 하나로 쉽게 도구를 만들 수 있습니다.
-                다음 섹션에서는 Claude Code의 Skills 생태계를 알아봅니다.
+                MCP는 AI 모델과 도구 사이의 표준 프로토콜입니다.
+                Managed MCP는 3rd-party와 Databricks가 제공하는 기성 서버이고,
+                Custom MCP는 내부 API와 비즈니스 로직을 위해 직접 개발하는 서버입니다.
+                Databricks는 거버넌스, AI 모델, 인프라를 결합한 가치를 제공합니다.
+                FastMCP로 쉽게 서버를 구현하고 로컬에서 테스트할 수 있습니다.
+                다음 섹션에서는 Genie MCP를 직접 만들어봅니다.
                 질문이 있으시면 지금 받겠습니다.
             </aside>
         </section>
