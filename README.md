@@ -42,7 +42,7 @@
 |---|------|------|------|------|
 | 04 | [Genie MCP](sections/04-genie-mcp/) | 30분 | 실습 | Databricks Genie API → MCP 서버 구현 |
 | 05 | [Skills](sections/05-skills/) | 30분 | 강의+실습 | Skills/Agents 개념, Custom Skill 작성, 레퍼런스 활용 |
-| 06 | [Custom Agents](sections/06-agents/) | 25분 | 강의+실습 | agent.md 구조, Skills vs Agents, 에이전트 만들기 |
+| 06 | [Agents](sections/06-agents/) | 25분 | 강의+실습 | agent.md 구조, Skills vs Agents, 에이전트 만들기 |
 | 07 | [Hooks](sections/07-hooks/) | 25분 | 강의+실습 | 이벤트 기반 자동화, 안전 가드레일, Auto-format |
 | 08 | [AI Dev Kit](sections/08-ai-dev-kit/) | 30분 | 강의+데모 | 5대 구성 요소, MCP 서버, Skills, ChatAgent, 배포 파이프라인 |
 
@@ -107,7 +107,7 @@ enable-your-vibe/
 │   ├── 03-mcp-architecture/   # 강의+실습: MCP 아키텍처
 │   ├── 04-genie-mcp/          # 실습: Genie MCP 서버
 │   ├── 05-skills/             # 강의+실습: Skills 개념에서 실전까지
-│   ├── 06-agents/             # 강의+실습: Custom Agents
+│   ├── 06-agents/             # 강의+실습: Subagents
 │   ├── 07-hooks/              # 강의+실습: Hooks 이벤트 기반 자동화
 │   ├── 08-ai-dev-kit/         # 강의+데모: AI Dev Kit
 │   └── 09-google-slides/      # 강의+데모: Google Slides 자동화

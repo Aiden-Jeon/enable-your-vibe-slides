@@ -4,9 +4,9 @@
     { number: '01', dir: '01-ai-foundation', title: 'AI Foundation', subtitle: 'Claude AI 기초', type: 'lecture', part: 1 },
     { number: '02', dir: '02-claude-code-features', title: 'Claude Code Features', subtitle: 'Claude Code 사용법', type: 'lecture+demo', part: 1 },
     { number: '03', dir: '03-mcp-architecture', title: 'MCP Architecture', subtitle: 'MCP 아키텍처', type: 'lecture+hands-on', part: 1 },
-    { number: '04', dir: '04-genie-mcp', title: 'Genie MCP', subtitle: 'Genie MCP 서버 만들기', type: 'hands-on', part: 2 },
+    { number: '04', dir: '04-genie-mcp', title: 'MCP', subtitle: 'Genie MCP 서버 만들기', type: 'hands-on', part: 2 },
     { number: '05', dir: '05-skills', title: 'Skills', subtitle: '개념에서 실전까지', type: 'lecture+hands-on', part: 2 },
-    { number: '06', dir: '06-agents', title: 'Custom Agents', subtitle: '나만의 에이전트 만들기', type: 'lecture+hands-on', part: 2 },
+    { number: '06', dir: '06-agents', title: 'Agents', subtitle: '나만의 에이전트 만들기', type: 'lecture+hands-on', part: 2 },
     { number: '07', dir: '07-hooks', title: 'Hooks', subtitle: '이벤트 기반 자동화', type: 'lecture+hands-on', part: 2 },
     { number: '08', dir: '08-ai-dev-kit', title: 'AI Dev Kit', subtitle: 'Databricks AI Dev Kit', type: 'lecture+demo', part: 2 },
     { number: '09', dir: '09-google-slides', title: 'Google Slides', subtitle: 'Vibe Coding으로 슬라이드 자동화', type: 'lecture+demo', part: 3 }
@@ -25,7 +25,7 @@
     var list = document.querySelector('.sidebar-sections');
     if (!list) return;
 
-    var partNames = { 1: 'AI Literacy for SA', 2: 'Vibe for Customer', 3: 'SA Tips' };
+    var partNames = { 1: 'AI Literacy', 2: 'Vibe with Databricks', 3: 'Vibe for SA' };
     var currentPart = 0;
 
     sections.forEach(function (s) {

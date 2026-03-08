@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/svg+xml" href="../../favicon.svg">
-    <title>06 - Custom Agents - Enable Your Vibe</title>
+    <title>06 - Agents - Enable Your Vibe</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reset.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/theme/black.css">
@@ -131,7 +131,7 @@
             <!-- Slide 1: Title -->
             <section>
                 <p class="section-number">Section 06</p>
-                <h1>Custom Agents</h1>
+                <h1>Agents</h1>
                 <p class="subtitle">나만의 에이전트 만들기</p>
                 <br>
                 <p style="font-size: 0.7em; color: var(--ev-text-muted);">
@@ -141,7 +141,7 @@
                     25분 | 강의+실습
                 </p>
                 <aside class="notes">
-                    섹션 6을 시작합니다. 이번 세션에서는 Claude Code의 Custom Agents를 다룹니다.
+                    섹션 6을 시작합니다. 이번 세션에서는 Claude Code의 Subagents를 다룹니다.
                     이전 섹션에서 Skills를 배웠다면, 이번에는 특정 역할에 특화된 에이전트를 만드는 방법을 알아봅니다.
                     Skills가 "무엇을 어떻게 할 것인가"라면, Agents는 "누가 어떤 관점에서 할 것인가"입니다.
                 </aside>
@@ -152,16 +152,59 @@
                 <h2>학습 목표</h2>
                 <ul>
                     <li><strong>Skills vs Agents</strong> 차이점을 우리 프로젝트 예시로 파악한다</li>
-                    <li>Custom Agent 개념과 <code>agent.md</code> 구조를 이해한다</li>
+                    <li>Subagent 개념과 <code>agent.md</code> 구조를 이해한다</li>
                     <li>실제 에이전트(<code>genie-space-designer</code>, <code>genie-instructor</code>, <code>genie-tester</code>)를 분석한다</li>
-                    <li>직접 <strong>Custom Agent</strong>를 만들어본다</li>
+                    <li>에이전트 <strong>라이프사이클</strong>을 실행하고 자연어 체이닝을 경험한다</li>
                 </ul>
                 <aside class="notes">
                     네 가지 학습 목표입니다.
                     첫째, 우리 프로젝트의 실제 예시를 통해 Skills와 Agents의 차이를 명확히 파악합니다.
-                    둘째, Custom Agent가 무엇이고 agent.md 파일이 어떤 구조인지 이해합니다.
+                    둘째, Subagent가 무엇이고 agent.md 파일이 어떤 구조인지 이해합니다.
                     셋째, Genie Space 라이프사이클을 담당하는 세 가지 에이전트를 분석합니다.
-                    넷째, 실습을 통해 직접 Custom Agent를 만들어봅니다.
+                    넷째, 에이전트 라이프사이클을 실행하고 자연어 체이닝을 경험합니다.
+                </aside>
+            </section>
+
+            <!-- Slide: 사전 준비 - Unity Catalog MCP -->
+            <section>
+                <h2>사전 준비: Unity Catalog MCP 서버</h2>
+                <p style="font-size: 0.85em; color: var(--ev-text-muted);">
+                    <code>@genie-space-designer</code>가 테이블 스키마를 분석하려면 메타데이터 조회 도구가 필요합니다
+                </p>
+                <table style="font-size: 0.75em; margin-top: 0.8em;">
+                    <thead>
+                        <tr><th>Tool</th><th>설명</th><th>예시</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>list_schemas</code></td>
+                            <td>카탈로그 내 스키마 목록 조회</td>
+                            <td><code>list_schemas("main")</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>list_tables</code></td>
+                            <td>스키마 내 테이블 목록 조회</td>
+                            <td><code>list_tables("main", "default")</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>describe_table</code></td>
+                            <td>테이블 상세 메타데이터 조회</td>
+                            <td><code>describe_table("main.default.t1")</code></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div style="margin-top: 0.8em;">
+                    <pre><code class="language-bash" data-trim style="font-size: 0.85em;">
+claude mcp add -s project unity-catalog -- \
+  uv run python 06-agents/exercise_unity_catalog_mcp.py
+                    </code></pre>
+                </div>
+                <aside class="notes">
+                    실습에 앞서 Unity Catalog MCP 서버를 먼저 설정합니다.
+                    이 서버는 테이블 메타데이터를 조회하는 3개 도구를 제공합니다.
+                    list_schemas로 스키마 목록, list_tables로 테이블 목록, describe_table로 컬럼 상세 정보를 조회할 수 있습니다.
+                    이 도구들이 있어야 genie-space-designer 에이전트가 테이블 스키마를 분석할 수 있습니다.
+                    exercise_unity_catalog_mcp.py는 완성 코드로 제공되므로 .mcp.json에 설정만 추가하면 됩니다.
                 </aside>
             </section>
 
@@ -198,9 +241,9 @@
                 </aside>
             </section>
 
-            <!-- Slide 4: Custom Agents란? -->
+            <!-- Slide 4: Subagents란? -->
             <section>
-                <h2>Custom Agents란?</h2>
+                <h2>Subagents란?</h2>
                 <ul>
                     <li><code>agent.md</code> 파일로 정의하는 <strong>역할 기반 AI 에이전트</strong></li>
                     <li>프로젝트 내 <code>.claude/agents/</code> 디렉토리에 위치</li>
@@ -213,12 +256,12 @@
                 <div style="margin-top: 0.8em;">
                     <pre><code class="language-text">
 # Claude Code에서 에이전트 호출
-> @genie-space-designer catalog.schema의 테이블을 분석해서 Space를 설계해줘
+> @genie-space-designer shared.fashion_recommendations의 테이블을 분석해서 Space를 설계해줘
 > @genie-instructor 이 테이블 구성에 맞는 instructions를 작성해줘
                     </code></pre>
                 </div>
                 <aside class="notes">
-                    Custom Agents의 핵심 개념을 설명합니다.
+                    Subagents의 핵심 개념을 설명합니다.
                     agent.md는 마크다운 파일로, Claude Code에게 특정 역할의 전문가처럼 행동하도록 지시합니다.
                     Skills가 작업 절차를 정의한다면, Agents는 역할과 관점을 정의합니다.
                     예를 들어 genie-space-designer 에이전트는 Space 설계 전문가로, genie-instructor 에이전트는 instructions 작성 전문가로 동작합니다.
@@ -256,61 +299,6 @@
                     Agents는 역할과 관점, 즉 Who를 정의합니다. "이 전문가처럼 행동해줘."
                     구조적으로도 차이가 있습니다. Skills는 디렉토리에 SKILL.md와 references를 가지지만, Agents는 .md 파일 하나로 완성됩니다.
                     선택 기준은 간단합니다. 동일한 작업을 반복적으로 수행해야 한다면 Skill, 특정 전문가의 관점이 필요하다면 Agent를 만듭니다.
-                </aside>
-            </section>
-
-            <!-- Slide 6: 우리 프로젝트의 Skills vs Agents 실제 예시 -->
-            <section>
-                <h2>우리 프로젝트의 실제 예시</h2>
-                <p style="font-size: 0.85em; margin-bottom: 0.6em;">이 프로젝트에서 실제 사용 중인 Skills와 Agents를 비교합니다</p>
-                <div style="display: flex; gap: 1.5em;">
-                    <!-- Skills 예시 -->
-                    <div style="flex: 1;">
-                        <h3 style="color: var(--ev-accent); font-size: 0.95em; margin-bottom: 0.5em;">Skills &mdash; 작업 절차</h3>
-                        <div class="principle-box" style="border-left-color: var(--ev-accent);">
-                            <h4 style="font-size: 0.85em;">/slide-deck</h4>
-                            <p style="font-size: 0.75em;">reveal.js 슬라이드를 <strong>정해진 절차</strong>로 생성<br>
-                            1. conventions 읽기 &rarr; 2. 템플릿 기반 생성 &rarr; 3. 저장</p>
-                        </div>
-                        <div class="principle-box" style="border-left-color: var(--ev-accent);">
-                            <h4 style="font-size: 0.85em;">/hands-on-code</h4>
-                            <p style="font-size: 0.75em;">실습 코드를 <strong>컨벤션에 맞게</strong> 생성<br>
-                            1. 코드 컨벤션 확인 &rarr; 2. 파일 생성 &rarr; 3. README 작성</p>
-                        </div>
-                        <div class="principle-box" style="border-left-color: var(--ev-accent);">
-                            <h4 style="font-size: 0.85em;">/genie-space</h4>
-                            <p style="font-size: 0.75em;">Genie Space를 <strong>MCP 도구 조합</strong>으로 생성<br>
-                            1. 스키마 분석 &rarr; 2. instructions 작성 &rarr; 3. Space 생성</p>
-                        </div>
-                    </div>
-                    <!-- Agents 예시 -->
-                    <div style="flex: 1;">
-                        <h3 style="color: #4ade80; font-size: 0.95em; margin-bottom: 0.5em;">Agents &mdash; 전문가 역할</h3>
-                        <div class="principle-box" style="border-left-color: #4ade80;">
-                            <h4 style="font-size: 0.85em; color: #4ade80;">@researcher</h4>
-                            <p style="font-size: 0.75em;"><strong>리서치 전문가</strong> 관점으로 정보 수집<br>
-                            읽기 전용 &mdash; 문서/API/코드 탐색만 수행</p>
-                        </div>
-                        <div class="principle-box" style="border-left-color: #4ade80;">
-                            <h4 style="font-size: 0.85em; color: #4ade80;">@validator</h4>
-                            <p style="font-size: 0.75em;"><strong>QA 전문가</strong> 관점으로 품질 검증<br>
-                            읽기 전용 &mdash; 파일 구조/코드/HTML 검증만 수행</p>
-                        </div>
-                        <div class="principle-box" style="border-left-color: #4ade80;">
-                            <h4 style="font-size: 0.85em; color: #4ade80;">@genie-space-designer</h4>
-                            <p style="font-size: 0.75em;"><strong>Space 아키텍트</strong> 관점으로 설계<br>
-                            스키마 분석만 &mdash; 생성은 하지 않음</p>
-                        </div>
-                    </div>
-                </div>
-                <aside class="notes">
-                    우리 프로젝트에서 실제 사용 중인 Skills와 Agents를 비교해봅시다.
-                    왼쪽 Skills를 보면, slide-deck은 슬라이드를 정해진 절차로 생성합니다. 누가 실행해도 같은 스타일의 결과가 나옵니다.
-                    hands-on-code는 실습 코드를 컨벤션에 맞게 생성합니다. genie-space는 MCP 도구를 조합하여 Space를 만듭니다.
-                    오른쪽 Agents를 보면, researcher는 리서치 전문가로 정보 수집만 합니다. 파일 수정은 절대 하지 않습니다.
-                    validator는 QA 전문가로 품질 검증만 합니다. 역시 읽기 전용입니다.
-                    genie-space-designer는 Space 아키텍트로 설계만 합니다. 실제 생성은 하지 않습니다.
-                    핵심 차이가 보이시나요? Skills는 절차를 따라 결과물을 만들고, Agents는 특정 관점에서 분석하거나 검증합니다.
                 </aside>
             </section>
 
@@ -368,7 +356,81 @@
                 </aside>
             </section>
 
-            <!-- Slide 8: agent.md 구조 -->
+            <!-- Slide: Agent 설계 원칙 -->
+            <section>
+                <h2>Agent 설계 원칙</h2>
+                <div class="principle-box">
+                    <h4>1. 명확한 역할 정의</h4>
+                    <p>"당신은 ~ 전문가입니다"로 시작. 역할이 모호하면 결과도 모호해집니다.</p>
+                </div>
+                <div class="principle-box">
+                    <h4>2. 적절한 제약 조건</h4>
+                    <p>하지 말아야 할 것을 명시. 범위가 넓을수록 제약 조건이 중요합니다.</p>
+                </div>
+                <div class="principle-box">
+                    <h4>3. 구조화된 출력 형식</h4>
+                    <p>결과물의 형태를 미리 정의하면 일관된 품질을 보장할 수 있습니다.</p>
+                </div>
+                <div class="principle-box">
+                    <h4>4. 단일 책임 원칙</h4>
+                    <p>하나의 Agent는 하나의 역할에 집중. 여러 역할이 필요하면 여러 Agent를 만듭니다.</p>
+                </div>
+                <aside class="notes">
+                    좋은 Agent를 설계하기 위한 네 가지 원칙입니다.
+                    첫째, 역할을 명확하게 정의합니다. 모호한 역할은 모호한 결과를 낳습니다.
+                    둘째, 적절한 제약 조건을 둡니다. 특히 범위가 넓은 에이전트일수록 제약이 중요합니다.
+                    셋째, 출력 형식을 미리 정의합니다. 매번 다른 형식으로 결과가 나오면 활용하기 어렵습니다.
+                    넷째, 단일 책임 원칙을 따릅니다. 리서치와 검증을 하나의 Agent에 넣지 마세요.
+                </aside>
+            </section>
+
+            <!-- Slide: Agent 디렉토리 구조 -->
+            <section>
+                <h2>Agent 디렉토리 구조</h2>
+                <div class="columns">
+                    <div>
+                        <div class="tree-diagram">
+                            <span class="dir">.claude/</span><br>
+                            <span class="file">&boxvr;&boxh;&boxh; <span class="dir">agents/</span></span> <span class="desc">&larr; Agent 정의</span><br>
+                            <span class="file">&boxvr;&ensp;&ensp; &boxvr;&boxh;&boxh; genie-space-designer.md</span> <span class="desc">&larr; Space 설계</span><br>
+                            <span class="file">&boxvr;&ensp;&ensp; &boxvr;&boxh;&boxh; genie-instructor.md</span> <span class="desc">&larr; Instructions 작성</span><br>
+                            <span class="file">&boxvr;&ensp;&ensp; &boxur;&boxh;&boxh; genie-tester.md</span> <span class="desc">&larr; 품질 테스트</span><br>
+                            <span class="file">&boxvr;&boxh;&boxh; <span class="dir">skills/</span></span> <span class="desc">&larr; Skill 정의</span><br>
+                            <span class="file">&boxvr;&ensp;&ensp; &boxvr;&boxh;&boxh; <span class="dir">slide-deck/</span></span><br>
+                            <span class="file">&boxvr;&ensp;&ensp; &boxvr;&boxh;&boxh; <span class="dir">hands-on-code/</span></span><br>
+                            <span class="file">&boxvr;&ensp;&ensp; &boxur;&boxh;&boxh; <span class="dir">section-builder/</span></span><br>
+                            <span class="file">&boxur;&boxh;&boxh; CLAUDE.md</span> <span class="desc">&larr; 프로젝트 컨텍스트</span>
+                        </div>
+                    </div>
+                    <div>
+                        <div style="margin-bottom: 0.8em;">
+                            <h3>핵심 포인트</h3>
+                            <ul style="font-size: 0.8em;">
+                                <li><code>.claude/agents/</code> 디렉토리에 배치</li>
+                                <li>각 Agent는 <strong>하나의 .md 파일</strong></li>
+                                <li>파일명 = 에이전트 호출명</li>
+                                <li>Skills보다 구조가 단순</li>
+                            </ul>
+                        </div>
+                        <div class="emphasis-box">
+                            <p style="font-size: 0.85em; margin: 0;">
+                                <strong>Skills</strong>: 디렉토리 + SKILL.md + references/<br>
+                                <strong>Agents</strong>: <code>agent-name.md</code> 파일 하나로 완성
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <aside class="notes">
+                    실제 프로젝트에서 Agent가 어떻게 배치되는지 보겠습니다.
+                    .claude 디렉토리 아래에 agents 폴더가 있고, 각 에이전트는 하나의 마크다운 파일입니다.
+                    Skills와 비교하면 구조가 훨씬 단순합니다.
+                    Skills는 디렉토리 안에 SKILL.md와 references를 가지지만,
+                    Agents는 .md 파일 하나로 완성됩니다.
+                    파일명이 곧 호출명이 됩니다. genie-space-designer.md → @genie-space-designer로 호출합니다.
+                </aside>
+            </section>
+
+            <!-- Slide: agent.md 구조 -->
             <section>
                 <h2>agent.md 파일 구조</h2>
                 <div class="columns">
@@ -483,6 +545,39 @@ sql_snippets를 작성합니다.
                 </aside>
             </section>
 
+            <!-- Slide: 실제 예시: genie-tester.md -->
+            <section>
+                <h2>실제 예시: genie-tester 에이전트</h2>
+                <p style="color: var(--ev-text-muted); font-size: 0.85em;">Genie Space 품질 테스트 전문 에이전트</p>
+                <pre><code class="language-markdown">
+# genie-tester
+Genie Space 품질 테스트 전문 에이전트
+
+## 역할
+당신은 Genie Space QA 전문가입니다.
+ask_genie 도구로 질의하고 응답 품질을 평가합니다.
+
+## 제약 조건
+- ask_genie 도구로 테스트 질의만 수행
+- Space 설정이나 instructions 수정 금지
+- sample questions 기반으로 최소 5개 질의
+- 한국어로 평가 리포트 작성
+
+## 출력 형식
+- **테스트 질의 목록**: 질문과 응답 쌍
+- **정확성 평가**: 각 응답의 정확도 (O/X)
+- **완전성 평가**: 누락된 정보 여부
+- **개선 제안**: instructions 보완 포인트
+                </code></pre>
+                <aside class="notes">
+                    마지막 genie-tester 에이전트입니다.
+                    역할에서 Genie Space QA 전문가로 정의하여, ask_genie 도구로 질의하고 응답 품질을 평가합니다.
+                    제약 조건에서 테스트 질의만 수행하고, Space 설정이나 instructions 수정은 하지 않도록 제한했습니다.
+                    출력 형식에서 테스트 질의 목록, 정확성 평가, 완전성 평가, 개선 제안을 구조화했습니다.
+                    이 에이전트가 개선 제안을 내놓으면, 다시 instructor에게 전달하여 instructions를 보완하는 반복 루프가 가능합니다.
+                </aside>
+            </section>
+
             <!-- Slide 8: Genie Space 라이프사이클 -->
             <section>
                 <h2>Genie Space 라이프사이클</h2>
@@ -509,18 +604,10 @@ sql_snippets를 작성합니다.
                 <div style="margin-top: 0.8em;">
                     <pre><code class="language-text" style="font-size: 0.85em;">
 # 라이프사이클 순서대로 호출
-> @genie-space-designer catalog.schema의 테이블을 분석해서 Space를 설계해줘
+> @genie-space-designer shared.fashion_recommendations의 테이블을 분석해서 Space를 설계해줘
 > @genie-instructor designer 결과를 기반으로 instructions를 작성해줘
 > @genie-tester Space에 sample questions를 질의하고 응답 품질을 평가해줘
                     </code></pre>
-                </div>
-                <div class="emphasis-box" style="margin-top: 0.6em;">
-                    <p style="font-size: 0.8em; margin: 0;">
-                        <strong>스토리라인:</strong>
-                        Section 04 <span style="color: var(--ev-accent);">MCP Tools</span> &rarr;
-                        Section 05 <span style="color: var(--ev-accent);">Skill</span> &rarr;
-                        Section 06 <span style="color: #4ade80;">Agents</span>
-                    </p>
                 </div>
                 <aside class="notes">
                     세 에이전트가 Genie Space 라이프사이클의 각 단계를 담당합니다.
@@ -532,350 +619,124 @@ sql_snippets를 작성합니다.
                 </aside>
             </section>
 
-            <!-- Slide 12: Agent 설계 원칙 -->
+            <!-- Slide: 명시적 호출의 한계 -->
             <section>
-                <h2>Agent 설계 원칙</h2>
-                <div class="principle-box">
-                    <h4>1. 명확한 역할 정의</h4>
-                    <p>"당신은 ~ 전문가입니다"로 시작. 역할이 모호하면 결과도 모호해집니다.</p>
+                <h2>명시적 호출의 한계</h2>
+                <p style="font-size: 0.85em; margin-bottom: 0.6em;"><code>@agent</code>는 <strong style="color: var(--ev-accent);">한 번에 하나만</strong> 호출할 수 있습니다</p>
+                <div style="border: 2px solid #555; border-radius: 12px; padding: 1em; background: rgba(255,255,255,0.02);">
+                    <pre style="font-size: 0.75em; margin: 0;"><code class="language-text">> @genie-space-designer 테이블 분석해줘     ← 1번째 입력, 결과 확인
+> @genie-instructor instructions 작성해줘   ← 2번째 입력, 결과 확인
+> @genie-tester 품질 테스트해줘              ← 3번째 입력, 결과 확인</code></pre>
                 </div>
-                <div class="principle-box">
-                    <h4>2. 적절한 제약 조건</h4>
-                    <p>하지 말아야 할 것을 명시. 범위가 넓을수록 제약 조건이 중요합니다.</p>
-                </div>
-                <div class="principle-box">
-                    <h4>3. 구조화된 출력 형식</h4>
-                    <p>결과물의 형태를 미리 정의하면 일관된 품질을 보장할 수 있습니다.</p>
-                </div>
-                <div class="principle-box">
-                    <h4>4. 단일 책임 원칙</h4>
-                    <p>하나의 Agent는 하나의 역할에 집중. 여러 역할이 필요하면 여러 Agent를 만듭니다.</p>
-                </div>
-                <aside class="notes">
-                    좋은 Agent를 설계하기 위한 네 가지 원칙입니다.
-                    첫째, 역할을 명확하게 정의합니다. 모호한 역할은 모호한 결과를 낳습니다.
-                    둘째, 적절한 제약 조건을 둡니다. 특히 범위가 넓은 에이전트일수록 제약이 중요합니다.
-                    셋째, 출력 형식을 미리 정의합니다. 매번 다른 형식으로 결과가 나오면 활용하기 어렵습니다.
-                    넷째, 단일 책임 원칙을 따릅니다. 리서치와 검증을 하나의 Agent에 넣지 마세요.
-                </aside>
-            </section>
-
-            <!-- Slide 11: Agent 디렉토리 구조 -->
-            <section>
-                <h2>Agent 디렉토리 구조</h2>
-                <div class="columns">
-                    <div>
-                        <div class="tree-diagram">
-                            <span class="dir">.claude/</span><br>
-                            <span class="file">&boxvr;&boxh;&boxh; <span class="dir">agents/</span></span> <span class="desc">&larr; Agent 정의</span><br>
-                            <span class="file">&boxvr;&ensp;&ensp; &boxvr;&boxh;&boxh; genie-space-designer.md</span> <span class="desc">&larr; Space 설계</span><br>
-                            <span class="file">&boxvr;&ensp;&ensp; &boxvr;&boxh;&boxh; genie-instructor.md</span> <span class="desc">&larr; Instructions 작성</span><br>
-                            <span class="file">&boxvr;&ensp;&ensp; &boxur;&boxh;&boxh; genie-tester.md</span> <span class="desc">&larr; 품질 테스트</span><br>
-                            <span class="file">&boxvr;&boxh;&boxh; <span class="dir">skills/</span></span> <span class="desc">&larr; Skill 정의</span><br>
-                            <span class="file">&boxvr;&ensp;&ensp; &boxvr;&boxh;&boxh; <span class="dir">slide-deck/</span></span><br>
-                            <span class="file">&boxvr;&ensp;&ensp; &boxvr;&boxh;&boxh; <span class="dir">hands-on-code/</span></span><br>
-                            <span class="file">&boxvr;&ensp;&ensp; &boxur;&boxh;&boxh; <span class="dir">section-builder/</span></span><br>
-                            <span class="file">&boxur;&boxh;&boxh; CLAUDE.md</span> <span class="desc">&larr; 프로젝트 컨텍스트</span>
-                        </div>
-                    </div>
-                    <div>
-                        <div style="margin-bottom: 0.8em;">
-                            <h3>핵심 포인트</h3>
-                            <ul style="font-size: 0.8em;">
-                                <li><code>.claude/agents/</code> 디렉토리에 배치</li>
-                                <li>각 Agent는 <strong>하나의 .md 파일</strong></li>
-                                <li>파일명 = 에이전트 호출명</li>
-                                <li>Skills보다 구조가 단순</li>
-                            </ul>
-                        </div>
-                        <div class="emphasis-box">
-                            <p style="font-size: 0.85em; margin: 0;">
-                                <strong>Skills</strong>: 디렉토리 + SKILL.md + references/<br>
-                                <strong>Agents</strong>: <code>agent-name.md</code> 파일 하나로 완성
-                            </p>
-                        </div>
-                    </div>
-                </div>
-                <aside class="notes">
-                    실제 프로젝트에서 Agent가 어떻게 배치되는지 보겠습니다.
-                    .claude 디렉토리 아래에 agents 폴더가 있고, 각 에이전트는 하나의 마크다운 파일입니다.
-                    Skills와 비교하면 구조가 훨씬 단순합니다.
-                    Skills는 디렉토리 안에 SKILL.md와 references를 가지지만,
-                    Agents는 .md 파일 하나로 완성됩니다.
-                    파일명이 곧 호출명이 됩니다. genie-space-designer.md → @genie-space-designer로 호출합니다.
-                </aside>
-            </section>
-
-            <!-- Slide 12: 사전 준비 - Unity Catalog MCP -->
-            <section>
-                <h2>사전 준비: Unity Catalog MCP 서버</h2>
-                <p style="font-size: 0.85em; color: var(--ev-text-muted);">
-                    <code>@genie-space-designer</code>가 테이블 스키마를 분석하려면 메타데이터 조회 도구가 필요합니다
-                </p>
-                <table style="font-size: 0.75em; margin-top: 0.8em;">
-                    <thead>
-                        <tr><th>Tool</th><th>설명</th><th>예시</th></tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><code>list_schemas</code></td>
-                            <td>카탈로그 내 스키마 목록 조회</td>
-                            <td><code>list_schemas("main")</code></td>
-                        </tr>
-                        <tr>
-                            <td><code>list_tables</code></td>
-                            <td>스키마 내 테이블 목록 조회</td>
-                            <td><code>list_tables("main", "default")</code></td>
-                        </tr>
-                        <tr>
-                            <td><code>describe_table</code></td>
-                            <td>테이블 상세 메타데이터 조회</td>
-                            <td><code>describe_table("main.default.t1")</code></td>
-                        </tr>
-                    </tbody>
-                </table>
-                <div style="margin-top: 0.8em;">
-                    <pre><code class="language-bash" data-trim style="font-size: 0.85em;">
-claude mcp add -s project unity-catalog -- \
-  uv run python 06-agents/exercise_unity_catalog_mcp.py
-                    </code></pre>
-                </div>
-                <aside class="notes">
-                    실습에 앞서 Unity Catalog MCP 서버를 설정합니다.
-                    이 서버는 테이블 메타데이터를 조회하는 3개 도구를 제공합니다.
-                    list_schemas로 스키마 목록, list_tables로 테이블 목록, describe_table로 컬럼 상세 정보를 조회할 수 있습니다.
-                    이 도구들이 있어야 genie-space-designer 에이전트가 테이블 스키마를 분석할 수 있습니다.
-                    exercise_unity_catalog_mcp.py는 완성 코드로 제공되므로 .mcp.json에 설정만 추가하면 됩니다.
-                </aside>
-            </section>
-
-            <!-- Slide 13: 실습 - 에이전트 만들기 -->
-            <section>
-                <h2>실습: 3개 에이전트 만들기</h2>
-                <p style="font-size: 0.85em; color: var(--ev-text-muted);">템플릿 TODO를 채워 에이전트 완성 (15분)</p>
-                <div class="exercise-box">
-                    <ol style="font-size: 0.8em;">
-                        <li>
-                            <strong style="color: #4ade80;">genie-space-designer</strong> &mdash; Space 설계 전문
-                            <pre style="margin-top: 0.3em;"><code class="language-text" data-trim style="font-size: 0.95em;">
-@06-agents/exercise_genie_agents/genie-space-designer.md 템플릿의 TODO를 채워서
-genie-space-designer 에이전트를 완성해줘.
-테이블 스키마를 분석하고 Space 구성을 설계하는 역할이야.
-완성되면 .claude/agents/genie-space-designer.md에 배치해줘.
-                            </code></pre>
-                        </li>
-                        <li>
-                            <strong style="color: #4ade80;">genie-instructor</strong> &mdash; Instructions 작성 전문
-                            <pre style="margin-top: 0.3em;"><code class="language-text" data-trim style="font-size: 0.95em;">
-@06-agents/exercise_genie_agents/genie-instructor.md 템플릿의 TODO를 채워줘.
-@06-agents/exercise_genie_agents/references/serialized-space-instructions.md를 참고해서
-instructions 블록을 작성하는 에이전트를 만들어줘.
-완성되면 .claude/agents/genie-instructor.md에 배치해줘.
-                            </code></pre>
-                        </li>
-                        <li>
-                            <strong style="color: #4ade80;">genie-tester</strong> &mdash; 품질 테스트 전문
-                            <pre style="margin-top: 0.3em;"><code class="language-text" data-trim style="font-size: 0.95em;">
-@06-agents/exercise_genie_agents/genie-tester.md 템플릿의 TODO를 채워서
-genie-tester 에이전트를 완성해줘.
-@ask_genie로 질의하고 응답 품질을 평가하는 역할이야.
-완성되면 .claude/agents/genie-tester.md에 배치해줘.
-                            </code></pre>
-                        </li>
-                    </ol>
-                </div>
-                <aside class="notes">
-                    먼저 3개 에이전트를 모두 만듭니다.
-                    exercise_genie_agents 디렉토리의 템플릿 파일을 확인하고, Claude Code에게 TODO를 채워달라고 요청합니다.
-                    genie-space-designer는 테이블 스키마를 분석하고 Space 구성을 설계합니다.
-                    genie-instructor는 references의 serialized-space-instructions 가이드를 참고하여 instructions 블록을 작성합니다.
-                    genie-tester는 ask_genie 도구로 질의하고 응답 품질을 평가합니다.
-                    각 에이전트가 완성되면 .claude/agents/ 디렉토리에 배치합니다.
-                </aside>
-            </section>
-
-            <!-- Slide 14: 실습 Step 1 - designer 실행 -->
-            <section>
-                <h2>실습 Step 1: <code>@genie-space-designer</code> 실행</h2>
-                <p style="font-size: 0.85em; color: var(--ev-text-muted);">테이블 스키마 분석 &amp; Space 설계 (5분)</p>
-                <div class="exercise-box">
-                    <ol style="font-size: 0.85em;">
-                        <li>
-                            <code>@genie-space-designer</code>로 실행
-                            <pre style="margin-top: 0.4em;"><code class="language-text" data-trim style="font-size: 1em;">
-@genie-space-designer shared.fashion_recommendations 테이블을 분석해서 Space를 설계해줘
-                            </code></pre>
-                        </li>
-                        <li>
-                            결과 확인: 추천 테이블 구성, Sample Questions, Space 방향성
-                        </li>
-                    </ol>
+                <div style="margin-top: 1em;">
+                    <ul style="font-size: 0.85em;">
+                        <li><code>@agent</code>는 <strong>서브프로세스</strong>로 실행 &mdash; 한 번에 하나만 가능</li>
+                        <li>3단계 워크플로우 = <strong>3번 수동 입력</strong> 필요</li>
+                        <li>단계마다 사람이 결과를 확인하고 다음을 호출해야 함</li>
+                    </ul>
                 </div>
                 <div class="emphasis-box" style="margin-top: 0.8em;">
                     <p style="font-size: 0.85em; margin: 0;">
-                        <strong>다음 단계:</strong> designer의 분석 결과가 instructor의 <strong>입력</strong>이 됩니다
+                        세밀한 통제에는 좋지만, <strong>전체 흐름을 한 번에 돌리고 싶다면?</strong>
                     </p>
-                    <div class="flow-chain" style="margin-top: 0.5em; margin-bottom: 0;">
-                        <div class="chain-step" style="border-color: #4ade80; background: rgba(74, 222, 128, 0.15);">
-                            <span class="step-name">designer</span>
-                            <span class="step-label">설계 결과 출력</span>
-                        </div>
-                        <span class="chain-arrow">&rarr;</span>
-                        <div class="chain-step" style="opacity: 0.5;">
-                            <span class="step-name">instructor</span>
-                            <span class="step-label">다음 Step</span>
-                        </div>
-                        <span class="chain-arrow" style="opacity: 0.5;">&rarr;</span>
-                        <div class="chain-step" style="opacity: 0.5;">
-                            <span class="step-name">tester</span>
-                            <span class="step-label">다음 Step</span>
-                        </div>
-                    </div>
                 </div>
                 <aside class="notes">
-                    이제 만든 에이전트를 순서대로 실행합니다.
-                    먼저 genie-space-designer를 호출하여 테이블 스키마를 분석하고 Space 구성을 설계합니다.
-                    Unity Catalog MCP의 list_tables, describe_table 도구를 활용하여 메타데이터를 분석합니다.
-                    결과로 추천 테이블 구성, Sample Questions, Space 방향성이 출력됩니다.
-                    이 결과가 다음 단계인 genie-instructor의 입력이 되므로, 결과를 잘 확인해두세요.
+                    명시적 @호출은 세밀한 통제에 좋지만 한계가 있습니다.
+                    @agent는 서브프로세스로 실행되기 때문에 한 번에 하나만 호출할 수 있습니다.
+                    3단계 워크플로우를 실행하려면 3번 수동으로 입력해야 합니다.
+                    각 단계마다 사람이 결과를 확인하고 다음 에이전트를 호출해야 하죠.
+                    그렇다면 전체 흐름을 한 번에 돌리는 방법은 없을까요?
                 </aside>
             </section>
 
-            <!-- Slide 15: 실습 Step 2 - instructor 실행 -->
+            <!-- Slide: 자연어로 Agent 자동 위임 -->
             <section>
-                <h2>실습 Step 2: <code>@genie-instructor</code> 실행</h2>
-                <p style="font-size: 0.85em; color: var(--ev-text-muted);">designer 결과 기반 Instructions 작성 (10분)</p>
-                <div class="exercise-box">
-                    <ol style="font-size: 0.85em;">
-                        <li>
-                            <code>@genie-instructor</code>로 실행 &mdash; <strong>designer 결과를 전달</strong>
-                            <pre style="margin-top: 0.4em;"><code class="language-text" data-trim style="font-size: 1em;">
-@genie-instructor designer 결과를 기반으로 instructions를 작성해줘
-                            </code></pre>
-                        </li>
-                        <li>
-                            결과 확인: text_instructions, example_question_sqls, sql_snippets
-                        </li>
-                    </ol>
-                </div>
-                <div class="emphasis-box" style="margin-top: 0.8em;">
-                    <p style="font-size: 0.85em; margin: 0;">
-                        <strong>핵심:</strong> designer의 설계 결과가 <strong>컨텍스트에 남아있으므로</strong> instructor가 자연스럽게 활용합니다
-                    </p>
-                    <div class="flow-chain" style="margin-top: 0.5em; margin-bottom: 0;">
-                        <div class="chain-step" style="opacity: 0.5;">
-                            <span class="step-name">designer</span>
-                            <span class="step-label">완료</span>
-                        </div>
-                        <span class="chain-arrow">&rarr;</span>
-                        <div class="chain-step" style="border-color: #4ade80; background: rgba(74, 222, 128, 0.15);">
-                            <span class="step-name">instructor</span>
-                            <span class="step-label">instructions 출력</span>
-                        </div>
-                        <span class="chain-arrow" style="opacity: 0.5;">&rarr;</span>
-                        <div class="chain-step" style="opacity: 0.5;">
-                            <span class="step-name">tester</span>
-                            <span class="step-label">다음 Step</span>
-                        </div>
-                    </div>
-                </div>
-                <aside class="notes">
-                    Step 2에서는 genie-instructor를 실행합니다.
-                    핵심은 designer의 분석 결과가 같은 대화 컨텍스트에 남아있으므로, instructor가 자연스럽게 활용한다는 점입니다.
-                    instructor는 serialized-space-instructions 레퍼런스를 참고하여 text_instructions, example_question_sqls, sql_snippets를 작성합니다.
-                    이렇게 에이전트 간 결과가 순차적으로 전달되는 것이 라이프사이클의 핵심 패턴입니다.
-                </aside>
-            </section>
-
-            <!-- Slide 16: 실습 Step 3 - tester 실행 -->
-            <section>
-                <h2>실습 Step 3: <code>@genie-tester</code> 실행</h2>
-                <p style="font-size: 0.85em; color: var(--ev-text-muted);">Space 품질 테스트 &amp; 검증 (5분)</p>
-                <div class="exercise-box">
-                    <ol style="font-size: 0.85em;">
-                        <li>
-                            <code>@genie-tester</code>로 실행
-                            <pre style="margin-top: 0.4em;"><code class="language-text" data-trim style="font-size: 1em;">
-@genie-tester Space에 sample questions를 질의하고 응답 품질을 평가해줘
-                            </code></pre>
-                        </li>
-                        <li>
-                            결과 확인: 응답 정확성, 완전성 평가 리포트
-                        </li>
-                    </ol>
-                </div>
-                <div class="emphasis-box" style="margin-top: 0.8em;">
-                    <p style="font-size: 0.85em; margin: 0;">
-                        <strong>라이프사이클 완성:</strong> designer &rarr; instructor &rarr; tester 순서로 실행하여 전 과정을 커버
-                    </p>
-                    <div class="flow-chain" style="margin-top: 0.5em; margin-bottom: 0;">
-                        <div class="chain-step" style="opacity: 0.5;">
-                            <span class="step-name">designer</span>
-                            <span class="step-label">완료</span>
-                        </div>
-                        <span class="chain-arrow">&rarr;</span>
-                        <div class="chain-step" style="opacity: 0.5;">
-                            <span class="step-name">instructor</span>
-                            <span class="step-label">완료</span>
-                        </div>
-                        <span class="chain-arrow">&rarr;</span>
-                        <div class="chain-step" style="border-color: #4ade80; background: rgba(74, 222, 128, 0.15);">
-                            <span class="step-name">tester</span>
-                            <span class="step-label">품질 리포트 출력</span>
-                        </div>
-                    </div>
-                </div>
-                <aside class="notes">
-                    마지막 Step 3에서는 genie-tester를 실행합니다.
-                    designer가 설계하고 instructor가 instructions를 작성한 Space의 품질을 검증하는 마지막 단계입니다.
-                    ask_genie 도구로 sample questions를 질의하고, 응답의 정확성과 완전성을 평가합니다.
-                    이렇게 3개 에이전트를 순서대로 실행하면 Genie Space 라이프사이클 전 과정을 커버합니다.
-                </aside>
-            </section>
-
-            <!-- Slide 17: 실습 - 워크플로우 자동화 -->
-            <section>
-                <h2>실습: 워크플로우 자동화</h2>
-                <p style="font-size: 0.85em; margin-bottom: 0.5em;"><code>@</code> 없이 자연어로 지시하면 Claude Code가 <strong style="color: #4ade80;">전체 라이프사이클</strong>을 수행합니다</p>
-                <div class="exercise-box">
-                    <pre><code class="language-text" data-trim style="font-size: 1em;">
-shared.fashion_recommendations 테이블을 분석해서 Genie Space를 설계하고,
-그 결과를 기반으로 instructions를 작성한 뒤,
-sample questions로 응답 품질까지 테스트해줘.
-
-.claude/agents/ 에 있는 에이전트 정의를 참고해서 진행해줘.
-                    </code></pre>
+                <h2>자연어로 자동 위임</h2>
+                <p style="font-size: 0.85em; margin-bottom: 0.6em;"><code>@</code> 없이 <strong style="color: #4ade80;">자연어만으로</strong> 전체 워크플로우를 지시할 수 있습니다</p>
+                <div style="border: 2px solid #4ade80; border-radius: 12px; padding: 1em; background: rgba(74, 222, 128, 0.05);">
+                    <pre style="font-size: 0.75em; margin: 0;"><code class="language-text">> shared.fashion_recommendations 테이블을 분석해서 Space 설계하고,
+  instructions 작성하고, 테스트까지 해줘.
+  .claude/agents/ 에 있는 에이전트 정의를 참고해서 진행해줘.</code></pre>
                 </div>
                 <div style="margin-top: 0.8em;">
                     <div class="flow-chain">
                         <div class="chain-step">
                             <span class="step-name">designer</span>
-                            <span class="step-label">설계 결과</span>
+                            <span class="step-label">자동 매칭</span>
                         </div>
                         <span class="chain-arrow">&rarr;</span>
                         <div class="chain-step">
                             <span class="step-name">instructor</span>
-                            <span class="step-label">instructions</span>
+                            <span class="step-label">자동 매칭</span>
                         </div>
                         <span class="chain-arrow">&rarr;</span>
                         <div class="chain-step">
                             <span class="step-name">tester</span>
-                            <span class="step-label">품질 리포트</span>
+                            <span class="step-label">자동 매칭</span>
                         </div>
                     </div>
                 </div>
-                <div class="emphasis-box" style="margin-top: 0.6em;">
-                    <p style="font-size: 0.85em; margin: 0;">
-                        <strong>참고:</strong> <code>@agent</code>는 한 번에 하나만 호출 가능 &mdash;
-                        워크플로우 자동화는 자연어로 전체 흐름을 지시하는 것이 효과적
+                <div class="emphasis-box" style="margin-top: 0.8em;">
+                    <p style="font-size: 0.75em; margin: 0;">
+                        <strong>공식 문서:</strong> "Claude automatically delegates tasks based on the task description in your request, the description field in subagent configurations, and current context."
+                        <br><span style="color: var(--ev-text-muted);">&mdash; <a href="https://code.claude.com/docs/en/sub-agents" target="_blank" style="color: var(--ev-accent-light);">Claude Code Docs: Sub-agents</a></span>
                     </p>
                 </div>
                 <aside class="notes">
-                    @agent는 한 번에 하나의 에이전트만 서브프로세스로 호출하는 방식입니다.
-                    따라서 여러 에이전트를 체이닝하려면, @ 없이 자연어로 전체 워크플로우를 지시합니다.
-                    Claude Code는 .claude/agents/에 정의된 에이전트 역할을 참고하여 각 단계를 순차적으로 수행합니다.
-                    이전 단계의 결과가 컨텍스트에 남아있으므로 자연스럽게 다음 단계에 전달됩니다.
-                    이 방식이 실무에서 에이전트를 조합하는 가장 실용적인 패턴입니다.
+                    해결책은 자연어 위임입니다.
+                    @agent-name 없이 자연어로 전체 작업을 설명하면, Claude가 알아서 적절한 Agent를 순차적으로 호출합니다.
+                    "테이블 분석해서 Space 설계하고, instructions 작성하고, 테스트까지 해줘"라고 하면,
+                    Claude가 designer → instructor → tester 순서로 자동 체이닝합니다.
+                    이 자동 위임은 agent.md의 description 필드를 기반으로 요청을 매칭합니다.
+                    따라서 description을 명확하게 작성하는 것이 자동 위임의 품질을 결정합니다.
+                </aside>
+            </section>
+
+            <!-- Slide: Agent 동작 원리 -->
+            <section>
+                <h2>자동 위임의 동작 원리</h2>
+                <p style="font-size: 0.85em; margin-bottom: 0.6em;">자연어 위임이 가능한 이유: <strong style="color: #4ade80;">순차 실행</strong>과 <strong style="color: #4ade80;">컨텍스트 전달</strong></p>
+                <div style="display: flex; gap: 1em;">
+                    <div class="principle-box" style="flex: 1; margin: 0;">
+                        <h4 style="font-size: 0.85em;">순차 실행</h4>
+                        <p style="font-size: 0.7em;">Agent는 한 번에 하나만 실행됩니다. 여러 Agent가 필요하면 <strong>자동으로 순차 호출</strong>합니다.</p>
+                    </div>
+                    <div class="principle-box" style="flex: 1; margin: 0;">
+                        <h4 style="font-size: 0.85em;">컨텍스트 전달</h4>
+                        <p style="font-size: 0.7em;">같은 대화 안에서 이전 Agent의 결과가 <strong>컨텍스트에 유지</strong>되어 다음 Agent가 활용합니다.</p>
+                    </div>
+                </div>
+                <div class="flow-chain" style="margin-top: 0.8em;">
+                    <div class="chain-step">
+                        <span class="step-name">designer</span>
+                        <span class="step-label">결과 출력</span>
+                    </div>
+                    <span class="chain-arrow">&rarr;</span>
+                    <div style="color: #4ade80; font-size: 0.7em; text-align: center;">컨텍스트<br>전달</div>
+                    <span class="chain-arrow">&rarr;</span>
+                    <div class="chain-step">
+                        <span class="step-name">instructor</span>
+                        <span class="step-label">결과 참조</span>
+                    </div>
+                    <span class="chain-arrow">&rarr;</span>
+                    <div style="color: #4ade80; font-size: 0.7em; text-align: center;">컨텍스트<br>전달</div>
+                    <span class="chain-arrow">&rarr;</span>
+                    <div class="chain-step">
+                        <span class="step-name">tester</span>
+                        <span class="step-label">결과 참조</span>
+                    </div>
+                </div>
+                <div class="emphasis-box" style="margin-top: 0.8em;">
+                    <p style="font-size: 0.8em; margin: 0;">
+                        <strong>새 대화를 시작하면 컨텍스트가 초기화됩니다.</strong> Agent 체이닝은 반드시 같은 대화에서 진행하세요.
+                    </p>
+                </div>
+                <aside class="notes">
+                    자연어 위임이 가능한 이유를 두 가지로 설명합니다.
+                    첫째, Agent는 내부적으로 한 번에 하나만 실행됩니다. 병렬 실행이 아니라 순차 실행입니다.
+                    둘째, 같은 대화 안에서 이전 Agent의 결과가 컨텍스트에 남아 다음 Agent에게 자연스럽게 전달됩니다.
+                    이 두 가지 특성 덕분에 자연어 한 문장으로도 designer → instructor → tester 체이닝이 가능합니다.
+                    단, 새 대화를 시작하면 컨텍스트가 초기화되므로, 체이닝 작업은 반드시 같은 대화에서 진행해야 합니다.
                 </aside>
             </section>
 
@@ -883,7 +744,7 @@ sample questions로 응답 품질까지 테스트해줘.
             <section>
                 <h2>정리 &amp; Q&amp;A</h2>
                 <ul>
-                    <li><strong>Custom Agents</strong>: <code>agent.md</code>로 정의하는 역할 기반 AI 에이전트</li>
+                    <li><strong>Agents</strong>: <code>agent.md</code>로 정의하는 역할 기반 AI 에이전트</li>
                     <li><strong>핵심 구조</strong>: 역할 + 제약 조건 + 출력 형식</li>
                     <li><strong>Skills vs Agents</strong>: 절차 중심 vs 역할 중심 &mdash; 빠른 반복은 Skill, 세밀한 통제는 Agent, 실무에서는 조합</li>
                     <li><strong>설계 원칙</strong>: 명확한 역할, 적절한 제약, 구조화된 출력, 단일 책임</li>
@@ -897,7 +758,7 @@ sample questions로 응답 품질까지 테스트해줘.
                 </div>
                 <aside class="notes">
                     정리하겠습니다.
-                    Custom Agents는 agent.md로 역할 기반 AI 에이전트를 정의합니다.
+                    Subagents는 agent.md로 역할 기반 AI 에이전트를 정의합니다.
                     핵심 구조는 역할, 제약 조건, 출력 형식 세 가지입니다.
                     Skills는 절차 중심, Agents는 역할 중심이며 실무에서는 조합하여 사용합니다.
                     설계 원칙은 명확한 역할, 적절한 제약, 구조화된 출력, 단일 책임입니다.

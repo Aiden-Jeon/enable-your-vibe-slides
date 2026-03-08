@@ -25,16 +25,16 @@ enable-your-vibe/
 
 | Part | # | 디렉토리명 | 제목 | 유형 |
 |------|---|-----------|------|------|
-| **Part 1: AI Literacy for SA** | 00 | home | Welcome: 세션 소개 | 강의 |
+| **Part 1: AI Literacy** | 00 | home | Welcome: 세션 소개 | 강의 |
 | | 01 | ai-foundation | AI Foundation: AI Fluency & Vibe Coding 기초 | 강의+데모 |
 | | 02 | claude-code-features | Claude Code Features: Claude Code 사용법 | 강의+실습 |
 | | 03 | mcp-architecture | MCP: Managed vs Custom MCP | 강의+실습 |
-| **Part 2: Vibe for Customer** | 04 | genie-mcp | Genie MCP: Genie MCP 서버 만들기 | 실습 |
+| **Part 2: Vibe with Databricks** | 04 | genie-mcp | MCP: Genie MCP 서버 만들기 | 실습 |
 | | 05 | skills | Skills: 개념에서 실전까지 | 강의+실습 |
-| | 06 | agents | Custom Agents: 나만의 에이전트 만들기 | 강의+실습 |
+| | 06 | agents | Agents: 나만의 에이전트 만들기 | 강의+실습 |
 | | 07 | hooks | Hooks: 이벤트 기반 자동화 | 강의+실습 |
 | | 08 | ai-dev-kit | AI Dev Kit: Databricks AI Dev Kit | 강의+데모 |
-| **Part 3: SA Tips** | 09 | google-slides | Google Slides: Vibe Coding으로 슬라이드 자동화 | 강의+데모 |
+| **Part 3: Vibe for SA** | 09 | google-slides | Google Slides: Vibe Coding으로 슬라이드 자동화 | 강의+데모 |
 
 ## 컨벤션
 

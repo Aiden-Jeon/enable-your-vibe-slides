@@ -58,11 +58,11 @@
   - `exercise_02_genie_mcp_server.py`: Genie MCP 서버 구현
   - `.env.example`: DATABRICKS_HOST, DATABRICKS_TOKEN, GENIE_SPACE_ID
 
-## Section 06: Custom Agents - 나만의 에이전트 만들기
+## Section 06: Agents - 나만의 에이전트 만들기
 - **시간**: 25분 | **유형**: 강의+실습
-- **목표**: Custom Agent 개념과 agent.md 구조 이해, 직접 Agent 만들기
+- **목표**: Subagent 개념과 agent.md 구조 이해, 직접 Agent 만들기
 - **내용**:
-  - Custom Agents란? (@호출, agent.md)
+  - Subagents란? (@호출, agent.md)
   - agent.md 구조 (역할/제약 조건/출력 형식)
   - 실제 예시: researcher, validator 에이전트
   - Skills vs Agents 비교
