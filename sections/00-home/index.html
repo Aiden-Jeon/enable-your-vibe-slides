@@ -217,14 +217,85 @@ uv run python -c "import fastmcp; print('Ready!')"</code></pre>
                 </div>
                 <aside class="notes">
                     실제로 만들기 위해 우선 환경 설정을 해야 됩니다. 코드를 남겨놨으니 참석하신 분들은 프로젝트 클론하시고 패키지 설치해 주시면 됩니다.
-                    패키지로는 UV를 사용할 건데, uv sync를 하면 적어 놓은 패키지들이 다 설치됩니다.
-                    MCP가 나오면서 UV를 많이 사용하게 되는데, UV는 결국 파이썬 가상 환경을 관리해주는 패키지라고 봐주시면 됩니다. Rust로 작성되어 있어서 매우 빠르고요.
-                    특히 UVX라고 하는 프로젝트가 있는데, MCP 서버를 여러 프로젝트에서 사용할 때 UVX로 경로를 설정하면 바로 실행되는 장점이 있습니다. UVX를 통해서 로컬 MCP 서버들을 관리하는 경우가 많이 있습니다.
+                    여기서 uv sync라는 명령어를 사용하는데, uv가 무엇인지는 다음 슬라이드에서 설명드리겠습니다.
                     설치 확인이 됐는지 한 번 확인해 보겠습니다.
                 </aside>
             </section>
 
-            <!-- Slide 5: 로드맵 Part 1 -->
+            <!-- Slide 5: uv란? -->
+            <section>
+                <h2>uv란?</h2>
+                <p style="font-size: 0.85em; margin-bottom: 0.6em;">
+                    <strong style="color: var(--ev-accent);">Rust</strong>로 작성된 초고속 Python 패키지 매니저
+                </p>
+                <p style="font-size: 0.75em; color: var(--ev-text-muted); margin-bottom: 0.8em;">
+                    pip 대비 <strong style="color: var(--ev-accent-light);">10-100배</strong> 빠른 설치 속도 &mdash;
+                    가상환경 + 패키지 관리 + 스크립트 실행을 하나로 통합
+                </p>
+                <table class="tool-table" style="font-size: 0.7em; width: 90%; margin: 0 auto;">
+                    <thead>
+                        <tr>
+                            <th style="color: var(--ev-text-muted);">pip</th>
+                            <th style="color: var(--ev-accent-light);">uv</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="fragment fade-up">
+                            <td><code>pip install -r requirements.txt</code></td>
+                            <td><code>uv sync</code></td>
+                        </tr>
+                        <tr class="fragment fade-up">
+                            <td><code>pip install &lt;pkg&gt;</code></td>
+                            <td><code>uv add &lt;pkg&gt;</code></td>
+                        </tr>
+                        <tr class="fragment fade-up">
+                            <td><code>python script.py</code></td>
+                            <td><code>uv run python script.py</code></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <aside class="notes">
+                    앞에서 uv sync를 사용했는데, uv가 무엇인지 간단히 설명드리겠습니다.
+                    uv는 Rust로 작성된 초고속 Python 패키지 매니저입니다. pip 대비 10배에서 100배까지 빠른 설치 속도를 보여줍니다.
+                    기존에 pip install -r requirements.txt 하던 것을 uv sync 한 줄로 대체할 수 있고, pip install 대신 uv add, python script.py 대신 uv run python script.py를 사용합니다.
+                    가상환경 생성, 패키지 관리, 스크립트 실행을 하나의 도구로 통합해서 관리할 수 있다는 것이 큰 장점입니다.
+                </aside>
+            </section>
+
+            <!-- Slide 6: uvx — 설치 없이 실행 -->
+            <section>
+                <h2>uvx &mdash; 설치 없이 실행</h2>
+                <p style="font-size: 0.85em; margin-bottom: 0.6em;">
+                    Python 도구를 <strong style="color: var(--ev-accent);">설치 없이 바로 실행</strong>
+                    &mdash; Node.js의 <code>npx</code>와 유사
+                </p>
+                <pre class="fragment fade-up"><code class="language-bash" data-trim># MCP 서버를 uvx로 바로 실행
+uvx fastmcp run server.py</code></pre>
+                <div class="fragment fade-up" style="margin-top: 1em;">
+                    <p style="font-size: 0.8em; margin-bottom: 0.4em;">MCP 설정에서의 활용 패턴:</p>
+                    <pre><code class="language-json" data-trim>{
+  "mcpServers": {
+    "my-server": {
+      "command": "uvx",
+      "args": ["fastmcp", "run", "server.py"]
+    }
+  }
+}</code></pre>
+                </div>
+                <div class="emphasis-box fragment fade-up" style="margin-top: 0.8em;">
+                    <p style="font-size: 0.8em; margin: 0;">
+                        이후 섹션에서 MCP 서버를 실행할 때 <code>uvx</code>를 계속 사용합니다
+                    </p>
+                </div>
+                <aside class="notes">
+                    특히 중요한 것이 uvx입니다. uvx는 Python 도구를 설치 없이 바로 실행할 수 있게 해줍니다. Node.js의 npx와 유사한 개념입니다.
+                    MCP 서버를 여러 프로젝트에서 사용할 때 uvx로 경로를 설정하면 바로 실행되는 장점이 있습니다.
+                    실제로 MCP 설정 파일에서 command를 uvx로 지정하는 패턴을 많이 사용합니다. uvx를 통해서 로컬 MCP 서버들을 관리하는 경우가 많이 있습니다.
+                    이후 섹션 03에서 MCP를 배우고, 섹션 04에서 Genie MCP를 만들 때 이 패턴을 직접 사용하게 됩니다.
+                </aside>
+            </section>
+
+            <!-- Slide 7: 로드맵 Part 1 -->
             <section>
                 <h2>로드맵: Part 1 &mdash; 기초 다지기</h2>
                 <p style="font-size: 0.8em; color: var(--ev-text-muted); margin-bottom: 0.6em;">70분 | 강의 중심</p>
@@ -248,7 +319,7 @@ uv run python -c "import fastmcp; print('Ready!')"</code></pre>
                 </aside>
             </section>
 
-            <!-- Slide 6: 로드맵 Part 2 -->
+            <!-- Slide 8: 로드맵 Part 2 -->
             <section>
                 <h2>로드맵: Part 2 &mdash; 실전 구현</h2>
                 <p style="font-size: 0.8em; color: var(--ev-text-muted); margin-bottom: 0.6em;">140분 | 실습 중심</p>
@@ -283,7 +354,7 @@ uv run python -c "import fastmcp; print('Ready!')"</code></pre>
                 </aside>
             </section>
 
-            <!-- Slide 7: 학습 경로 -->
+            <!-- Slide 9: 학습 경로 -->
             <section>
                 <h2>학습 경로</h2>
                 <div class="diagram">
@@ -327,7 +398,7 @@ uv run python -c "import fastmcp; print('Ready!')"</code></pre>
                 </aside>
             </section>
 
-            <!-- Slide 8: 시작합시다! -->
+            <!-- Slide 10: 시작합시다! -->
             <section>
                 <h2 style="text-align: center; border: none;">시작합시다!</h2>
                 <br>
