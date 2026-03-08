@@ -32,7 +32,6 @@
   - Claude Code에서 MCP 서버 연결하기
 - **코드**:
   - `exercise_01_hello_mcp.py`: 기본 MCP 서버 (echo tool)
-  - `exercise_02_calculator_mcp.py`: 계산기 MCP 서버
 
 ## Section 04: Skills Ecosystem - Skills 생태계
 - **시간**: 15분 | **유형**: 강의
