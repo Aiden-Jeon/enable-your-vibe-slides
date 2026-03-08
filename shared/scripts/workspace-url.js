@@ -14,6 +14,12 @@
     document.querySelectorAll("[data-workspace-profile]").forEach(function (el) {
       el.textContent = profile;
     });
+    // Replace href placeholders: data-workspace-href="/ml/playground"
+    // → href="https://<workspace>/ml/playground"
+    document.querySelectorAll("[data-workspace-href]").forEach(function (el) {
+      var path = el.getAttribute("data-workspace-href");
+      el.href = url + path;
+    });
   }
 
   function extractProfile(url) {

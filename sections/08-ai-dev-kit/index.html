@@ -257,28 +257,107 @@
                 </aside>
             </section>
 
-            <!-- Slide 3:AI Dev Kit 전체 그림 -->
+            <!-- Slide 3: Databricks와 상호작용하는 방법들 -->
+            <section>
+                <h2>Databricks와 상호작용하는 방법들</h2>
+                <table style="font-size: 0.75em; margin-top: 1em;">
+                    <thead>
+                        <tr>
+                            <th>방법</th>
+                            <th>설명</th>
+                            <th>Claude Code 활용</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Databricks Connect</strong></td>
+                            <td>로컬 IDE에서 원격 클러스터로 Spark 코드 실행</td>
+                            <td>코드 생성 &amp; 실행</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Databricks CLI</strong></td>
+                            <td>터미널에서 워크스페이스 리소스 관리</td>
+                            <td style="color: var(--ev-accent);"><strong>Skills 만들기에 최적!</strong></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Databricks SDK</strong></td>
+                            <td>Python/Java/Go SDK로 프로그래밍 방식 제어</td>
+                            <td>코드 생성 &amp; 실행</td>
+                        </tr>
+                        <tr>
+                            <td><strong>REST API</strong></td>
+                            <td>HTTP 요청으로 모든 기능에 직접 접근</td>
+                            <td>MCP 서버 구축</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div style="margin-top: 1.2em; font-size: 0.7em; color: var(--ev-text-muted);">
+                    <p>💡 최근 "MCP vs CLI" 논쟁이 있지만, Databricks는 CLI·SDK·API를 모두 갖추고 있어 상황에 맞게 선택 가능</p>
+                </div>
+                <div class="emphasis-box" style="margin-top: 0.8em; text-align: center;">
+                    <p style="font-size: 1.1em;"><span style="color: var(--ev-accent);">AI Dev Kit</span>은 이 도구들을 하나의 통합 프레임워크로 묶어줍니다</p>
+                </div>
+                <aside class="notes">
+                    Databricks는 다양한 상호작용 도구를 제공합니다.
+                    Connect, CLI, SDK, REST API — 각각 용도와 장점이 다릅니다.
+                    Connect는 로컬에서 원격 클러스터로 Spark 코드를 실행하고,
+                    CLI는 터미널에서 워크스페이스 리소스를 관리하며 Skills를 만들 때 특히 유용합니다.
+                    SDK는 프로그래밍 방식으로 제어하고, REST API는 MCP 서버를 구축하는 데 활용됩니다.
+                    AI Dev Kit은 이 도구들을 하나의 통합 프레임워크로 묶어줍니다.
+                </aside>
+            </section>
+
+            <!-- Slide 4: AI Dev Kit 전체 그림 -->
             <section>
                 <h2>AI Dev Kit 전체 그림</h2>
                 <p style="font-size: 0.85em; margin-bottom: 0.6em;">
                     <a href="https://github.com/databricks-solutions/ai-dev-kit" style="color: var(--ev-accent-light);">databricks-solutions/ai-dev-kit</a> &mdash; 오픈소스 통합 프레임워크
                 </p>
-                <div style="background: var(--ev-code-bg); border: 1px solid var(--ev-accent); border-radius: 8px; padding: 1.2em 2em; width: 100%; box-sizing: border-box;">
-                    <div style="text-align: center; margin-bottom: 0.8em;">
-                        <span style="color: var(--ev-accent-light); font-size: 1.1em; font-weight: 600;">Databricks AI Dev Kit</span>
+                <!-- 3-Layer Diagram -->
+                <div style="display: flex; flex-direction: column; align-items: center; gap: 0;">
+                    <!-- Top: Build Cool Stuff -->
+                    <div style="background: #e85d4a; border-radius: 12px; padding: 0.8em 1.5em; width: 85%; text-align: center;">
+                        <strong style="font-size: 1em; color: #fff;">Build Cool Stuff on Databricks</strong>
+                        <div style="display: flex; justify-content: center; gap: 0.5em; margin-top: 0.5em; flex-wrap: wrap;">
+                            <span style="background: rgba(255,255,255,0.2); color: #fff; padding: 0.2em 0.6em; border-radius: 6px; font-size: 0.65em;">SQL</span>
+                            <span style="background: rgba(255,255,255,0.2); color: #fff; padding: 0.2em 0.6em; border-radius: 6px; font-size: 0.65em;">Jobs</span>
+                            <span style="background: rgba(255,255,255,0.2); color: #fff; padding: 0.2em 0.6em; border-radius: 6px; font-size: 0.65em;">Pipelines</span>
+                            <span style="background: rgba(255,255,255,0.2); color: #fff; padding: 0.2em 0.6em; border-radius: 6px; font-size: 0.65em;">Catalog</span>
+                            <span style="background: rgba(255,255,255,0.2); color: #fff; padding: 0.2em 0.6em; border-radius: 6px; font-size: 0.65em;">Genie</span>
+                            <span style="background: rgba(255,255,255,0.2); color: #fff; padding: 0.2em 0.6em; border-radius: 6px; font-size: 0.65em;">AI/BI</span>
+                            <span style="background: rgba(255,255,255,0.2); color: #fff; padding: 0.2em 0.6em; border-radius: 6px; font-size: 0.65em;">+ more</span>
+                        </div>
                     </div>
-                    <table style="border-collapse: collapse; font-family: 'Courier New', monospace; font-size: 0.75em; width: 100%;">
-                        <tr><td style="padding: 0.3em 0; width: 40%; text-align: right; padding-right: 2em;"><span style="color: #4ecdc4;">[tools-core]</span></td><td style="padding: 0.3em 0; color: var(--ev-text-muted);">SDK 래퍼 &amp; 공통 도구</td></tr>
-                        <tr><td style="padding: 0.3em 0; text-align: right; padding-right: 2em;"><span style="color: #ffe66d;">[mcp-server]</span></td><td style="padding: 0.3em 0; color: var(--ev-text-muted);">MCP 프로토콜 서버</td></tr>
-                        <tr><td style="padding: 0.3em 0; text-align: right; padding-right: 2em;"><span style="color: #a8e6cf;">[skills]</span></td><td style="padding: 0.3em 0; color: var(--ev-text-muted);">프롬프트 &amp; 지식 팩</td></tr>
-                        <tr><td style="padding: 0.3em 0; text-align: right; padding-right: 2em;"><span style="color: #ff6b6b;">[builder-app]</span></td><td style="padding: 0.3em 0; color: var(--ev-text-muted);">대화형 빌더 UI</td></tr>
-                        <tr><td style="padding: 0.3em 0; text-align: right; padding-right: 2em;"><span style="color: #c9b1ff;">[ai-dev-project]</span></td><td style="padding: 0.3em 0; color: var(--ev-text-muted);">프로젝트 템플릿</td></tr>
-                    </table>
-                </div>
-                <div style="margin-top: 0.8em;">
-                    <p style="font-size: 0.75em; color: var(--ev-text-muted); text-align: center;">
-                        Claude Code + Databricks를 하나의 워크플로우로 연결하는 5대 구성 요소
-                    </p>
+                    <!-- Arrow: enables -->
+                    <div style="display: flex; align-items: center; gap: 0.5em; padding: 0.4em 0;">
+                        <span style="font-size: 1.2em; color: var(--ev-text-muted);">&uarr;</span>
+                        <span style="font-size: 0.75em; font-style: italic; color: var(--ev-text-muted);">enables</span>
+                        <span style="font-size: 1.2em; color: var(--ev-text-muted);">&uarr;</span>
+                    </div>
+                    <!-- Middle: Skills + MCP Tools -->
+                    <div style="display: flex; justify-content: center; gap: 1.5em; width: 85%;">
+                        <div style="flex: 1; background: #4ade80; border-radius: 12px; padding: 0.7em 1em; text-align: center;">
+                            <strong style="font-size: 0.95em; color: #1a1a2e;">Skills</strong>
+                            <p style="font-size: 0.7em; color: #1a1a2e; margin: 0.2em 0 0;">Knowledge &amp; Patterns</p>
+                            <p style="font-size: 0.65em; color: rgba(26,26,46,0.7); margin: 0.1em 0 0;">17+ Databricks skills</p>
+                        </div>
+                        <div style="flex: 1; background: #60a5fa; border-radius: 12px; padding: 0.7em 1em; text-align: center;">
+                            <strong style="font-size: 0.95em; color: #1a1a2e;">MCP Tools</strong>
+                            <p style="font-size: 0.7em; color: #1a1a2e; margin: 0.2em 0 0;">Executable Actions</p>
+                            <p style="font-size: 0.65em; color: rgba(26,26,46,0.7); margin: 0.1em 0 0;">45+ Databricks tools</p>
+                        </div>
+                    </div>
+                    <!-- Arrow: provides -->
+                    <div style="display: flex; align-items: center; gap: 0.5em; padding: 0.4em 0;">
+                        <span style="font-size: 1.2em; color: var(--ev-text-muted);">&uarr;</span>
+                        <span style="font-size: 0.75em; font-style: italic; color: var(--ev-text-muted);">provides</span>
+                        <span style="font-size: 1.2em; color: var(--ev-text-muted);">&uarr;</span>
+                    </div>
+                    <!-- Bottom: AI Dev Kit -->
+                    <div style="background: #222; border-radius: 12px; padding: 0.7em 1.5em; width: 85%; text-align: center; border: 1px solid #444;">
+                        <strong style="font-size: 1em; color: #fff;">AI Dev Kit</strong>
+                        <p style="font-size: 0.7em; color: #aaa; margin: 0.2em 0 0;">Trusted sources for your AI coding assistant</p>
+                    </div>
                 </div>
                 <aside class="notes">
                     Databricks AI Dev Kit는 GitHub의 databricks-solutions/ai-dev-kit 레포에서 오픈소스로 공개된 프레임워크입니다.
@@ -291,7 +370,7 @@
                 </aside>
             </section>
 
-            <!-- Slide 4:5대 구성 요소 상세 -->
+            <!-- Slide 5: 5대 구성 요소 상세 -->
             <section>
                 <h2>5대 구성 요소</h2>
                 <div class="columns">
@@ -330,7 +409,7 @@
                 </aside>
             </section>
 
-            <!-- Slide 5:MCP Server 아키텍처 -->
+            <!-- Slide 6: MCP Server 아키텍처 -->
             <section>
                 <h2>MCP Server 아키텍처</h2>
                 <p style="font-size: 0.85em; margin-bottom: 0.6em;">
@@ -381,7 +460,7 @@
                 </aside>
             </section>
 
-            <!-- Slide 6:50+ 도구 카테고리 -->
+            <!-- Slide 7: 50+ 도구 카테고리 -->
             <section>
                 <h2>50+ 도구 카테고리</h2>
                 <p style="font-size: 0.8em; margin-bottom: 0.5em; color: var(--ev-text-muted);">
@@ -420,7 +499,7 @@
                 </aside>
             </section>
 
-            <!-- Slide 7:databricks-skills -->
+            <!-- Slide 8: databricks-skills -->
             <section>
                 <h2>databricks-skills</h2>
                 <p style="font-size: 0.85em; margin-bottom: 0.5em;">
@@ -469,7 +548,7 @@
                 </aside>
             </section>
 
-            <!-- Slide 8:Skills + MCP Tools 통합 -->
+            <!-- Slide 9: Skills + MCP Tools 통합 -->
             <section>
                 <h2>Skills + MCP Tools 통합</h2>
                 <p style="font-size: 0.85em; margin-bottom: 0.6em;">
@@ -500,7 +579,7 @@
                 </aside>
             </section>
 
-            <!-- Slide 9:설치 방법 -->
+            <!-- Slide 10: 설치 방법 -->
             <section>
                 <h2 style="margin-bottom: 0.4em;">설치 방법</h2>
                 <p style="font-size: 0.75em; margin-bottom: 0.3em;">
@@ -532,7 +611,7 @@ cd ai-dev-project && claude</code></pre>
                 </aside>
             </section>
 
-            <!-- Slide 10:빌드 가능한 것들 -->
+            <!-- Slide 11: 빌드 가능한 것들 -->
             <section>
                 <h2>AI Dev Kit로 빌드 가능한 것들</h2>
                 <div class="columns">
@@ -561,7 +640,7 @@ cd ai-dev-project && claude</code></pre>
                 </aside>
             </section>
 
-            <!-- Slide 11: ChatAgent 프레임워크 (기존 유지) -->
+            <!-- Slide 12: ChatAgent 프레임워크 -->
             <section>
                 <h2>ChatAgent 프레임워크</h2>
                 <p style="font-size: 0.85em; margin-bottom: 0.5em;">
@@ -602,7 +681,7 @@ class MyAgent(ChatAgent):
                 </aside>
             </section>
 
-            <!-- Slide 12: predict() 상세 (기존 유지) -->
+            <!-- Slide 13: predict() 상세 -->
             <section>
                 <h2><code>predict()</code> 메서드 상세</h2>
                 <div class="columns">
@@ -655,7 +734,7 @@ context = {
                 </aside>
             </section>
 
-            <!-- Slide 13: MLflow Tracing 연동 (기존 유지) -->
+            <!-- Slide 14: MLflow Tracing 연동 -->
             <section>
                 <h2>MLflow Tracing 연동</h2>
                 <p style="font-size: 0.85em; margin-bottom: 0.6em;">
@@ -691,7 +770,7 @@ def retrieve_context(query: str) -> list[str]:
                 </aside>
             </section>
 
-            <!-- Slide 14: Tracing 적용 예시 (기존 유지) -->
+            <!-- Slide 15: Tracing 적용 예시 -->
             <section>
                 <h2>Tracing 적용 예시</h2>
                 <pre><code class="language-python">import mlflow
@@ -740,7 +819,7 @@ class MyAgent(ChatAgent):
                 </aside>
             </section>
 
-            <!-- Slide 15: 로컬 → 배포 흐름 (기존 유지) -->
+            <!-- Slide 16: 로컬 → 배포 흐름 -->
             <section>
                 <h2>로컬 개발 &rarr; Databricks 배포</h2>
                 <div class="deploy-flow">
@@ -794,7 +873,7 @@ deploy(
                 </aside>
             </section>
 
-            <!-- Slide 16: 데모 - ChatAgent (기존 유지) -->
+            <!-- Slide 17: 데모 - ChatAgent -->
             <section>
                 <h2>데모: ChatAgent 구현 <span class="badge">LIVE</span></h2>
                 <p style="font-size: 0.85em; margin-bottom: 0.6em;">
@@ -850,7 +929,7 @@ print(result.messages[0].content)
                 </aside>
             </section>
 
-            <!-- Slide 17:오늘 배운 것과 AI Dev Kit -->
+            <!-- Slide 18: 오늘 배운 것과 AI Dev Kit -->
             <section>
                 <h2>오늘 배운 것 &rarr; AI Dev Kit</h2>
                 <p style="font-size: 0.85em; margin-bottom: 0.6em;">
@@ -899,7 +978,7 @@ print(result.messages[0].content)
                 </aside>
             </section>
 
-            <!-- Slide 18:마무리 & Q&A -->
+            <!-- Slide 19: 마무리 & Q&A -->
             <section>
                 <h2>마무리 &amp; Q&amp;A</h2>
                 <div class="emphasis-box">

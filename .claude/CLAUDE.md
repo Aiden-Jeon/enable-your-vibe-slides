@@ -49,6 +49,22 @@ enable-your-vibe/
 - 코드 블록은 highlight.js로 하이라이팅
 - 스피커 노트 필수 포함
 
+### Databricks URL 링크
+슬라이드에서 Databricks 콘솔 링크(Playground, Workspace 등)를 넣을 때는 `workspace-url.js`를 활용한다.
+- `data-workspace-href` 속성에 경로를 지정하면, 런타임에 실제 workspace URL로 치환됨
+- `href`에는 fallback 값(`<workspace-url>`)을 넣어둔다
+- 해당 섹션 HTML에 `workspace-url.js` 스크립트가 로드되어 있어야 한다
+
+```html
+<!-- 스크립트 로드 -->
+<script src="../../shared/scripts/workspace-url.js"></script>
+
+<!-- 링크 사용 -->
+<a data-workspace-href="/ml/playground"
+   href="https://<workspace-url>.cloud.databricks.com/ml/playground"
+   target="_blank">Playground</a>
+```
+
 ### 섹션 메타데이터 (section.yaml)
 ```yaml
 number: "01"

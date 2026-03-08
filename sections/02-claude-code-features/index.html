@@ -270,10 +270,6 @@ cat error.log | claude -p "이 에러의 원인을 분석해줘"</code></pre>
 
 # 다중 파일 편집
 > "모든 테스트 파일에서 deprecated된 assert 메서드를 새로운 방식으로 바꿔줘"</code></pre>
-            <div class="emphasis-box">
-                <strong>안전장치:</strong> 파일 수정 전 항상 확인을 요청합니다.
-                <code>--allowedTools</code>로 권한을 세밀하게 제어할 수 있습니다.
-            </div>
             <aside class="notes">
                 파일을 읽을 수 있고, 생성할 수 있고, 편집할 수 있고 여러 가지들을 한 번에 쭉 쓸 수도 있고요.
             </aside>
@@ -373,7 +369,79 @@ cat error.log | claude -p "이 에러의 원인을 분석해줘"</code></pre>
             </aside>
         </section>
 
-        <!-- Slide 14: CLAUDE.md - 프로젝트 컨텍스트 파일 -->
+        <!-- Slide 14: 컨텍스트란? -->
+        <section>
+            <h2>컨텍스트(Context)란?</h2>
+            <p style="color: var(--ev-text-muted); font-size: 0.9em;">Claude가 작업할 때 참고하는 <strong>모든 정보</strong></p>
+            <div style="max-width: 700px; margin: 1em auto 0; display: flex; gap: 1em; flex-wrap: wrap; justify-content: center;">
+                <div style="flex: 1; min-width: 200px; background: rgba(46,204,113,0.1); border: 1px solid rgba(46,204,113,0.4); border-radius: 8px; padding: 0.8em; text-align: center;">
+                    <div style="font-size: 1.5em; margin-bottom: 0.3em;">📋</div>
+                    <strong>프로젝트 설정</strong>
+                    <p style="font-size: 0.75em; color: var(--ev-text-muted); margin: 0.3em 0 0;">CLAUDE.md, 설정 파일</p>
+                </div>
+                <div style="flex: 1; min-width: 200px; background: rgba(52,152,219,0.1); border: 1px solid rgba(52,152,219,0.4); border-radius: 8px; padding: 0.8em; text-align: center;">
+                    <div style="font-size: 1.5em; margin-bottom: 0.3em;">💬</div>
+                    <strong>대화 내용</strong>
+                    <p style="font-size: 0.75em; color: var(--ev-text-muted); margin: 0.3em 0 0;">이전 메시지, 요청사항</p>
+                </div>
+                <div style="flex: 1; min-width: 200px; background: rgba(233,69,96,0.1); border: 1px solid rgba(233,69,96,0.4); border-radius: 8px; padding: 0.8em; text-align: center;">
+                    <div style="font-size: 1.5em; margin-bottom: 0.3em;">📂</div>
+                    <strong>파일 & 코드</strong>
+                    <p style="font-size: 0.75em; color: var(--ev-text-muted); margin: 0.3em 0 0;">참조한 파일, 탐색 결과</p>
+                </div>
+            </div>
+            <div class="emphasis-box" style="margin-top: 1.2em; font-size: 0.9em;">
+                컨텍스트가 <strong>풍부하고 정확</strong>할수록 Claude의 응답 품질이 높아집니다.<br>
+                이후 슬라이드에서 컨텍스트를 <strong>어떻게 관리</strong>하는지 알아봅니다.
+            </div>
+            <aside class="notes">
+                지금까지 Claude Code의 기본 기능들을 살펴봤는데요, 이제부터는 컨텍스트에 대해 이야기하겠습니다.
+                컨텍스트라고 하는 건 Claude가 작업할 때 참고하는 모든 정보를 말합니다.
+                크게 세 가지로 나눌 수 있는데요, 프로젝트 설정 파일, 지금까지의 대화 내용, 그리고 참조한 파일과 코드입니다.
+                이 컨텍스트가 풍부하고 정확할수록 Claude가 더 좋은 응답을 줍니다.
+                반대로 컨텍스트가 부족하면 Claude가 알아서 파일을 탐색해야 하니까 시간도 더 걸리고 정확도도 떨어질 수 있죠.
+                그래서 이 컨텍스트를 어떻게 잘 관리하느냐가 Claude Code를 잘 쓰는 핵심입니다.
+                지금부터 그 방법들을 하나씩 알아보겠습니다.
+            </aside>
+        </section>
+
+        <!-- Slide 15: 컨텍스트 우선순위 -->
+        <section>
+            <h2>컨텍스트 우선순위</h2>
+            <p style="color: var(--ev-text-muted); font-size: 0.85em;">Claude Code가 정보를 참조하는 순서</p>
+            <div style="max-width: 700px; margin: 0.8em auto 0;">
+                <div style="display: flex; align-items: center; padding: 0.6em 1em; margin-bottom: 0.4em; background: rgba(233, 69, 96, 0.25); border-left: 4px solid #e94560; border-radius: 6px;">
+                    <span style="font-size: 1.4em; font-weight: bold; margin-right: 0.6em; color: #e94560;">1</span>
+                    <span><strong>CLAUDE.md</strong> — 자동 로드되는 프로젝트 설정</span>
+                </div>
+                <div style="display: flex; align-items: center; padding: 0.6em 1em; margin-bottom: 0.4em; background: rgba(233, 69, 96, 0.18); border-left: 4px solid rgba(233, 69, 96, 0.7); border-radius: 6px;">
+                    <span style="font-size: 1.4em; font-weight: bold; margin-right: 0.6em; color: rgba(233, 69, 96, 0.85);">2</span>
+                    <span>현재 대화의 <strong>이전 메시지</strong></span>
+                </div>
+                <div style="display: flex; align-items: center; padding: 0.6em 1em; margin-bottom: 0.4em; background: rgba(233, 69, 96, 0.12); border-left: 4px solid rgba(233, 69, 96, 0.5); border-radius: 6px;">
+                    <span style="font-size: 1.4em; font-weight: bold; margin-right: 0.6em; color: rgba(233, 69, 96, 0.65);">3</span>
+                    <span><strong>명시적으로 참조</strong>한 파일 (<code>@</code>로 지정)</span>
+                </div>
+                <div style="display: flex; align-items: center; padding: 0.6em 1em; background: rgba(233, 69, 96, 0.07); border-left: 4px solid rgba(233, 69, 96, 0.3); border-radius: 6px;">
+                    <span style="font-size: 1.4em; font-weight: bold; margin-right: 0.6em; color: rgba(233, 69, 96, 0.45);">4</span>
+                    <span>Claude가 <strong>자동 탐색</strong>한 파일</span>
+                </div>
+            </div>
+            <div class="emphasis-box" style="margin-top: 1em; font-size: 0.85em;">
+                1순위인 <strong>CLAUDE.md</strong>를 잘 작성하면 탐색 범위를 줄이고 일관된 결과를 얻을 수 있습니다.
+            </div>
+            <aside class="notes">
+                Claude Code가 작업을 할 때 정보를 참조하는 우선순위가 있습니다.
+                제일 먼저 읽는 게 CLAUDE.md 파일이고요.
+                그다음이 현재 세션 내에서 있었던 이전 메시지들,
+                그리고 사용자가 @로 명시적으로 참조한 파일,
+                마지막으로 여기까지로 충분하지 않은 경우에 Claude가 도구들을 사용해서 자동으로 탐색한 파일들을 보게 됩니다.
+                여기서 핵심은 1순위인 CLAUDE.md를 잘 작성해 놓으면 Claude가 불필요한 탐색 없이 바로 작업에 들어갈 수 있다는 점입니다.
+                그럼 이 CLAUDE.md가 뭔지 좀 더 자세히 보겠습니다.
+            </aside>
+        </section>
+
+        <!-- Slide 15: CLAUDE.md - 프로젝트 컨텍스트 파일 -->
         <section>
             <h2>CLAUDE.md</h2>
             <h3>프로젝트 컨텍스트 파일</h3>
@@ -410,9 +478,9 @@ Python 3.11 기반 FastAPI 백엔드
                 </div>
             </div>
             <aside class="notes">
-                그리고 CLAUDE.md라고 하는 파일이 있습니다.
-                CLAUDE.md 같은 경우에는 이 프로젝트에서 Claude가 어떤 컨텍스트를 참조하는 순서들이 있는데,
-                예를 들어서 CLAUDE.md가 없는 경우에는 전체 파일을 한번 스캔해서 이 명령을 수행하기 위한 것들이 어디에 있는지 탐색을 해야 됩니다.
+                그래서 CLAUDE.md라고 하는 파일이 있습니다.
+                앞에서 봤듯이 컨텍스트 우선순위에서 1순위로 읽히는 파일인데요,
+                CLAUDE.md가 없는 경우에는 전체 파일을 한번 스캔해서 이 명령을 수행하기 위한 것들이 어디에 있는지 탐색을 해야 됩니다.
                 그렇게 되면 컨텍스트를 조금 많이 사용을 하게 되는데,
                 CLAUDE.md에 넣어 놓으면 Claude가 "아 이쪽에 이런 게 있겠구나"라고 해서 탐색하는 범위를 줄일 수 있습니다.
                 그래서 Claude로 어떤 협업을 하는 케이스에서는 CLAUDE.md 파일을 잘 만들어 놓게 되면
@@ -421,10 +489,10 @@ Python 3.11 기반 FastAPI 백엔드
             </aside>
         </section>
 
-        <!-- Slide 15: 컨텍스트 관리 -->
+        <!-- Slide 16: 컨텍스트 관리 -->
         <section>
-            <h2>컨텍스트 관리</h2>
-            <h3>파일 참조 방법</h3>
+            <h2>파일 참조 방법</h2>
+            <h3><code>@</code>로 컨텍스트에 파일 추가하기</h3>
             <pre><code class="language-text"># 파일 경로를 직접 언급
 > "src/utils/helpers.py를 보고 비슷한 패턴으로 새 유틸 함수 만들어줘"</code></pre>
             <h3 style="margin-top: 0.8em;"><code>@</code> (파일 경로 자동완성)</h3>
@@ -438,34 +506,7 @@ Python 3.11 기반 FastAPI 백엔드
                 그리고 내가 예를 들어서 "찾아줘"라는 것보다는 내가 특정하게 딱 이걸 하고 싶다라고 하면
                 @(골뱅이)로 참조할 수가 있고, @해서 보시면 이렇게 컨텍스트를 참조를 해서 "뭘 해줘" 이런 식으로
                 빠르게 참조해서 쓸 수 있습니다.
-            </aside>
-        </section>
-
-        <!-- Slide 16: 컨텍스트 우선순위 -->
-        <section>
-            <h2>컨텍스트 우선순위</h2>
-            <div style="max-width: 700px; margin: 0.8em auto 0;">
-                <div style="display: flex; align-items: center; padding: 0.6em 1em; margin-bottom: 0.4em; background: rgba(233, 69, 96, 0.25); border-left: 4px solid #e94560; border-radius: 6px;">
-                    <span style="font-size: 1.4em; font-weight: bold; margin-right: 0.6em; color: #e94560;">1</span>
-                    <span><strong>CLAUDE.md</strong> — 자동 로드되는 프로젝트 설정</span>
-                </div>
-                <div style="display: flex; align-items: center; padding: 0.6em 1em; margin-bottom: 0.4em; background: rgba(233, 69, 96, 0.18); border-left: 4px solid rgba(233, 69, 96, 0.7); border-radius: 6px;">
-                    <span style="font-size: 1.4em; font-weight: bold; margin-right: 0.6em; color: rgba(233, 69, 96, 0.85);">2</span>
-                    <span>현재 대화의 <strong>이전 메시지</strong></span>
-                </div>
-                <div style="display: flex; align-items: center; padding: 0.6em 1em; margin-bottom: 0.4em; background: rgba(233, 69, 96, 0.12); border-left: 4px solid rgba(233, 69, 96, 0.5); border-radius: 6px;">
-                    <span style="font-size: 1.4em; font-weight: bold; margin-right: 0.6em; color: rgba(233, 69, 96, 0.65);">3</span>
-                    <span><strong>명시적으로 참조</strong>한 파일 (<code>@</code>로 지정)</span>
-                </div>
-                <div style="display: flex; align-items: center; padding: 0.6em 1em; background: rgba(233, 69, 96, 0.07); border-left: 4px solid rgba(233, 69, 96, 0.3); border-radius: 6px;">
-                    <span style="font-size: 1.4em; font-weight: bold; margin-right: 0.6em; color: rgba(233, 69, 96, 0.45);">4</span>
-                    <span>Claude가 <strong>자동 탐색</strong>한 파일</span>
-                </div>
-            </div>
-            <aside class="notes">
-                컨텍스트의 우선 순위는 아까 말씀드린 것처럼 CLAUDE.md 파일이 제일 처음 읽고요.
-                그리고 이 세션 내에서 있었던 이전 메시지, 그리고 저희가 참조한 거,
-                그다음에 마지막으로 여기에서 충분하지 않은 경우에 Claude가 도구들을 사용해서 자동으로 탐색한 파일들을 보게 됩니다.
+                아까 우선순위에서 3번째였던 "명시적으로 참조한 파일"이 바로 이 @를 사용하는 겁니다.
             </aside>
         </section>
 
@@ -531,20 +572,19 @@ Python 3.11 기반 FastAPI 백엔드
                     </p>
                 </div>
                 <div style="flex: 1.2;">
-                    <pre style="font-size: 0.52em;"><code class="language-text">$ /context
-
-Context Usage
-  Messages:      42 (12 user, 30 assistant)
-  Context used:  67% of 200k tokens
-
-  Breakdown:
-    System prompt:    8,200 tokens  (4.1%)
-    CLAUDE.md:        3,400 tokens  (1.7%)
-    Conversation:   121,000 tokens (60.5%)
-    Tool results:     1,400 tokens  (0.7%)
-
-  MCP tools:     12 loaded
-  Skills:         3 available</code></pre>
+                    <pre style="font-size: 0.52em;"><code class="language-text">❯ /context
+  ⎿  Context Usage
+     ⛁ ⛁ ⛁ ⛁ ⛁ ⛀ ⛀ ⛁ ⛁ ⛁   claude-opus-4-6 · 59k/200k tokens (29%)
+     ⛁ ⛁ ⛁ ⛁ ⛁ ⛁ ⛁ ⛁ ⛁ ⛁
+     ⛁ ⛁ ⛁ ⛁ ⛁ ⛁ ⛁ ⛁ ⛁ ⛁   Estimated usage by category
+     ⛁ ⛶ ⛶ ⛶ ⛶ ⛶ ⛶ ⛶ ⛶ ⛶   ⛁ System prompt: 3.8k tokens (1.9%)
+     ⛶ ⛶ ⛶ ⛶ ⛶ ⛶ ⛶ ⛶ ⛶ ⛶   ⛁ System tools: 7.4k tokens (3.7%)
+     ⛶ ⛶ ⛶ ⛶ ⛶ ⛶ ⛶ ⛶ ⛶ ⛶   ⛁ Custom agents: 869 tokens (0.4%)
+     ⛶ ⛶ ⛶ ⛶ ⛶ ⛶ ⛶ ⛶ ⛶ ⛶   ⛁ Memory files: 1.4k tokens (0.7%)
+     ⛶ ⛶ ⛶ ⛶ ⛶ ⛶ ⛶ ⛶ ⛶ ⛶   ⛁ Skills: 3.9k tokens (1.9%)
+     ⛶ ⛶ ⛶ ⛝ ⛝ ⛝ ⛝ ⛝ ⛝ ⛝   ⛁ Messages: 41.6k tokens (20.8%)
+     ⛝ ⛝ ⛝ ⛝ ⛝ ⛝ ⛝ ⛝ ⛝ ⛝   ⛶ Free space: 108k (54.0%)
+                           ⛝ Autocompact buffer: 33k tokens (16.5%)</code></pre>
                 </div>
             </div>
             <div class="emphasis-box" style="margin-top: 0.8em; font-size: 0.85em;">
@@ -618,127 +658,6 @@ Context Usage
         </section>
 
         <!-- Slide 20: Anthropic 채용 시험 사례 -->
-        <section>
-            <h2>Claude가 채용 시험을 이긴 사례</h2>
-            <p style="color: var(--ev-text-muted); font-size: 0.85em;">Anthropic Performance Engineering Take-Home</p>
-            <div style="max-width: 700px; margin: 1em auto 0;">
-                <!-- 최적화 결과 비교 바 -->
-                <div style="display: flex; align-items: center; gap: 0.8em; margin-bottom: 0.8em;">
-                    <span style="font-size: 0.75em; width: 80px; text-align: right; color: var(--ev-text-muted);">Baseline</span>
-                    <div style="flex: 1; background: rgba(255,255,255,0.05); border-radius: 4px; height: 28px; position: relative;">
-                        <div style="width: 100%; height: 100%; background: rgba(231,76,60,0.4); border-radius: 4px; display: flex; align-items: center; justify-content: flex-end; padding-right: 0.5em;">
-                            <span style="font-size: 0.7em; font-family: monospace; color: #e74c3c; font-weight: bold;">147,734 cycles</span>
-                        </div>
-                    </div>
-                </div>
-                <div style="display: flex; align-items: center; gap: 0.8em; margin-bottom: 0.8em;">
-                    <span style="font-size: 0.75em; width: 80px; text-align: right; color: var(--ev-text-muted);">Human Best</span>
-                    <div style="flex: 1; background: rgba(255,255,255,0.05); border-radius: 4px; height: 28px; position: relative;">
-                        <div style="width: 0.9%; min-width: 8px; height: 100%; background: rgba(52,152,219,0.4); border-radius: 4px;"></div>
-                    </div>
-                    <span style="font-size: 0.7em; font-family: monospace; color: #3498db; font-weight: bold; white-space: nowrap;">1,338 cycles</span>
-                </div>
-                <div style="display: flex; align-items: center; gap: 0.8em; margin-bottom: 0.8em;">
-                    <span style="font-size: 0.75em; width: 80px; text-align: right; color: var(--ev-accent-light);">Claude</span>
-                    <div style="flex: 1; background: rgba(255,255,255,0.05); border-radius: 4px; height: 28px; position: relative;">
-                        <div style="width: 1%; min-width: 8px; height: 100%; background: rgba(233,69,96,0.4); border-radius: 4px;"></div>
-                    </div>
-                    <span style="font-size: 0.7em; font-family: monospace; color: var(--ev-accent); font-weight: bold; white-space: nowrap;">1,487 cycles</span>
-                    <span style="font-size: 0.8em; color: var(--ev-accent); font-weight: bold;">99x</span>
-                </div>
-            </div>
-            <div class="emphasis-box" style="margin-top: 1em; font-size: 0.8em; text-align: left;">
-                <p style="margin: 0 0 0.4em;">커스텀 VLIW SIMD 프로세서에서 커널 최적화하는 채용 시험</p>
-                <p style="margin: 0 0 0.4em;">Claude Opus 4.5가 대부분의 인간 지원자를 이기자 → <strong>시험을 오픈소스로 공개</strong></p>
-                <p style="margin: 0; color: var(--ev-accent);">"1,487 cycles 이하로 최적화하면 이력서를 보내달라" — Anthropic</p>
-            </div>
-            <aside class="notes">
-                재미있는 사례를 하나 소개드리자면, Anthropic에서 성능 엔지니어를 뽑을 때 쓰던 채용 시험이 있었습니다.
-                커스텀 프로세서 시뮬레이터에서 커널 코드를 최적화하는 문제인데요,
-                기본 코드가 147,734 cycles이 걸리는 걸 얼마나 줄일 수 있느냐가 과제였습니다.
-                그런데 Claude Opus 4.5가 이걸 1,487 cycles까지, 약 99배 속도 향상을 달성해서
-                대부분의 인간 지원자를 이겨버렸습니다.
-                그래서 Anthropic은 이 시험을 GitHub에 오픈소스로 공개하면서
-                "Claude보다 더 잘 풀면 이력서를 보내달라, 채용을 논의하겠다"는 도전장을 냈죠.
-                이게 가능했던 건 AI가 충분한 컨텍스트 안에서 반복적으로 최적화할 수 있었기 때문입니다.
-                반대로 컨텍스트가 포화되면 이런 반복 최적화 자체가 불가능해지고,
-                앞서 본 시지푸스 코딩이나 랄프 코딩에 빠지게 되는 겁니다.
-            </aside>
-        </section>
-
-        <!-- Slide 21: Claude의 최적화 사이클 상세 -->
-        <section>
-            <h2>랄프 루프의 실전 사례</h2>
-            <p style="color: var(--ev-text-muted); font-size: 0.85em;">채용 시험에서 Claude가 실제로 돌린 반복 과정</p>
-            <div style="max-width: 750px; margin: 0.8em auto 0;">
-                <!-- 사이클 다이어그램 -->
-                <div style="display: flex; align-items: center; justify-content: center; gap: 0.3em; flex-wrap: wrap; margin-bottom: 1em;">
-                    <div style="background: rgba(46,204,113,0.15); border: 1px solid rgba(46,204,113,0.5); border-radius: 8px; padding: 0.5em 0.7em; text-align: center; font-size: 0.7em; min-width: 100px;">
-                        <strong style="color: #2ecc71;">1. Read</strong><br>코드 & 아키텍처<br>문서 분석
-                    </div>
-                    <span style="color: var(--ev-text-muted); font-size: 1.2em;">→</span>
-                    <div style="background: rgba(52,152,219,0.15); border: 1px solid rgba(52,152,219,0.5); border-radius: 8px; padding: 0.5em 0.7em; text-align: center; font-size: 0.7em; min-width: 100px;">
-                        <strong style="color: #3498db;">2. Profile</strong><br>시뮬레이터 실행<br>병목 지점 식별
-                    </div>
-                    <span style="color: var(--ev-text-muted); font-size: 1.2em;">→</span>
-                    <div style="background: rgba(233,69,96,0.15); border: 1px solid rgba(233,69,96,0.5); border-radius: 8px; padding: 0.5em 0.7em; text-align: center; font-size: 0.7em; min-width: 100px;">
-                        <strong style="color: #e94560;">3. Optimize</strong><br>최적화 기법 적용<br>코드 수정
-                    </div>
-                    <span style="color: var(--ev-text-muted); font-size: 1.2em;">→</span>
-                    <div style="background: rgba(155,89,182,0.15); border: 1px solid rgba(155,89,182,0.5); border-radius: 8px; padding: 0.5em 0.7em; text-align: center; font-size: 0.7em; min-width: 100px;">
-                        <strong style="color: #9b59b6;">4. Measure</strong><br>cycle 수 측정<br>결과 비교
-                    </div>
-                </div>
-                <!-- 반복 화살표 -->
-                <div style="text-align: center; color: var(--ev-accent); font-size: 0.8em; margin-bottom: 0.8em;">
-                    ↻ 개선 여지가 있으면 2~4 반복
-                </div>
-                <!-- 적용한 최적화 기법들 -->
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5em; font-size: 0.7em;">
-                    <div style="background: rgba(255,255,255,0.03); padding: 0.5em 0.8em; border-radius: 6px; border-left: 3px solid #2ecc71;">
-                        <strong>SIMD 벡터화</strong> — 데이터 병렬 처리로 여러 연산을 한 사이클에
-                    </div>
-                    <div style="background: rgba(255,255,255,0.03); padding: 0.5em 0.8em; border-radius: 6px; border-left: 3px solid #3498db;">
-                        <strong>루프 언롤링</strong> — 반복문 풀어서 분기 예측 오버헤드 제거
-                    </div>
-                    <div style="background: rgba(255,255,255,0.03); padding: 0.5em 0.8em; border-radius: 6px; border-left: 3px solid #e94560;">
-                        <strong>명령어 스케줄링</strong> — VLIW 파이프라인에 맞게 명령어 재배치
-                    </div>
-                    <div style="background: rgba(255,255,255,0.03); padding: 0.5em 0.8em; border-radius: 6px; border-left: 3px solid #9b59b6;">
-                        <strong>메모리 접근 최적화</strong> — 캐시 히트율 높이는 데이터 배치
-                    </div>
-                </div>
-            </div>
-            <div class="emphasis-box" style="margin-top: 0.8em; font-size: 0.8em;">
-                <strong>핵심:</strong> 앞에서 본 <span style="color: #4ecca3;">랄프 루프</span> 그 자체 — "코드 읽기 → 실행 → 결과 분석 → 수정"을 반복하며 147,734 → 1,487 cycles로 최적화
-            </div>
-            <aside class="notes">
-                Claude가 이 시험을 어떻게 풀었는지 좀 더 상세하게 보겠습니다.
-                Claude가 돌린 사이클은 크게 4단계입니다.
-
-                첫째, Read — 프로세서 아키텍처 문서와 기존 커널 코드를 읽어서 VLIW SIMD 프로세서의 제약 조건을 파악합니다.
-                이 프로세서가 몇 개의 실행 유닛을 가지고 있고, 어떤 명령어를 동시에 실행할 수 있는지, 파이프라인 구조가 어떤지를 이해하는 거죠.
-
-                둘째, Profile — 시뮬레이터를 실제로 돌려서 현재 몇 cycle이 걸리는지 측정하고, 어디서 병목이 발생하는지 식별합니다.
-                어떤 루프에서 가장 많은 cycle을 소모하고 있는지, 파이프라인 스톨이 어디서 발생하는지를 분석합니다.
-
-                셋째, Optimize — 식별한 병목에 맞는 최적화 기법을 적용합니다.
-                SIMD 벡터화로 데이터를 병렬 처리하고, 루프 언롤링으로 분기 오버헤드를 줄이고,
-                VLIW 아키텍처에 맞게 명령어를 재배치해서 파이프라인을 최대한 활용하고,
-                메모리 접근 패턴을 최적화해서 캐시 히트율을 높였습니다.
-
-                넷째, Measure — 수정한 코드를 다시 시뮬레이터에 돌려서 cycle 수가 얼마나 줄었는지 확인합니다.
-
-                이 2~4단계를 개선 여지가 있을 때까지 반복한 겁니다.
-                이게 바로 앞에서 배운 랄프 루프의 실전 사례입니다.
-                매 반복마다 시뮬레이터 실행 결과라는 피드백 루프가 있고,
-                진행 상황은 코드 파일에 저장되니까 컨텍스트를 리셋해도 이어갈 수 있는 거죠.
-                Claude Code가 파일을 읽고, 터미널에서 시뮬레이터를 실행하고, 결과를 분석해서 코드를 수정하는 —
-                이 전체 사이클을 자동으로 돌린 겁니다.
-                결국 147,734 cycles에서 시작해서 1,487 cycles까지, 약 99배의 성능 향상을 달성했습니다.
-            </aside>
-        </section>
-
         <!-- Slide 22: 실용 팁 - 주요 명령어 -->
         <section>
             <h2>실용 팁</h2>
@@ -800,34 +719,6 @@ Context Usage
         </section>
 
         <!-- Slide 22: 실용 팁 - 효과적인 프롬프트 -->
-        <section>
-            <h2>실용 팁</h2>
-            <h3>효과적인 프롬프트 작성법</h3>
-            <div class="columns" style="align-items: stretch;">
-                <div style="flex: 1; min-width: 0; max-width: 50%;">
-                    <p style="color: var(--ev-accent);">나쁜 예시</p>
-                    <pre><code class="language-text">> "코드 고쳐줘"
-
-> "더 좋게 만들어줘"
-
-> "에러 나는데 해결해줘"</code></pre>
-                </div>
-                <div style="flex: 1; min-width: 0; max-width: 50%;">
-                    <p style="color: #4ecca3;">좋은 예시</p>
-                    <pre style="white-space: pre-wrap; word-break: break-word;"><code class="language-text" style="white-space: pre-wrap !important; word-break: break-word !important;">> "get_user 함수에서 DB 연결이 실패할 때 retry 로직 추가해줘. 최대 3회, 간격은 exponential backoff으로."
-
-> "src/api/routes.py의 /users 엔드포인트에 pagination 추가해줘. page_size 기본값은 20으로."</code></pre>
-                </div>
-            </div>
-            <div class="emphasis-box" style="margin-top: 1em;">
-                <strong>원칙:</strong> 구체적인 파일, 함수, 요구사항을 명시할수록 좋은 결과를 얻습니다.
-            </div>
-            <aside class="notes">
-                그래서 어떤 식으로 쓰느냐라고 하면 앞에 AI Foundation에서 말씀드렸었던 것처럼
-                조금 명시적으로 작성을 해주는 게 사실 원하는 결과를 얻기 가장 좋습니다.
-            </aside>
-        </section>
-
         <!-- Slide 23: 실습 안내 -->
         <section>
             <h2>실습: Claude Code로 Python 함수 만들기</h2>
@@ -891,58 +782,7 @@ Context Usage
                 이상입니다.
             </aside>
         </section>
-
-        <!-- Slide 25: Databricks와 상호작용하는 방법들 -->
-        <section>
-            <h2>Databricks와 상호작용하는 방법들</h2>
-            <table style="font-size: 0.75em; margin-top: 1em;">
-                <thead>
-                    <tr>
-                        <th>방법</th>
-                        <th>설명</th>
-                        <th>Claude Code 활용</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><strong>Databricks Connect</strong></td>
-                        <td>로컬 IDE에서 원격 클러스터로 Spark 코드 실행</td>
-                        <td>코드 생성 &amp; 실행</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Databricks CLI</strong></td>
-                        <td>터미널에서 워크스페이스 리소스 관리</td>
-                        <td style="color: var(--ev-accent);"><strong>Skills 만들기에 최적!</strong></td>
-                    </tr>
-                    <tr>
-                        <td><strong>Databricks SDK</strong></td>
-                        <td>Python/Java/Go SDK로 프로그래밍 방식 제어</td>
-                        <td>코드 생성 &amp; 실행</td>
-                    </tr>
-                    <tr>
-                        <td><strong>REST API</strong></td>
-                        <td>HTTP 요청으로 모든 기능에 직접 접근</td>
-                        <td>MCP 서버 구축</td>
-                    </tr>
-                </tbody>
-            </table>
-            <div style="margin-top: 1.2em; font-size: 0.7em; color: var(--ev-text-muted);">
-                <p>💡 최근 "MCP vs CLI" 논쟁이 있지만, Databricks는 CLI·SDK·API를 모두 갖추고 있어 상황에 맞게 선택 가능</p>
-            </div>
-            <div class="emphasis-box" style="margin-top: 0.8em; text-align: center;">
-                <p style="font-size: 1.1em;">이 도구들을 활용해 <span style="color: var(--ev-accent);">MCP 서버</span>와 <span style="color: var(--ev-accent);">Skills</span>를 만들어보자!</p>
-            </div>
-            <aside class="notes">
-                Claude Code에서 Databricks 작업을 하려면 여러 방법이 있습니다.
-                Connect, CLI, SDK, REST API — Databricks는 이 모든 인터페이스를 다 제공하고 있죠.
-                최근에 MCP보다 CLI가 낫다는 논쟁이 있는데, 사실 Databricks는 다 갖추고 있어서 이 논쟁과 크게 상관이 없습니다.
-                특히 Databricks CLI는 Skills를 만들 때 아주 유용합니다. CLI 명령어를 조합해서 Claude Code가 바로 실행할 수 있는 Skills를 쉽게 구성할 수 있거든요.
-                그리고 REST API를 활용하면 Custom MCP 서버도 만들 수 있습니다.
-                이번 핸즈온에서 MCP 서버도 만들어보고, Skills도 직접 만들어볼 겁니다.
-            </aside>
-        </section>
-
-        <!-- Slide 26: Q&A -->
+        <!-- Slide 25: Q&A -->
         <section>
             <h1>Q&A</h1>
             <p style="text-align: center; font-size: 1.2em; color: var(--ev-text-muted);">

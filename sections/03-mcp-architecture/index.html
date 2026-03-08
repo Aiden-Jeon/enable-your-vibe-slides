@@ -381,7 +381,7 @@
             </aside>
         </section>
 
-        <!-- Slide 10-1: 이런 MCP를 만들 수 있습니다 -->
+        <!-- Slide 11: 이런 MCP를 만들 수 있습니다 -->
         <section>
             <h2>이런 MCP를 만들 수 있습니다</h2>
             <p style="font-size: 0.85em;">Databricks 위에서 Custom MCP로 만들면 효과적인 사례:</p>
@@ -422,7 +422,8 @@
         <!-- Part 3: Custom MCP 만들기 (7장)              -->
         <!-- ============================================ -->
 
-        <!-- Slide 11: FastMCP 소개 -->
+        <!-- Slide 12: FastMCP 소개 -->
+
         <section>
             <h2>FastMCP 소개</h2>
             <div class="emphasis-box">
@@ -456,7 +457,7 @@ uv sync</code></pre>
             </aside>
         </section>
 
-        <!-- Slide 12: FastMCP 핵심 패턴 -->
+        <!-- Slide 13: FastMCP 핵심 패턴 -->
         <section>
             <h2>FastMCP 핵심 패턴</h2>
             <pre><code class="language-python" data-trim data-line-numbers="1|3|5-8|10-11">from fastmcp import FastMCP
@@ -489,7 +490,7 @@ if __name__ == "__main__":
             </aside>
         </section>
 
-        <!-- Slide 13: 실습 안내 -->
+        <!-- Slide 14: 실습 안내 -->
         <section>
             <h2>실습: Claude Code로 MCP 서버 만들기!</h2>
             <div class="emphasis-box">
@@ -524,11 +525,107 @@ uv run --with fastmcp fastmcp run \
             </aside>
         </section>
 
+        <!-- Slide 15: MCP 서버 등록하기 -->
+        <section>
+            <h2>MCP 서버 등록하기</h2>
+            <div style="display: flex; align-items: flex-start; gap: 1em;">
+                <div style="flex: 1;">
+                    <h3>① .mcp.json 생성</h3>
+                    <pre><code class="language-bash" data-trim># 프로젝트 루트에 설정 파일 생성
+cat > .mcp.json << 'EOF'
+{
+  "mcpServers": {
+    "hello-mcp": {
+      "type": "stdio",
+      "command": "uv",
+      "args": [
+        "run", "--with", "fastmcp",
+        "fastmcp", "run",
+        "03-mcp-architecture/exercise_01_hello_mcp.py"
+      ]
+    }
+  }
+}
+EOF</code></pre>
+                </div>
+                <div style="flex: 0.7;">
+                    <h3>② Claude Code 재시작</h3>
+                    <pre><code class="language-bash" data-trim># Claude Code 종료 후 다시 실행
+/exit
+claude</code></pre>
+                    <h3 style="margin-top: 1em;">③ 연결 확인</h3>
+                    <pre><code class="language-bash" data-trim>/mcp</code></pre>
+                    <p style="font-size: 0.8em; color: var(--ev-text-muted);">
+                        hello-mcp 서버가 목록에<br>표시되면 성공!
+                    </p>
+                </div>
+            </div>
+            <aside class="notes">
+                MCP 서버를 구현했으면 Claude Code에 등록하는 과정입니다.
+                먼저 프로젝트 루트의 .mcp.json 파일을 열어
+                mcpServers 섹션에 서버 정보를 추가합니다.
+                경로는 반드시 프로젝트 루트 기준으로 작성해야 합니다.
+                설정을 저장한 뒤 Claude Code를 재시작해야 새 서버가 로드됩니다.
+                /mcp 명령어를 실행하면 등록된 MCP 서버 목록과 연결 상태를 확인할 수 있습니다.
+                hello-mcp가 목록에 보이면 정상적으로 연결된 것입니다.
+            </aside>
+        </section>
+
+        <!-- Slide 16: MCP 서버 사용해보기 -->
+        <section>
+            <h2>MCP 서버 사용해보기</h2>
+            <div class="emphasis-box">
+                <p style="font-size: 1.1em;">등록된 MCP 서버에 자연어로 요청해보세요</p>
+            </div>
+            <div style="display: flex; gap: 1.5em; margin-top: 0.8em;">
+                <!-- 왼쪽: echo 도구 -->
+                <div style="flex: 1;">
+                    <pre style="font-size: 0.48em;"><code class="language-bash" data-trim>> echo 도구로 "Hello MCP!"를 보내줘</code></pre>
+                    <div style="background: var(--ev-code-bg); border: 1px solid #333; border-radius: 8px; padding: 0.6em 0.8em; margin-top: 0.3em; font-family: monospace; font-size: 0.38em; line-height: 1.6; text-align: left;">
+                        <div><span style="color: #a6e3a1;">⏺</span> <strong style="color: #cdd6f4;">hello-mcp - echo (MCP)</strong><span style="color: #9399b2;">(message: "Hello MCP!")</span></div>
+                        <div style="color: #585b70;">&nbsp;&nbsp;⎿&nbsp;&nbsp;{</div>
+                        <div style="color: #9399b2;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #89b4fa;">"result"</span>: <span style="color: #a6e3a1;">"Echo: Hello MCP!"</span></div>
+                        <div style="color: #585b70;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</div>
+                        <div style="margin-top: 0.5em;"><span style="color: #a6e3a1;">⏺</span> <span style="color: #cdd6f4;">hello-mcp MCP 서버의 echo 도구로 메시지를 보냈고,</span></div>
+                        <div><span style="color: #cdd6f4;">&nbsp;&nbsp;응답으로 <strong>"Echo: Hello MCP!"</strong>가 돌아왔습니다.</span></div>
+                    </div>
+                </div>
+                <!-- 오른쪽: greet 도구 -->
+                <div style="flex: 1;">
+                    <pre style="font-size: 0.48em;"><code class="language-bash" data-trim>> 내 이름은 홍길동이야, 인사해줘</code></pre>
+                    <div style="background: var(--ev-code-bg); border: 1px solid #333; border-radius: 8px; padding: 0.6em 0.8em; margin-top: 0.3em; font-family: monospace; font-size: 0.38em; line-height: 1.6; text-align: left;">
+                        <div><span style="color: #a6e3a1;">⏺</span> <strong style="color: #cdd6f4;">hello-mcp - greet (MCP)</strong><span style="color: #9399b2;">(name: "홍길동")</span></div>
+                        <div style="color: #585b70;">&nbsp;&nbsp;⎿&nbsp;&nbsp;{</div>
+                        <div style="color: #9399b2;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #89b4fa;">"result"</span>: <span style="color: #a6e3a1;">"안녕하세요, 홍길동님! 반갑습니다."</span></div>
+                        <div style="color: #585b70;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</div>
+                        <div style="margin-top: 0.5em;"><span style="color: #a6e3a1;">⏺</span> <span style="color: #cdd6f4;">hello-mcp MCP 서버의 greet 도구를 사용했습니다:</span></div>
+                        <div><span style="color: #cdd6f4;">&nbsp;&nbsp;"안녕하세요, 홍길동님! 반갑습니다."</span></div>
+                    </div>
+                </div>
+            </div>
+            <div style="margin-top: 0.8em; text-align: center;">
+                <p style="font-size: 0.9em;">
+                    <strong>Discovery</strong> → <strong>도구 선택</strong> → <strong>실행</strong> — 자연어만으로 MCP 도구가 호출됩니다!
+                </p>
+            </div>
+            <aside class="notes">
+                등록된 hello-mcp 서버를 실제로 사용해봅시다.
+                자연어로 요청하면 AI가 자동으로 처리합니다.
+                왼쪽: "echo 도구로 Hello MCP를 보내줘"라고 하면
+                AI가 echo 도구를 발견(Discovery)하고 호출합니다.
+                오른쪽: "내 이름은 홍길동이야, 인사해줘"라고 하면
+                greet 도구를 찾아서 이름을 인자로 전달합니다.
+                사용자가 도구 이름이나 파라미터를 직접 지정하지 않았는데도
+                AI가 자동으로 적절한 도구를 찾아서 호출하는 것이
+                MCP의 Discovery 메커니즘이자 핵심 가치입니다.
+            </aside>
+        </section>
+
         <!-- ============================================ -->
         <!-- Part 4: 정리 (1장)                           -->
         <!-- ============================================ -->
 
-        <!-- Slide 17: 정리 & Q&A -->
+        <!-- Slide 18: 정리 & Q&A -->
         <section>
             <h2>정리 & Q&A</h2>
             <div class="columns">
