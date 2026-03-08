@@ -25,16 +25,16 @@
 
 **[enable-your-vibe-exercise](https://github.com/Aiden-Jeon/enable-your-vibe-exercise)** — 클론 후 `uv sync`로 환경을 설정하세요.
 
-## 커리큘럼 (총 220분)
+## 커리큘럼 (총 235분)
 
 ### Part 1: 기초 다지기 (80분)
 
 | # | 섹션 | 시간 | 유형 | 설명 |
 |---|------|------|------|------|
 | 00 | [Welcome](sections/00-home/) | 10분 | 강의 | 세션 소개, 전체 흐름 안내, 사전 준비 확인 |
-| 01 | [AI Foundation](sections/01-ai-foundation/) | 15분 | 강의+데모 | Vibe Coding 개념, Claude AI 차별점, 에이전틱 코딩 |
+| 01 | [AI Foundation](sections/01-ai-foundation/) | 15분 | 강의+데모 | AI Fluency, Vibe Coding 개념, 에이전틱 코딩 |
 | 02 | [Claude Code Features](sections/02-claude-code-features/) | 25분 | 강의+실습 | CLI 사용법, CLAUDE.md, 핵심 기능 4가지 |
-| 03 | [MCP Architecture](sections/03-mcp-architecture/) | 30분 | 강의+실습 | MCP 프로토콜, FastMCP로 첫 MCP 서버 만들기 |
+| 03 | [MCP Architecture](sections/03-mcp-architecture/) | 30분 | 강의+실습 | Managed vs Custom MCP, FastMCP로 첫 MCP 서버 만들기 |
 
 ### Part 2: 실전 구현 (140분)
 
@@ -45,6 +45,12 @@
 | 06 | [Custom Agents](sections/06-agents/) | 25분 | 강의+실습 | agent.md 구조, Skills vs Agents, 에이전트 만들기 |
 | 07 | [Hooks](sections/07-hooks/) | 25분 | 강의+실습 | 이벤트 기반 자동화, 안전 가드레일, Auto-format |
 | 08 | [AI Dev Kit](sections/08-ai-dev-kit/) | 30분 | 강의+데모 | 5대 구성 요소, MCP 서버, Skills, ChatAgent, 배포 파이프라인 |
+
+### Part 3: 보너스 (15분)
+
+| # | 섹션 | 시간 | 유형 | 설명 |
+|---|------|------|------|------|
+| 09 | [Google Slides](sections/09-google-slides/) | 15분 | 강의+데모 | Vibe Coding으로 Google Slides 자동화 |
 
 ### 학습 경로
 
@@ -57,6 +63,11 @@ Part 1: 기초                                          Part 2: 실전
                                                      05 Skills ──→ 06 Agents ──→ 07 Hooks
                                                               │
                                                      08 AI Dev Kit (프로덕션 통합)
+
+                                                     Part 3: 보너스
+                                                     ┌──────────────────┐
+                                                     │ 09 Google Slides │
+                                                     └──────────────────┘
 ```
 
 ## 슬라이드 보기
@@ -98,12 +109,14 @@ enable-your-vibe/
 │   ├── 05-skills/             # 강의+실습: Skills 개념에서 실전까지
 │   ├── 06-agents/             # 강의+실습: Custom Agents
 │   ├── 07-hooks/              # 강의+실습: Hooks 이벤트 기반 자동화
-│   └── 08-ai-dev-kit/         # 강의+데모: AI Dev Kit
+│   ├── 08-ai-dev-kit/         # 강의+데모: AI Dev Kit
+│   └── 09-google-slides/      # 강의+데모: Google Slides 자동화
 ├── shared/
 │   ├── assets/theme.css       # 커스텀 reveal.js 테마
 │   └── scripts/
 │       ├── copy-code.js       # 코드 복사 유틸리티
 │       ├── sidebar.js         # 사이드바 네비게이션
+│       ├── workspace-url.js   # 워크스페이스 URL 유틸리티
 │       ├── serve-slides.py    # 슬라이드 프리뷰 서버
 │       └── validate-section.py # 섹션 구조 검증
 ├── enable-your-vibe-exercise/ # 실습 코드 (git submodule)

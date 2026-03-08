@@ -45,36 +45,6 @@
             font-size: 0.8em;
             color: var(--ev-text-muted);
         }
-        .reveal .flow-chain {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.6em;
-            margin: 1em 0;
-            flex-wrap: wrap;
-        }
-        .reveal .flow-chain .chain-step {
-            background: var(--ev-bg-alt);
-            border: 1px solid var(--ev-accent);
-            border-radius: 10px;
-            padding: 0.5em 0.9em;
-            text-align: center;
-            min-width: 90px;
-        }
-        .reveal .flow-chain .chain-step .step-label {
-            font-size: 0.7em;
-            color: var(--ev-text-muted);
-            display: block;
-        }
-        .reveal .flow-chain .chain-step .step-name {
-            font-size: 0.85em;
-            font-weight: bold;
-            color: var(--ev-accent-light);
-        }
-        .reveal .flow-chain .chain-arrow {
-            color: var(--ev-accent);
-            font-size: 1.3em;
-        }
         .reveal .tree-diagram {
             font-family: "Courier New", monospace;
             text-align: left;
@@ -185,18 +155,16 @@
             <section>
                 <h2>학습 목표</h2>
                 <ul>
-                    <li class="fragment fade-up" data-fragment-index="0">Claude Code의 <strong>Skills</strong>와 <strong>Agents</strong> 개념 이해</li>
+                    <li class="fragment fade-up" data-fragment-index="0">Claude Code의 <strong>Skills</strong> 개념 이해</li>
                     <li class="fragment fade-up" data-fragment-index="0"><code>SKILL.md</code> 파일 구조와 작성법 학습</li>
                     <li class="fragment fade-up" data-fragment-index="0"><strong>레퍼런스 파일</strong>을 활용하여 일관된 품질의 코드 생성</li>
-                    <li class="fragment fade-up" data-fragment-index="0"><strong>Skill 체이닝</strong> 패턴으로 복잡한 워크플로우 구성</li>
                     <li class="fragment fade-up" data-fragment-index="0">직접 <strong>Custom Skill</strong>을 만들어 팀에서 활용</li>
                 </ul>
                 <aside class="notes">
-                    다섯 가지 학습 목표가 있습니다.
-                    Skills와 Agents가 무엇인지 정확히 이해합니다.
+                    학습 목표를 살펴보겠습니다.
+                    Skills가 무엇인지 정확히 이해합니다.
                     SKILL.md 파일을 직접 작성할 수 있을 정도로 구조를 파악합니다.
                     레퍼런스 파일을 활용해서 AI가 항상 팀 컨벤션에 맞는 코드를 생성하게 합니다.
-                    여러 Skill을 연결하는 체이닝 패턴을 이해합니다.
                     마지막으로 실습을 통해 실제로 Custom Skill을 만들어봅니다.
                 </aside>
             </section>
@@ -527,101 +495,7 @@ Genie MCP 서버를 활용하여 Genie Space를 생성합니다.
                 </aside>
             </section>
 
-            <!-- Slide 11: Custom Agents + Skills vs Agents 비교 -->
-            <section>
-                <h2>Custom Agents &amp; Skills vs Agents</h2>
-                <div class="columns">
-                    <div>
-                        <h3 style="font-size: 0.9em;">Custom Agents</h3>
-                        <ul style="font-size: 0.8em;">
-                            <li><code>.claude/agents/</code> 디렉토리에 마크다운으로 정의</li>
-                            <li>특정 <strong>역할</strong>에 특화 (예: @researcher, @validator)</li>
-                            <li>도구 사용 권한과 제약 조건 명시</li>
-                            <li>호출: <code>@agent-name</code></li>
-                        </ul>
-                    </div>
-                    <div>
-                        <table style="font-size: 0.7em;">
-                            <thead>
-                                <tr><th></th><th>Skills</th><th>Agents</th></tr>
-                            </thead>
-                            <tbody>
-                                <tr><td><strong>정의</strong></td><td>작업 절차</td><td>역할과 권한</td></tr>
-                                <tr><td><strong>파일</strong></td><td>SKILL.md</td><td>agent.md</td></tr>
-                                <tr><td><strong>위치</strong></td><td>.claude/skills/</td><td>.claude/agents/</td></tr>
-                                <tr><td><strong>호출</strong></td><td>/skill-name</td><td>@agent-name</td></tr>
-                                <tr><td><strong>초점</strong></td><td>"무엇을, 어떻게"</td><td>"누가, 어떤 범위에서"</td></tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-                <div class="emphasis-box fragment" style="margin-top: 0.8em;">
-                    <strong>핵심:</strong> Skills는 절차 중심, Agents는 역할 중심 &mdash; 다음 섹션에서 Agents를 자세히 다룹니다
-                </div>
-                <aside class="notes">
-                    Agents는 Skills와는 다른 개념입니다. Skills가 작업의 절차를 정의한다면, Agents는 역할과 권한을 정의합니다.
-                    Skills는 "무엇을 어떻게 할 것인가"에 초점을 맞추고 슬래시 명령어로 호출합니다.
-                    Agents는 "누가 어떤 범위에서 할 것인가"에 초점을 맞추고 골뱅이로 호출합니다.
-                    둘 다 마크다운 파일로 정의되며, .claude 디렉토리 아래에 위치합니다.
-                    실무에서는 이 둘을 조합해서 사용합니다.
-                </aside>
-            </section>
-
-            <!-- Slide 12: Skill 체이닝 패턴 -->
-            <section>
-                <h2 style="font-size: 1.4em;">Skill 체이닝 패턴</h2>
-                <p style="font-size: 0.7em; margin-bottom: 0.3em;">
-                    Skill A의 출력을 Skill B의 입력으로 연결하여 <strong>복잡한 워크플로우</strong>를 구성합니다
-                </p>
-                <div class="flow-chain fragment fade-up" style="flex-wrap:nowrap;overflow-x:auto;gap:0.2em;">
-                    <div class="chain-step" style="min-width:unset;padding:0.3em 0.6em;display:inline-block;">
-                        <span class="step-label" style="font-size:0.65em;">Skill A</span>
-                        <span class="step-name" style="font-size:0.75em;">api-endpoint</span>
-                    </div>
-                    <span class="chain-arrow" style="display:inline-block;font-size:0.8em;">&rarr;</span>
-                    <div class="chain-step" style="min-width:unset;padding:0.3em 0.6em;display:inline-block;">
-                        <span class="step-label" style="font-size:0.65em;">출력 &rarr; 입력</span>
-                        <span class="step-name" style="font-size:0.75em;">엔드포인트 코드</span>
-                    </div>
-                    <span class="chain-arrow" style="display:inline-block;font-size:0.8em;">&rarr;</span>
-                    <div class="chain-step" style="min-width:unset;padding:0.3em 0.6em;display:inline-block;">
-                        <span class="step-label" style="font-size:0.65em;">Skill B</span>
-                        <span class="step-name" style="font-size:0.75em;">test-generator</span>
-                    </div>
-                    <span class="chain-arrow" style="display:inline-block;font-size:0.8em;">&rarr;</span>
-                    <div class="chain-step" style="min-width:unset;padding:0.3em 0.6em;display:inline-block;">
-                        <span class="step-label" style="font-size:0.65em;">출력 &rarr; 입력</span>
-                        <span class="step-name" style="font-size:0.75em;">테스트 코드</span>
-                    </div>
-                    <span class="chain-arrow" style="display:inline-block;font-size:0.8em;">&rarr;</span>
-                    <div class="chain-step" style="min-width:unset;padding:0.3em 0.6em;display:inline-block;">
-                        <span class="step-label" style="font-size:0.65em;">Skill C</span>
-                        <span class="step-name" style="font-size:0.75em;">api-docs</span>
-                    </div>
-                </div>
-                <div class="fragment fade-up" style="margin-top: 0.8em;">
-                    <h3>체이닝 예시: 기능 개발 워크플로우</h3>
-                    <pre><code class="language-text">1. /api-endpoint "사용자 프로필 조회 API"  → 엔드포인트 코드 생성
-2. /test-generator "생성된 엔드포인트에 대한 테스트"  → 테스트 코드 자동 생성
-3. /api-docs "프로필 조회 API 문서화"  → API 문서 생성</code></pre>
-                </div>
-                <div class="fragment fade-up emphasis-box" style="margin-top: 0.5em;">
-                    <p style="font-size: 0.85em; margin: 0; text-align: center;">
-                        체이닝의 핵심: 각 Skill의 <strong style="color: var(--ev-accent);">출력 형식</strong>이
-                        다음 Skill의 <strong style="color: var(--ev-accent);">입력 형식</strong>과 호환되어야 합니다
-                    </p>
-                </div>
-                <aside class="notes">
-                    Skill 체이닝은 여러 Skill을 연결하여 복잡한 워크플로우를 구성하는 패턴입니다.
-                    예를 들어, 기능 개발 워크플로우를 생각해봅시다.
-                    먼저 api-endpoint 스킬로 엔드포인트 코드를 생성하고,
-                    그 결과물을 기반으로 test-generator 스킬로 테스트 코드를 만들고,
-                    마지막으로 api-docs 스킬로 API 문서를 생성합니다.
-                    체이닝이 잘 동작하려면 각 Skill의 출력 형식이 다음 Skill의 입력으로 자연스럽게 연결되어야 합니다.
-                </aside>
-            </section>
-
-            <!-- Slide 13: 실습 Step 1 - genie-space 워크플로우 작성 -->
+            <!-- Slide 11: 실습 Step 1 - genie-space 워크플로우 작성 -->
             <section>
                 <h2>실습 Step 1: genie-space 워크플로우 작성</h2>
                 <div class="exercise-box fragment fade-up">
@@ -749,12 +623,6 @@ references/genie-best-practices.md 문서를 만들고,
                         <li class="fragment fade-up" data-fragment-index="0">
                             <strong>레퍼런스 파일</strong> &mdash; conventions, templates, examples로 일관성 보장
                         </li>
-                        <li class="fragment fade-up" data-fragment-index="0">
-                            <strong>Skill 체이닝</strong> &mdash; 출력-입력 연결로 복잡한 워크플로우 구성
-                        </li>
-                        <li class="fragment fade-up" data-fragment-index="0">
-                            <strong>Agents</strong> &mdash; 역할과 권한 기반. Skills와 조합하여 사용
-                        </li>
                     </ul>
                 </div>
                 <p class="fragment fade-up" style="margin-top: 1.5em; text-align: center; font-size: 1.2em; color: var(--ev-accent);" data-fragment-index="1">
@@ -768,8 +636,7 @@ references/genie-best-practices.md 문서를 만들고,
                     정리하겠습니다.
                     Skills는 작업 절차를 SKILL.md에 정의하여 슬래시 명령어로 호출합니다.
                     좋은 Skill은 명확한 목적, 구조화된 절차, 레퍼런스 기반 품질 세 가지를 갖춥니다.
-                    레퍼런스 파일로 일관성을 보장하고, 체이닝으로 워크플로우를 구성합니다.
-                    Agents는 역할 기반으로 Skills와 상호 보완적입니다.
+                    레퍼런스 파일로 일관성을 보장합니다.
                     질문을 받겠습니다.
                     예상 질문들:
                     - Q: Skills와 CLAUDE.md의 차이는? A: CLAUDE.md는 프로젝트 전체의 컨텍스트를 설정하고, Skills는 특정 작업의 절차를 정의합니다.
