@@ -149,9 +149,9 @@
             <section>
                 <h2>학습 목표</h2>
                 <ol class="objective-list">
-                    <li class="fragment fade-up">Claude Code에서 <strong>Google Slides 스킬</strong> 활용법 이해</li>
-                    <li class="fragment fade-up"><strong>자연어</strong>로 프레젠테이션을 생성하는 워크플로우 학습</li>
-                    <li class="fragment fade-up">Vibe Coding을 활용한 <strong>문서 자동화</strong>의 가능성 파악</li>
+                    <li>Claude Code에서 <strong>Google Slides 스킬</strong> 활용법 이해</li>
+                    <li><strong>자연어</strong>로 프레젠테이션을 생성하는 워크플로우 학습</li>
+                    <li>Vibe Coding을 활용한 <strong>문서 자동화</strong>의 가능성 파악</li>
                 </ol>
                 <aside class="notes">
                     이번 섹션의 학습 목표는 세 가지입니다.
@@ -164,19 +164,19 @@
             <!-- Slide 3: 문서 자동화의 필요성 -->
             <section>
                 <h2>왜 슬라이드를 코드로 만드는가?</h2>
-                <div class="fragment fade-up">
+                <div>
                     <div class="workflow-step">
                         <h4>기존 방식의 문제</h4>
                         <p>슬라이드 디자인에 시간 소모 &bull; 반복적인 레이아웃 작업 &bull; 일관성 유지 어려움</p>
                     </div>
                 </div>
-                <div class="fragment fade-up">
+                <div>
                     <div class="workflow-step">
                         <h4>Vibe Coding 방식</h4>
                         <p>자연어로 내용 전달 &bull; AI가 디자인/구조화 &bull; 수정도 대화로 해결</p>
                     </div>
                 </div>
-                <div class="fragment fade-up">
+                <div>
                     <div class="workflow-step">
                         <h4>결과</h4>
                         <p>콘텐츠에 집중 &bull; 제작 시간 단축 &bull; 템플릿 기반 일관성 확보</p>
@@ -198,25 +198,25 @@
                 <p style="font-size: 0.85em; margin-bottom: 0.6em;">
                     Claude Code의 <code>/google-slides</code> 스킬이 제공하는 기능
                 </p>
-                <div class="fragment fade-up">
+                <div>
                     <div class="skill-card">
                         <h4>프레젠테이션 생성</h4>
                         <p>새 Google Slides 프레젠테이션을 자동으로 생성</p>
                     </div>
                 </div>
-                <div class="fragment fade-up">
+                <div>
                     <div class="skill-card">
                         <h4>템플릿 &amp; 서식</h4>
                         <p>Databricks 템플릿 적용, 표, 차트, 이미지 삽입</p>
                     </div>
                 </div>
-                <div class="fragment fade-up">
+                <div>
                     <div class="skill-card">
                         <h4>콘텐츠 관리</h4>
                         <p>슬라이드 추가/수정/삭제, 텍스트 서식, 레이아웃 조정</p>
                     </div>
                 </div>
-                <div class="fragment fade-up">
+                <div>
                     <div class="skill-card">
                         <h4>Google Workspace 연동</h4>
                         <p>gcloud CLI + Google Slides API를 통한 직접 제어</p>
@@ -237,7 +237,7 @@
                 <p style="font-size: 0.85em; margin-bottom: 0.8em;">
                     자연어 명령 한 줄로 프레젠테이션을 만들어봅니다
                 </p>
-                <div class="demo-flow fragment fade-up">
+                <div class="demo-flow">
                     <div class="flow-step">
                         <strong>프롬프트 작성</strong>
                         <span class="step-label">자연어로<br>내용 전달</span>
@@ -253,7 +253,7 @@
                         <span class="step-label">Google Slides<br>에서 열기</span>
                     </div>
                 </div>
-                <div class="fragment fade-up" style="margin-top: 1em;">
+                <div style="margin-top: 1em;">
                     <pre><code class="language-bash"># Claude Code에서 이렇게 요청합니다
 > "Databricks Unity Catalog 소개 프레젠테이션을 5장으로 만들어줘.
    각 슬라이드에는 제목, 핵심 내용, 스피커 노트를 포함해줘."</code></pre>
@@ -274,16 +274,16 @@
                 <p style="font-size: 0.85em; margin-bottom: 0.6em;">
                     Claude Code에서 자연어로 프레젠테이션을 생성합니다
                 </p>
-                <pre class="fragment fade-up"><code class="language-bash"># Step 1: Google 인증 확인
+                <pre><code class="language-bash"># Step 1: Google 인증 확인
 $ gcloud auth list
 # 활성 계정이 표시되는지 확인</code></pre>
-                <pre class="fragment fade-up"><code class="language-bash"># Step 2: Claude Code에서 스킬 호출
+                <pre><code class="language-bash"># Step 2: Claude Code에서 스킬 호출
 > /google-slides
 
 # "Databricks Unity Catalog 소개 프레젠테이션을 만들어줘.
 #  5장 구성으로, 각 슬라이드에 제목과 핵심 내용을 넣어줘.
 #  Databricks 템플릿을 적용해줘."</code></pre>
-                <pre class="fragment fade-up"><code class="language-bash"># Step 3: 생성된 프레젠테이션 URL 확인
+                <pre><code class="language-bash"># Step 3: 생성된 프레젠테이션 URL 확인
 # https://docs.google.com/presentation/d/xxxxx/edit
 # 브라우저에서 바로 열어서 확인!</code></pre>
                 <aside class="notes">
@@ -303,19 +303,19 @@ $ gcloud auth list
                 <p style="font-size: 0.85em; margin-bottom: 0.6em;">
                     자동 생성된 프레젠테이션의 구조를 살펴봅니다
                 </p>
-                <div class="fragment fade-up">
+                <div>
                     <div class="workflow-step">
                         <h4>자동으로 생성된 것</h4>
                         <p>슬라이드 레이아웃 &bull; 제목/본문 텍스트 &bull; 서식 &amp; 색상 &bull; 스피커 노트</p>
                     </div>
                 </div>
-                <div class="fragment fade-up">
+                <div>
                     <div class="workflow-step">
                         <h4>추가 수정도 자연어로</h4>
                         <p>"3번째 슬라이드에 아키텍처 다이어그램 설명을 추가해줘"</p>
                     </div>
                 </div>
-                <div class="fragment fade-up">
+                <div>
                     <div class="workflow-step">
                         <h4>핵심 포인트</h4>
                         <p>콘텐츠만 전달하면 AI가 구조화 &rarr; 검토 &rarr; 수정 요청의 반복</p>
@@ -335,7 +335,7 @@ $ gcloud auth list
             <section>
                 <h2>활용 팁 &amp; 확장 아이디어</h2>
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.8em;">
-                    <div class="fragment fade-up">
+                    <div>
                         <div class="skill-card">
                             <h4>효과적인 프롬프트</h4>
                             <ul class="tip-list">
@@ -346,7 +346,7 @@ $ gcloud auth list
                             </ul>
                         </div>
                     </div>
-                    <div class="fragment fade-up">
+                    <div>
                         <div class="skill-card">
                             <h4>확장 활용</h4>
                             <ul class="tip-list">
@@ -358,7 +358,7 @@ $ gcloud auth list
                         </div>
                     </div>
                 </div>
-                <div class="fragment fade-up" style="margin-top: 0.8em;">
+                <div style="margin-top: 0.8em;">
                     <div class="emphasis-box" style="font-size: 0.85em;">
                         Section 05에서 배운 <strong style="color: var(--ev-accent);">Skills</strong>의 실전 활용 사례입니다
                     </div>
@@ -378,13 +378,13 @@ $ gcloud auth list
             <section>
                 <h2>요약</h2>
                 <div class="emphasis-box">
-                    <ul style="font-size: 0.85em;" class="fragment fade-up">
+                    <ul style="font-size: 0.85em;">
                         <li>Google Slides 스킬로 <strong>자연어 &rarr; 프레젠테이션</strong> 자동 생성</li>
                         <li>gcloud CLI + Google Slides API 기반의 <strong>직접 제어</strong></li>
                         <li>콘텐츠에 집중하고 디자인은 AI에게 &rarr; <strong>생산성 향상</strong></li>
                     </ul>
                 </div>
-                <div class="fragment fade-up" style="margin-top: 1em;">
+                <div style="margin-top: 1em;">
                     <p style="font-size: 0.9em;">
                         Vibe Coding은 코드만이 아닙니다.<br>
                         <strong style="color: var(--ev-accent);">문서, 슬라이드, 스프레드시트</strong> &mdash; 모든 것을 자동화할 수 있습니다.

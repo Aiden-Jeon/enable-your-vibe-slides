@@ -143,15 +143,15 @@
             <!-- Slide 2: 오늘의 목표 -->
             <section>
                 <h2>오늘의 목표</h2>
-                <div class="goal-item fragment fade-up" data-fragment-index="0">
+                <div class="goal-item">
                     <span class="goal-icon">1.</span>
                     <span><strong>AI 기초</strong> 이해 &mdash; AI Fluency, Vibe Coding 개념과 Claude AI의 핵심 특징 파악</span>
                 </div>
-                <div class="goal-item fragment fade-up" data-fragment-index="0">
+                <div class="goal-item">
                     <span class="goal-icon">2.</span>
                     <span><strong>핵심 도구</strong> 습득 &mdash; Claude Code, MCP, Skills 등 개발 도구 직접 사용</span>
                 </div>
-                <div class="goal-item fragment fade-up" data-fragment-index="0">
+                <div class="goal-item">
                     <span class="goal-icon">3.</span>
                     <span><strong>AI Dev Kit</strong> 개발 워크플로우 &mdash; Genie MCP 서버부터 에이전트까지 전체 파이프라인 구축</span>
                 </div>
@@ -185,7 +185,7 @@
                         생성된 Space에<br>질의하여 데이터 조회
                     </div>
                 </div>
-                <div class="emphasis-box fragment fade-up" style="margin-top: 1em;">
+                <div class="emphasis-box" style="margin-top: 1em;">
                     <p style="font-size: 0.8em; margin: 0;">
                         이 모든 것을 <strong style="color: var(--ev-accent);">Vibe Coding</strong>으로 &mdash;
                         코드를 직접 작성하지 않고, AI에게 의도를 전달하여 구현합니다
@@ -202,14 +202,14 @@
                 <p style="font-size: 0.85em; margin-bottom: 0.8em;">
                     아래 3단계로 실습 환경을 준비합니다
                 </p>
-                <pre class="fragment fade-up"><code class="language-bash" data-trim># 1. 프로젝트 클론
+                <pre><code class="language-bash" data-trim># 1. 프로젝트 클론
 git clone https://github.com/Aiden-Jeon/enable-your-vibe-exercise
 cd enable-your-vibe-exercise</code></pre>
-                <pre class="fragment fade-up"><code class="language-bash" data-trim># 2. 패키지 설치 (모든 실습 의존성 한 번에)
+                <pre><code class="language-bash" data-trim># 2. 패키지 설치 (모든 실습 의존성 한 번에)
 uv sync</code></pre>
-                <pre class="fragment fade-up"><code class="language-bash" data-trim># 3. 설치 확인
+                <pre><code class="language-bash" data-trim># 3. 설치 확인
 uv run python -c "import fastmcp; print('Ready!')"</code></pre>
-                <div class="emphasis-box fragment fade-up" style="margin-top: 1em;">
+                <div class="emphasis-box" style="margin-top: 1em;">
                     <p style="font-size: 0.8em; margin: 0;">
                         <code>uv sync</code> 한 번으로 모든 실습 패키지가 설치됩니다 &mdash;
                         섹션별 <code>pip install</code>은 필요 없습니다!
@@ -240,15 +240,15 @@ uv run python -c "import fastmcp; print('Ready!')"</code></pre>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr class="fragment fade-up">
+                        <tr>
                             <td><code>pip install -r requirements.txt</code></td>
                             <td><code>uv sync</code></td>
                         </tr>
-                        <tr class="fragment fade-up">
+                        <tr>
                             <td><code>pip install &lt;pkg&gt;</code></td>
                             <td><code>uv add &lt;pkg&gt;</code></td>
                         </tr>
-                        <tr class="fragment fade-up">
+                        <tr>
                             <td><code>python script.py</code></td>
                             <td><code>uv run python script.py</code></td>
                         </tr>
@@ -269,9 +269,9 @@ uv run python -c "import fastmcp; print('Ready!')"</code></pre>
                     Python 도구를 <strong style="color: var(--ev-accent);">설치 없이 바로 실행</strong>
                     &mdash; Node.js의 <code>npx</code>와 유사
                 </p>
-                <pre class="fragment fade-up"><code class="language-bash" data-trim># MCP 서버를 uvx로 바로 실행
+                <pre><code class="language-bash" data-trim># MCP 서버를 uvx로 바로 실행
 uvx fastmcp run server.py</code></pre>
-                <div class="fragment fade-up" style="margin-top: 1em;">
+                <div style="margin-top: 1em;">
                     <p style="font-size: 0.8em; margin-bottom: 0.4em;">MCP 설정에서의 활용 패턴:</p>
                     <pre><code class="language-json" data-trim>{
   "mcpServers": {
@@ -282,7 +282,7 @@ uvx fastmcp run server.py</code></pre>
   }
 }</code></pre>
                 </div>
-                <div class="emphasis-box fragment fade-up" style="margin-top: 0.8em;">
+                <div class="emphasis-box" style="margin-top: 0.8em;">
                     <p style="font-size: 0.8em; margin: 0;">
                         이후 섹션에서 MCP 서버를 실행할 때 <code>uvx</code>를 계속 사용합니다
                     </p>
@@ -299,17 +299,17 @@ uvx fastmcp run server.py</code></pre>
             <section>
                 <h2>로드맵: Part 1 &mdash; 기초 다지기</h2>
                 <p style="font-size: 0.8em; color: var(--ev-text-muted); margin-bottom: 0.6em;">70분 | 강의 중심</p>
-                <div class="roadmap-card fragment fade-up" data-fragment-index="0">
+                <div class="roadmap-card">
                     <span class="rm-num">01</span>
                     <span class="rm-title"><strong>AI Foundation</strong> &mdash; AI Fluency, 4D Framework, Vibe Coding 개념</span>
                     <span class="rm-meta">15분 &middot; 강의</span>
                 </div>
-                <div class="roadmap-card fragment fade-up" data-fragment-index="0">
+                <div class="roadmap-card">
                     <span class="rm-num">02</span>
                     <span class="rm-title"><strong>Claude Code Features</strong> &mdash; CLI 설치, 기본 사용법, 핵심 기능</span>
                     <span class="rm-meta">20분 &middot; 강의+데모</span>
                 </div>
-                <div class="roadmap-card fragment fade-up" data-fragment-index="0">
+                <div class="roadmap-card">
                     <span class="rm-num">03</span>
                     <span class="rm-title"><strong>MCP Architecture</strong> &mdash; MCP 프로토콜, FastMCP로 첫 서버 만들기</span>
                     <span class="rm-meta">25분 &middot; 강의+실습</span>
@@ -323,27 +323,27 @@ uvx fastmcp run server.py</code></pre>
             <section>
                 <h2>로드맵: Part 2 &mdash; 실전 구현</h2>
                 <p style="font-size: 0.8em; color: var(--ev-text-muted); margin-bottom: 0.6em;">140분 | 실습 중심</p>
-                <div class="roadmap-card fragment fade-up" data-fragment-index="1">
+                <div class="roadmap-card">
                     <span class="rm-num">04</span>
                     <span class="rm-title"><strong>Genie MCP</strong> &mdash; Databricks Genie API, MCP 서버 래핑</span>
                     <span class="rm-meta">30분 &middot; 실습</span>
                 </div>
-                <div class="roadmap-card fragment fade-up" data-fragment-index="1">
+                <div class="roadmap-card">
                     <span class="rm-num">05</span>
                     <span class="rm-title"><strong>Skills</strong> &mdash; 개념에서 실전까지, Custom Skill 만들기</span>
                     <span class="rm-meta">30분 &middot; 강의+실습</span>
                 </div>
-                <div class="roadmap-card fragment fade-up" data-fragment-index="1">
+                <div class="roadmap-card">
                     <span class="rm-num">06</span>
                     <span class="rm-title"><strong>Custom Agents</strong> &mdash; 나만의 에이전트 만들기</span>
                     <span class="rm-meta">25분 &middot; 강의+실습</span>
                 </div>
-                <div class="roadmap-card fragment fade-up" data-fragment-index="1">
+                <div class="roadmap-card">
                     <span class="rm-num">07</span>
                     <span class="rm-title"><strong>Hooks</strong> &mdash; 이벤트 기반 자동화</span>
                     <span class="rm-meta">25분 &middot; 강의+실습</span>
                 </div>
-                <div class="roadmap-card fragment fade-up" data-fragment-index="1">
+                <div class="roadmap-card">
                     <span class="rm-num">08</span>
                     <span class="rm-title"><strong>AI Dev Kit</strong> &mdash; 5대 구성 요소, MCP 서버, Skills, ChatAgent, 배포</span>
                     <span class="rm-meta">30분 &middot; 강의+데모</span>
@@ -384,7 +384,7 @@ uvx fastmcp run server.py</code></pre>
                               └─────────────────────────┘
 </pre>
                 </div>
-                <p class="fragment fade-up" style="font-size: 0.75em; color: var(--ev-text-muted); margin-top: 0.5em; text-align: center;">
+                <p style="font-size: 0.75em; color: var(--ev-text-muted); margin-top: 0.5em; text-align: center;">
                     각 섹션은 이전 섹션의 지식을 기반으로 하지만, 독립적으로도 참고 가능합니다
                 </p>
                 <aside class="notes">

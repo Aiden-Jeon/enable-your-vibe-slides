@@ -117,10 +117,10 @@
             <section>
                 <h2>학습 목표</h2>
                 <ul>
-                    <li class="fragment fade-up" data-fragment-index="0">Hooks 개념과 <strong>이벤트 트리거</strong> 방식을 이해한다</li>
-                    <li class="fragment fade-up" data-fragment-index="0">Hook <strong>타입별 사용 시나리오</strong>를 학습한다</li>
-                    <li class="fragment fade-up" data-fragment-index="0"><code>settings.json</code>에서 Hook 설정 방법을 숙지한다</li>
-                    <li class="fragment fade-up" data-fragment-index="0">실습: 간단한 Hook을 <strong>설정하고 테스트</strong>한다</li>
+                    <li>Hooks 개념과 <strong>이벤트 트리거</strong> 방식을 이해한다</li>
+                    <li>Hook <strong>타입별 사용 시나리오</strong>를 학습한다</li>
+                    <li><code>settings.json</code>에서 Hook 설정 방법을 숙지한다</li>
+                    <li>실습: 간단한 Hook을 <strong>설정하고 테스트</strong>한다</li>
                 </ul>
                 <aside class="notes">
                     네 가지 학습 목표입니다.
@@ -174,10 +174,10 @@
                     <li>Claude Code의 특정 동작 <strong>전/후</strong>에 자동으로 트리거</li>
                     <li>코드 포매팅, 안전 가드레일, 알림 등에 활용</li>
                 </ul>
-                <div class="emphasis-box fragment fade-up" style="margin-top: 1em;">
+                <div class="emphasis-box" style="margin-top: 1em;">
                     <strong>핵심 아이디어:</strong> "이 이벤트가 발생하면 자동으로 이 작업을 실행해줘"를 설정한 것
                 </div>
-                <div class="fragment fade-up" style="margin-top: 0.8em;">
+                <div style="margin-top: 0.8em;">
                     <pre><code class="language-text">
 Skills:  사용자가 /명령어로 명시적 호출
 Agents:  사용자가 @에이전트로 명시적 호출
@@ -228,7 +228,7 @@ Hooks:   이벤트 발생 시 자동으로 실행 (암시적)
                         </tr>
                     </tbody>
                 </table>
-                <div class="emphasis-box fragment fade-up" style="margin-top: 0.8em;">
+                <div class="emphasis-box" style="margin-top: 0.8em;">
                     <strong>가장 자주 사용:</strong>
                     <code>PreToolUse</code> (안전) + <code>PostToolUse</code> (자동화)
                 </div>
@@ -265,7 +265,7 @@ Hooks:   이벤트 발생 시 자동으로 실행 (암시적)
   }
 }
                 </code></pre>
-                <div class="columns fragment fade-up" style="margin-top: 0.5em;">
+                <div class="columns" style="margin-top: 0.5em;">
                     <div>
                         <h4 style="color: #60a5fa; font-size: 0.9em;">matcher</h4>
                         <p style="font-size: 0.8em; color: var(--ev-text-muted);">트리거할 도구 이름 패턴 (정규식)</p>
@@ -293,19 +293,19 @@ Hooks:   이벤트 발생 시 자동으로 실행 (암시적)
             <section>
                 <h2>설정 파일 위치와 우선순위</h2>
                 <div style="display: flex; flex-direction: column; gap: 0.8em; margin-top: 1em;">
-                    <div class="priority-box fragment fade-up" data-fragment-index="2" style="border-color: var(--ev-accent);">
+                    <div class="priority-box" style="border-color: var(--ev-accent);">
                         <h4 style="color: var(--ev-accent);">1. 프로젝트 설정 (최우선)</h4>
                         <p><code>.claude/settings.json</code></p>
                         <p>프로젝트별 Hook &mdash; Git으로 팀과 공유</p>
                     </div>
-                    <div class="fragment fade-up" data-fragment-index="1" style="text-align: center; font-size: 0.9em; color: #ef4444; font-weight: bold;">&uarr; <span style="color: #ef4444;">우선순위</span></div>
-                    <div class="priority-box fragment fade-up" data-fragment-index="1">
+                    <div style="text-align: center; font-size: 0.9em; color: #ef4444; font-weight: bold;">&uarr; <span style="color: #ef4444;">우선순위</span></div>
+                    <div class="priority-box">
                         <h4 style="color: #60a5fa;">2. 사용자 설정</h4>
                         <p><code>~/.claude/settings.json</code></p>
                         <p>개인 환경 Hook &mdash; 모든 프로젝트에 적용</p>
                     </div>
-                    <div class="fragment fade-up" data-fragment-index="0" style="text-align: center; font-size: 0.9em; color: #ef4444; font-weight: bold;">&uarr; <span style="color: #ef4444;">우선순위</span></div>
-                    <div class="priority-box fragment fade-up" data-fragment-index="0" style="opacity: 0.7;">
+                    <div style="text-align: center; font-size: 0.9em; color: #ef4444; font-weight: bold;">&uarr; <span style="color: #ef4444;">우선순위</span></div>
+                    <div class="priority-box" style="opacity: 0.7;">
                         <h4 style="color: var(--ev-text-muted);">3. 엔터프라이즈 설정</h4>
                         <p>관리자가 배포하는 조직 전체 설정</p>
                     </div>
@@ -343,7 +343,7 @@ Hooks:   이벤트 발생 시 자동으로 실행 (암시적)
   }
 }
 </code></pre>
-                <div class="hook-card fragment fade-up" style="font-size: 0.85em;">
+                <div class="hook-card" style="font-size: 0.85em;">
                     <h4>동작 흐름</h4>
                     <p>
                         Claude Code가 파일 수정 (Write/Edit)
@@ -352,7 +352,7 @@ Hooks:   이벤트 발생 시 자동으로 실행 (암시적)
                         &rarr; <code>isort</code>로 import 정렬
                     </p>
                 </div>
-                <div class="fragment fade-up emphasis-box" style="margin-top: 0.5em;">
+                <div class="emphasis-box" style="margin-top: 0.5em;">
                     <strong>장점:</strong> Claude Code가 생성한 코드가 항상 팀 컨벤션에 맞게 포매팅됨
                 </div>
                 <aside class="notes">
@@ -387,7 +387,7 @@ Hooks:   이벤트 발생 시 자동으로 실행 (암시적)
   }
 }
                 </code></pre>
-                <div class="hook-card fragment fade-up" style="font-size: 0.85em;">
+                <div class="hook-card" style="font-size: 0.85em;">
                     <h4>동작 흐름</h4>
                     <p>
                         Claude Code가 Bash 명령 실행 시도
@@ -395,7 +395,7 @@ Hooks:   이벤트 발생 시 자동으로 실행 (암시적)
                         &rarr; <code>rm -rf</code>, <code>drop table</code> 등 감지 시 차단 (exit 2)
                     </p>
                 </div>
-                <div class="fragment fade-up emphasis-box" style="margin-top: 0.5em;">
+                <div class="emphasis-box" style="margin-top: 0.5em;">
                     <strong>exit 2</strong>: Hook이 exit 2를 반환하면 도구 실행이 차단됩니다
                 </div>
                 <aside class="notes">
@@ -442,7 +442,7 @@ Hooks:   이벤트 발생 시 자동으로 실행 (암시적)
                         <div style="color: #ccc; font-size: 0.95em;">자동 실행!</div>
                     </div>
                 </div>
-                <div class="fragment fade-up" style="margin-top: 0.5em;">
+                <div style="margin-top: 0.5em;">
                     <table style="font-size: 0.75em;">
                         <thead>
                             <tr><th>확장 체계</th><th>트리거</th><th>초점</th><th>호출 방식</th></tr>
@@ -487,7 +487,7 @@ json.dump(cfg, open(path, "w"), indent=2, ensure_ascii=False)
 print("Hook 설정 완료!")
 PYEOF</code></pre>
                 </div>
-                <div class="fragment fade-up" style="margin-top: 0.4em; font-size: 0.7em;">
+                <div style="margin-top: 0.4em; font-size: 0.7em;">
                     <ul style="margin: 0;">
                         <li><strong style="color: var(--ev-accent-light);">PostToolUse</strong>: Write/Edit 후 <code>.py</code> 파일이면 <code>black</code> 자동 실행</li>
                         <li><strong style="color: var(--ev-accent-light);">PreToolUse</strong>: <code>rm -rf</code>, <code>drop table</code> 등 위험 명령 감지 시 차단 (exit 2)</li>
@@ -530,7 +530,7 @@ claude</code></pre>
                         </li>
                     </ol>
                 </div>
-                <div class="fragment fade-up emphasis-box" style="margin-top: 0.5em;">
+                <div class="emphasis-box" style="margin-top: 0.5em;">
                     <p style="font-size: 0.85em; margin: 0; text-align: center;">
                         두 Hook 모두 정상 동작하면 <strong style="color: var(--ev-accent);">실습 완료!</strong>
                     </p>

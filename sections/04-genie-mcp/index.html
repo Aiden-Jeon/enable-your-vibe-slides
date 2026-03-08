@@ -42,11 +42,11 @@
         <section>
             <h2>학습 목표</h2>
             <ul>
-                <li class="fragment" data-fragment-index="0">Genie Space 생성 API와 serialized_space 형식을 이해한다</li>
-                <li class="fragment" data-fragment-index="0">FastMCP로 Space 생성 + 질의 MCP 서버를 구현한다</li>
-                <li class="fragment" data-fragment-index="0">Claude Code에서 Genie MCP를 연결하여 Space 생성 및 데이터 질의</li>
+                <li>Genie Space 생성 API와 serialized_space 형식을 이해한다</li>
+                <li>FastMCP로 Space 생성 + 질의 MCP 서버를 구현한다</li>
+                <li>Claude Code에서 Genie MCP를 연결하여 Space 생성 및 데이터 질의</li>
             </ul>
-            <div class="emphasis-box fragment" data-fragment-index="0" style="margin-top: 1.5em;">
+            <div class="emphasis-box" style="margin-top: 1.5em;">
                 <strong>핵심:</strong> Space 생성부터 질의까지 — Genie의 전체 라이프사이클을 API로 제어합니다
             </div>
             <aside class="notes">
@@ -70,32 +70,32 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr class="fragment" data-fragment-index="0">
+                    <tr>
                         <td><strong>Space 생성</strong></td>
                         <td><code>POST</code></td>
                         <td><code>/api/2.0/genie/spaces</code></td>
                     </tr>
-                    <tr class="fragment" data-fragment-index="0">
+                    <tr>
                         <td><strong>대화 생성</strong></td>
                         <td><code>POST</code></td>
                         <td><code>/api/2.0/genie/spaces/{id}/conversations</code></td>
                     </tr>
-                    <tr class="fragment" data-fragment-index="0">
+                    <tr>
                         <td><strong>메시지 전송</strong></td>
                         <td><code>POST</code></td>
                         <td><code>.../conversations/{id}/messages</code></td>
                     </tr>
-                    <tr class="fragment" data-fragment-index="0">
+                    <tr>
                         <td><strong>결과 조회</strong></td>
                         <td><code>GET</code></td>
                         <td><code>.../messages/{id}</code></td>
                     </tr>
                 </tbody>
             </table>
-            <div class="emphasis-box fragment" style="margin-top: 1em;">
+            <div class="emphasis-box" style="margin-top: 1em;">
                 <strong>인증:</strong> Bearer 토큰 &mdash; <code>Authorization: Bearer {token}</code>
             </div>
-            <p class="fragment" style="margin-top: 0.8em; font-size: 0.7em;">
+            <p style="margin-top: 0.8em; font-size: 0.7em;">
                 📖 OpenAPI 스펙: <a href="https://openapi.dev.databricks.com/api/workspace/genie" target="_blank" style="color: var(--ev-accent);">openapi.dev.databricks.com/api/workspace/genie</a>
             </p>
             <aside class="notes">
@@ -159,24 +159,24 @@ Client                               Genie API
                     </tr>
                 </thead>
                 <tbody>
-                    <tr class="fragment" data-fragment-index="1">
+                    <tr>
                         <td><code>create_genie_space</code></td>
                         <td>Space 생성</td>
                         <td>title, tables, instructions</td>
                     </tr>
-                    <tr class="fragment" data-fragment-index="1">
+                    <tr>
                         <td><code>ask_genie</code></td>
                         <td>새 대화 + 질의</td>
                         <td>space_id, question</td>
                     </tr>
-                    <tr class="fragment" data-fragment-index="1">
+                    <tr>
                         <td><code>continue_conversation</code></td>
                         <td>후속 질의</td>
                         <td>space_id, conversation_id, question</td>
                     </tr>
                 </tbody>
             </table>
-            <div class="emphasis-box fragment" style="margin-top: 1em;">
+            <div class="emphasis-box" style="margin-top: 1em;">
                 <strong>설계 포인트:</strong> space_id를 파라미터로 받아 여러 Space를 유연하게 사용
             </div>
             <aside class="notes">
@@ -275,7 +275,7 @@ Client                               Genie API
   }
 }
             </code></pre>
-            <div class="emphasis-box fragment" style="margin-top: 0.8em;">
+            <div class="emphasis-box" style="margin-top: 0.8em;">
                 이 구조를 코드로 생성합니다 &mdash; <code>build_serialized_space()</code>
             </div>
             <aside class="notes">
@@ -473,7 +473,7 @@ def create_genie_space(
     resp.raise_for_status()
     return resp.json()
             </code></pre>
-            <div class="emphasis-box fragment" style="margin-top: 1em;">
+            <div class="emphasis-box" style="margin-top: 1em;">
                 <strong>핵심:</strong> <code>serialized_space</code>를 문자열로 전달 &mdash; JSON 안에 JSON 문자열
             </div>
             <aside class="notes">
@@ -493,16 +493,16 @@ def create_genie_space(
             <div style="text-align: left; margin: 0.8em auto; max-width: 95%;">
                 <h3 style="font-size: 1.1em;">실습 단계</h3>
                 <ol style="font-size: 0.9em; line-height: 1.6;">
-                    <li class="fragment">코드를 읽고 주요 함수를 이해합니다: <br><code>build_serialized_space()</code>, <code>create_genie_space()</code></li>
-                    <li class="fragment">코드를 실행합니다:
+                    <li>코드를 읽고 주요 함수를 이해합니다: <br><code>build_serialized_space()</code>, <code>create_genie_space()</code></li>
+                    <li>코드를 실행합니다:
                         <pre style="margin: 0.4em 0;"><code class="language-bash" data-trim>
 uv run python 04-genie-mcp/exercise_01a_create_space.py
                         </code></pre>
                     </li>
-                    <li class="fragment">출력된 <code>Space ID</code>를 확인합니다</li>
+                    <li>출력된 <code>Space ID</code>를 확인합니다</li>
                 </ol>
             </div>
-            <div class="emphasis-box fragment" style="margin-top: 0.8em; font-size: 1.05em;">
+            <div class="emphasis-box" style="margin-top: 0.8em; font-size: 1.05em;">
                 출력된 <code>Space ID</code>를 exercise_01b에서 사용합니다
             </div>
             <aside class="notes">
@@ -553,16 +553,16 @@ create_conversation()     send_message()       poll_result()
             <div style="text-align: left; margin: 1em auto; max-width: 85%;">
                 <h3 style="font-size: 1em;">실습 단계</h3>
                 <ol style="font-size: 0.85em;">
-                    <li class="fragment">코드를 읽고 질의 3단계 흐름을 이해합니다</li>
-                    <li class="fragment">exercise_01a에서 얻은 Space ID로 실행합니다:
+                    <li>코드를 읽고 질의 3단계 흐름을 이해합니다</li>
+                    <li>exercise_01a에서 얻은 Space ID로 실행합니다:
                         <pre style="margin: 0.5em 0; font-size: 0.8em;"><code class="language-bash" data-trim>
 uv run python 04-genie-mcp/exercise_01b_query_space.py &lt;SPACE_ID&gt;
                         </code></pre>
                     </li>
-                    <li class="fragment">질의 결과를 확인합니다</li>
+                    <li>질의 결과를 확인합니다</li>
                 </ol>
             </div>
-            <div class="emphasis-box fragment" style="margin-top: 0.8em;">
+            <div class="emphasis-box" style="margin-top: 0.8em;">
                 API 동작 확인 완료 &rarr; Exercise 02에서 MCP 서버로 래핑합니다
             </div>
             <aside class="notes">
@@ -629,13 +629,13 @@ uv run python 04-genie-mcp/exercise_01b_query_space.py &lt;SPACE_ID&gt;
             <p style="font-size: 0.7em; color: var(--ev-text-muted);">Claude Code로 MCP 서버 코딩 실습</p>
             <div style="text-align: left; margin: 0.8em auto; max-width: 90%;">
                 <ol style="font-size: 0.7em;">
-                    <li class="fragment">스켈레톤 파일의 TODO 확인: <code>exercise_02_genie_mcp_server.py</code></li>
-                    <li class="fragment">Claude Code에게 구현 요청:
+                    <li>스켈레톤 파일의 TODO 확인: <code>exercise_02_genie_mcp_server.py</code></li>
+                    <li>Claude Code에게 구현 요청:
                         <pre style="margin: 0.5em 0; font-size: 0.8em;"><code class="language-text" data-trim>
 @04-genie-mcp/ exercise_01a, 01b를 참고해서 exercise_02의 MCP 서버를 완성해줘
                         </code></pre>
                     </li>
-                    <li class="fragment">실행 및 테스트:
+                    <li>실행 및 테스트:
                         <pre style="margin: 0.5em 0; font-size: 0.8em;"><code class="language-bash" data-trim>
 uv run python 04-genie-mcp/exercise_02_genie_mcp_server.py
                         </code></pre>

@@ -230,19 +230,19 @@
             <section>
                 <h2>학습 목표</h2>
                 <ol class="objective-list">
-                    <li class="fragment fade-up" data-fragment-index="0">
+                    <li>
                         <strong>AI Dev Kit</strong>의 5대 구성 요소와 전체 아키텍처를 이해한다
                     </li>
-                    <li class="fragment fade-up" data-fragment-index="0">
+                    <li>
                         <strong>databricks-mcp</strong> 서버의 도구 카테고리와 활용법을 파악한다
                     </li>
-                    <li class="fragment fade-up" data-fragment-index="0">
+                    <li>
                         <strong>databricks-skills</strong>의 구조와 Claude Code 연동 방법을 학습한다
                     </li>
-                    <li class="fragment fade-up" data-fragment-index="0">
+                    <li>
                         <strong>databricks-agents</strong>의 <code>ChatAgent</code> 인터페이스를 학습한다
                     </li>
-                    <li class="fragment fade-up" data-fragment-index="0">
+                    <li>
                         <strong>MLflow Tracing</strong>을 활용한 에이전트 모니터링 방법을 파악한다
                     </li>
                 </ol>
@@ -262,7 +262,7 @@
                 <p style="font-size: 0.85em; margin-bottom: 0.6em;">
                     <a href="https://github.com/databricks-solutions/ai-dev-kit" style="color: var(--ev-accent-light);">databricks-solutions/ai-dev-kit</a> &mdash; 오픈소스 통합 프레임워크
                 </p>
-                <div class="fragment fade-up" style="background: var(--ev-code-bg); border: 1px solid var(--ev-accent); border-radius: 8px; padding: 1.2em 2em; width: 100%; box-sizing: border-box;">
+                <div style="background: var(--ev-code-bg); border: 1px solid var(--ev-accent); border-radius: 8px; padding: 1.2em 2em; width: 100%; box-sizing: border-box;">
                     <div style="text-align: center; margin-bottom: 0.8em;">
                         <span style="color: var(--ev-accent-light); font-size: 1.1em; font-weight: 600;">Databricks AI Dev Kit</span>
                     </div>
@@ -274,7 +274,7 @@
                         <tr><td style="padding: 0.3em 0; text-align: right; padding-right: 2em;"><span style="color: #c9b1ff;">[ai-dev-project]</span></td><td style="padding: 0.3em 0; color: var(--ev-text-muted);">프로젝트 템플릿</td></tr>
                     </table>
                 </div>
-                <div class="fragment fade-up" style="margin-top: 0.8em;">
+                <div style="margin-top: 0.8em;">
                     <p style="font-size: 0.75em; color: var(--ev-text-muted); text-align: center;">
                         Claude Code + Databricks를 하나의 워크플로우로 연결하는 5대 구성 요소
                     </p>
@@ -295,25 +295,25 @@
                 <h2>5대 구성 요소</h2>
                 <div class="columns">
                     <div>
-                        <div class="component-card fragment fade-up">
+                        <div class="component-card">
                             <h4>databricks-tools-core</h4>
                             <p>Databricks SDK 래퍼 &mdash; SQL, Compute, Jobs 등 50+ 도구</p>
                         </div>
-                        <div class="component-card fragment fade-up">
+                        <div class="component-card">
                             <h4>databricks-mcp</h4>
                             <p>FastMCP 기반 MCP 서버 &mdash; tools-core를 MCP 프로토콜로 노출</p>
                         </div>
-                        <div class="component-card fragment fade-up">
+                        <div class="component-card">
                             <h4>databricks-skills</h4>
                             <p>25+ SKILL.md 팩 &mdash; 파이프라인, 대시보드, Genie 등 작업별 가이드</p>
                         </div>
                     </div>
                     <div>
-                        <div class="component-card fragment fade-up">
+                        <div class="component-card">
                             <h4>databricks-builder-app</h4>
                             <p>대화형 빌더 UI &mdash; 스킬 선택, 프로젝트 스캐폴딩, 원클릭 설정</p>
                         </div>
-                        <div class="component-card fragment fade-up" style="border-color: var(--ev-accent);">
+                        <div class="component-card" style="border-color: var(--ev-accent);">
                             <h4>databricks-ai-dev-project</h4>
                             <p>프로젝트 템플릿 &mdash; CLAUDE.md, MCP 설정, Skills 포함 스타터 킷</p>
                         </div>
@@ -335,7 +335,7 @@
                 <p style="font-size: 0.85em; margin-bottom: 0.6em;">
                     Claude Code &rarr; <strong>databricks-mcp</strong> &rarr; Databricks Workspace
                 </p>
-                <div class="deploy-flow fragment fade-up">
+                <div class="deploy-flow">
                     <div class="flow-step">
                         <strong>Claude Code</strong>
                         <span class="step-label">MCP Client</span>
@@ -356,7 +356,7 @@
                         <span class="step-label">Databricks API</span>
                     </div>
                 </div>
-                <pre class="fragment fade-up"><code class="language-json">// .claude/settings.json
+                <pre><code class="language-json">// .claude/settings.json
 {
   "mcpServers": {
     "databricks": {
@@ -365,7 +365,7 @@
     }
   }
 }</code></pre>
-                <div class="fragment fade-up" style="margin-top: 0.6em;">
+                <div style="margin-top: 0.6em;">
                     <div class="emphasis-box" style="font-size: 0.8em;">
                         <strong>핵심:</strong> Section 03에서 배운 MCP 아키텍처가 그대로 적용됩니다
                     </div>
@@ -386,7 +386,7 @@
                 <p style="font-size: 0.8em; margin-bottom: 0.5em; color: var(--ev-text-muted);">
                     databricks-mcp가 제공하는 주요 도구 카테고리
                 </p>
-                <table class="category-table fragment fade-up">
+                <table class="category-table">
                     <thead>
                         <tr><th>카테고리</th><th>주요 도구</th><th>활용 예시</th></tr>
                     </thead>
@@ -403,7 +403,7 @@
                         <tr><td>Dashboard</td><td>create_dashboard</td><td>AI SQL 대시보드</td></tr>
                     </tbody>
                 </table>
-                <div class="fragment fade-up" style="margin-top: 0.5em; text-align: center;">
+                <div style="margin-top: 0.5em; text-align: center;">
                     <p style="font-size: 0.75em; color: var(--ev-text-muted);">
                         Section 04에서 직접 만든 Genie MCP가 이미 내장되어 있습니다!
                     </p>
@@ -426,7 +426,7 @@
                     6개 카테고리, <strong>25+ 스킬</strong> &mdash; <code>.claude/skills/</code>에 설치
                 </p>
                 <div class="columns">
-                    <div class="fragment fade-up" data-fragment-index="0" style="display: flex; gap: 2em;">
+                    <div style="display: flex; gap: 2em;">
                         <div>
                             <div class="mini-card">
                                 <strong>Data Engineering</strong><br>
@@ -474,7 +474,7 @@
                 <p style="font-size: 0.85em; margin-bottom: 0.6em;">
                     <strong>Skills = 지식</strong> (무엇을, 어떻게) + <strong>MCP Tools = 실행</strong> (실제 동작)
                 </p>
-                <div class="component-card fragment fade-up">
+                <div class="component-card">
                     <h4>예시: "DLT 파이프라인 만들어줘"</h4>
                     <p style="color: var(--ev-text); font-size: 0.8em; margin-top: 0.5em;">
                         1. <span style="color: #a8e6cf;">Skill</span> &mdash; <code>create-dlt-pipeline</code> 스킬이 파이프라인 구조, 모범 사례, 설정 가이드 제공<br>
@@ -482,7 +482,7 @@
                         3. <span style="color: #4ecdc4;">결과</span> &mdash; 실제 동작하는 DLT 파이프라인이 Databricks에 생성됨
                     </p>
                 </div>
-                <div class="fragment fade-up" style="margin-top: 0.8em;">
+                <div style="margin-top: 0.8em;">
                     <div class="emphasis-box" style="font-size: 0.8em;">
                         <strong>핵심 인사이트:</strong>
                         Skills가 "전문가의 지식"을 제공하고, MCP Tools가 "손과 발"이 되어 실행합니다.
@@ -505,18 +505,18 @@
                 <p style="font-size: 0.75em; margin-bottom: 0.3em;">
                     3가지 방법으로 시작할 수 있습니다
                 </p>
-                <div class="install-box fragment fade-up">
+                <div class="install-box">
                     <p style="font-size: 0.75em; margin: 0 0 0.15em 0; color: var(--ev-accent-light);"><strong>1. 원라인 설치 (권장)</strong></p>
                     <pre><code class="language-bash">curl -fsSL https://raw.githubusercontent.com/databricks-solutions/ai-dev-kit/main/install.sh | bash</code></pre>
                     <p style="font-size: 0.6em; color: var(--ev-text-muted); margin: 0.15em 0 0 0;">MCP 서버 + Skills + CLAUDE.md 한 번에 설정</p>
                 </div>
-                <div class="install-box fragment fade-up">
+                <div class="install-box">
                     <p style="font-size: 0.75em; margin: 0 0 0.15em 0; color: var(--ev-accent-light);"><strong>2. 스타터 킷</strong></p>
                     <pre><code class="language-bash">git clone https://github.com/databricks-solutions/ai-dev-project
 cd ai-dev-project && claude</code></pre>
                     <p style="font-size: 0.6em; color: var(--ev-text-muted); margin: 0.15em 0 0 0;">CLAUDE.md, MCP, Skills 포함 프로젝트 템플릿</p>
                 </div>
-                <div class="install-box fragment fade-up">
+                <div class="install-box">
                     <p style="font-size: 0.75em; margin: 0 0 0.15em 0; color: var(--ev-accent-light);"><strong>3. Skills만 설치</strong></p>
                     <pre><code class="language-bash">cp -r ai-dev-kit/skills/databricks-skills/.claude/skills/* .claude/skills/</code></pre>
                     <p style="font-size: 0.6em; color: var(--ev-text-muted); margin: 0.15em 0 0 0;">기존 프로젝트에 Databricks Skills만 추가</p>
@@ -536,17 +536,17 @@ cd ai-dev-project && claude</code></pre>
                 <h2>AI Dev Kit로 빌드 가능한 것들</h2>
                 <div class="columns">
                     <div>
-                        <div class="mini-card fragment fade-up" data-fragment-index="0"><strong>DLT Pipelines</strong> &mdash; 데이터 파이프라인 자동 생성</div>
-                        <div class="mini-card fragment fade-up" data-fragment-index="0"><strong>Workflows &amp; Jobs</strong> &mdash; 스케줄링 &amp; 오케스트레이션</div>
-                        <div class="mini-card fragment fade-up" data-fragment-index="0"><strong>SQL Dashboards</strong> &mdash; AI 기반 대시보드 생성</div>
-                        <div class="mini-card fragment fade-up" data-fragment-index="0"><strong>Genie Spaces</strong> &mdash; 자연어 데이터 분석</div>
-                        <div class="mini-card fragment fade-up" data-fragment-index="0"><strong>Knowledge Articles</strong> &mdash; Genie 지식 베이스</div>
+                        <div class="mini-card"><strong>DLT Pipelines</strong> &mdash; 데이터 파이프라인 자동 생성</div>
+                        <div class="mini-card"><strong>Workflows &amp; Jobs</strong> &mdash; 스케줄링 &amp; 오케스트레이션</div>
+                        <div class="mini-card"><strong>SQL Dashboards</strong> &mdash; AI 기반 대시보드 생성</div>
+                        <div class="mini-card"><strong>Genie Spaces</strong> &mdash; 자연어 데이터 분석</div>
+                        <div class="mini-card"><strong>Knowledge Articles</strong> &mdash; Genie 지식 베이스</div>
                     </div>
                     <div>
-                        <div class="mini-card fragment fade-up" data-fragment-index="0"><strong>MLflow Experiments</strong> &mdash; ML 실험 관리</div>
-                        <div class="mini-card fragment fade-up" data-fragment-index="0"><strong>Model Serving</strong> &mdash; 엔드포인트 배포</div>
-                        <div class="mini-card fragment fade-up" data-fragment-index="0"><strong>Unity Catalog</strong> &mdash; 테이블 &amp; 스키마 관리</div>
-                        <div class="mini-card fragment fade-up" data-fragment-index="0"><strong>ChatAgent Apps</strong> &mdash; 에이전트 앱 구축 &amp; 배포</div>
+                        <div class="mini-card"><strong>MLflow Experiments</strong> &mdash; ML 실험 관리</div>
+                        <div class="mini-card"><strong>Model Serving</strong> &mdash; 엔드포인트 배포</div>
+                        <div class="mini-card"><strong>Unity Catalog</strong> &mdash; 테이블 &amp; 스키마 관리</div>
+                        <div class="mini-card"><strong>ChatAgent Apps</strong> &mdash; 에이전트 앱 구축 &amp; 배포</div>
                     </div>
                 </div>
                 <aside class="notes">
@@ -566,7 +566,7 @@ cd ai-dev-project && claude</code></pre>
                 <p style="font-size: 0.85em; margin-bottom: 0.5em;">
                     <code>ChatAgent</code> &mdash; 모든 에이전트의 표준 인터페이스
                 </p>
-                <pre class="fragment fade-up"><code class="language-python">from databricks.agents import ChatAgent, ChatAgentResponse, ChatAgentMessage
+                <pre><code class="language-python">from databricks.agents import ChatAgent, ChatAgentResponse, ChatAgentMessage
 
 class MyAgent(ChatAgent):
     """ChatAgent를 상속받아 에이전트를 구현합니다."""
@@ -584,7 +584,7 @@ class MyAgent(ChatAgent):
             ]
         )
 </code></pre>
-                <div class="fragment fade-up" style="margin-top: 0.8em;">
+                <div style="margin-top: 0.8em;">
                     <div class="emphasis-box" style="font-size: 0.8em;">
                         <strong>핵심 포인트:</strong>
                         <code>predict()</code> 메서드 하나만 구현하면 로컬 테스트부터 프로덕션 배포까지 동일한 코드 사용
@@ -639,7 +639,7 @@ context = {
 </code></pre>
                     </div>
                 </div>
-                <div class="fragment fade-up" style="margin-top: 0.6em; text-align: center;">
+                <div style="margin-top: 0.6em; text-align: center;">
                     <p style="font-size: 0.8em; color: var(--ev-text-muted);">
                         OpenAI 호환 메시지 형식 &rarr; 기존 코드와의 높은 호환성
                     </p>
@@ -660,19 +660,19 @@ context = {
                 <p style="font-size: 0.85em; margin-bottom: 0.6em;">
                     에이전트의 모든 동작을 <strong>자동으로 추적</strong>하고 시각화
                 </p>
-                <div class="tracing-box fragment fade-up">
+                <div class="tracing-box">
                     <h4>1. <code>@mlflow.trace</code> 데코레이터</h4>
                     <p>함수 단위로 추적 포인트를 지정 &mdash; 입출력, 실행 시간 자동 기록</p>
                 </div>
-                <div class="tracing-box fragment fade-up">
+                <div class="tracing-box">
                     <h4>2. 자동 추적 (autolog)</h4>
                     <p><code>mlflow.openai.autolog()</code> &mdash; OpenAI, LangChain 등 프레임워크 자동 연동</p>
                 </div>
-                <div class="tracing-box fragment fade-up">
+                <div class="tracing-box">
                     <h4>3. 트레이스 UI</h4>
                     <p>MLflow UI에서 각 요청의 전체 호출 트리, 토큰 사용량, 지연 시간 확인</p>
                 </div>
-                <pre class="fragment fade-up"><code class="language-python">import mlflow
+                <pre><code class="language-python">import mlflow
 
 @mlflow.trace
 def retrieve_context(query: str) -> list[str]:
@@ -742,7 +742,7 @@ class MyAgent(ChatAgent):
             <!-- Slide 15: 로컬 → 배포 흐름 (기존 유지) -->
             <section>
                 <h2>로컬 개발 &rarr; Databricks 배포</h2>
-                <div class="deploy-flow fragment fade-up">
+                <div class="deploy-flow">
                     <div class="flow-step">
                         <strong>로컬 개발</strong>
                         <span class="step-label">ChatAgent 구현<br>&amp; 테스트</span>
@@ -758,14 +758,14 @@ class MyAgent(ChatAgent):
                         <span class="step-label">엔드포인트<br>배포</span>
                     </div>
                 </div>
-                <pre class="fragment fade-up"><code class="language-python"># Step 1: 로컬에서 테스트
+                <pre><code class="language-python"># Step 1: 로컬에서 테스트
 agent = MyAgent()
 response = agent.predict(
     messages=[{"role": "user", "content": "안녕하세요"}]
 )
 print(response.messages[0].content)
 </code></pre>
-                <pre class="fragment fade-up"><code class="language-python"># Step 2: MLflow로 모델 로깅
+                <pre><code class="language-python"># Step 2: MLflow로 모델 로깅
 import mlflow
 
 with mlflow.start_run():
@@ -775,7 +775,7 @@ with mlflow.start_run():
         pip_requirements=["databricks-agents", "openai"],
     )
 </code></pre>
-                <pre class="fragment fade-up"><code class="language-python"># Step 3: Databricks Model Serving으로 배포
+                <pre><code class="language-python"># Step 3: Databricks Model Serving으로 배포
 from databricks.agents import deploy
 
 deploy(
@@ -855,7 +855,7 @@ print(result.messages[0].content)
                 <p style="font-size: 0.85em; margin-bottom: 0.6em;">
                     워크숍에서 학습한 개념이 AI Dev Kit에 그대로 적용됩니다
                 </p>
-                <div class="fragment fade-up" data-fragment-index="0">
+                <div>
                     <div class="mapping-row">
                         <span class="map-from">03. MCP 아키텍처</span>
                         <span class="map-arrow">&rarr;</span>
@@ -882,7 +882,7 @@ print(result.messages[0].content)
                         <span class="map-to">프로젝트 설정 자동화</span>
                     </div>
                 </div>
-                <div class="fragment fade-up" style="margin-top: 0.8em;">
+                <div style="margin-top: 0.8em;">
                     <div class="emphasis-box" style="font-size: 0.8em;">
                         오늘 배운 패턴들이 <strong style="color: var(--ev-accent);">프로덕션 수준</strong>으로 확장된 것이 AI Dev Kit입니다
                     </div>
@@ -903,7 +903,7 @@ print(result.messages[0].content)
                 <h2>마무리 &amp; Q&amp;A</h2>
                 <div class="emphasis-box">
                     <h3>오늘의 여정</h3>
-                    <ul style="font-size: 0.85em;" class="fragment fade-up" data-fragment-index="0">
+                    <ul style="font-size: 0.85em;">
                         <li>
                             <strong>AI 기초</strong> &rarr; Claude Code &rarr; <strong>MCP</strong> &rarr; Genie MCP 서버 구현
                         </li>
@@ -915,7 +915,7 @@ print(result.messages[0].content)
                         </li>
                     </ul>
                 </div>
-                <div class="fragment fade-up" style="margin-top: 1.2em;">
+                <div style="margin-top: 1.2em;">
                     <h3>리소스</h3>
                     <ul style="font-size: 0.8em;">
                         <li><a href="https://github.com/databricks-solutions/ai-dev-kit" style="color: var(--ev-accent-light);">github.com/databricks-solutions/ai-dev-kit</a></li>
@@ -924,7 +924,7 @@ print(result.messages[0].content)
                     </ul>
                 </div>
                 <br>
-                <p class="fragment fade-up" style="text-align: center; font-size: 1.3em; color: var(--ev-accent);">
+                <p style="text-align: center; font-size: 1.3em; color: var(--ev-accent);">
                     감사합니다! 질문이 있으신가요?
                 </p>
                 <div class="nav-btn-group">
