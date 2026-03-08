@@ -21,6 +21,7 @@ class Handler(http.server.SimpleHTTPRequestHandler):
 
 
 def main():
+    socketserver.TCPServer.allow_reuse_address = True
     with socketserver.TCPServer(("", PORT), Handler) as httpd:
         print(f"🚀 슬라이드 서버 시작: http://localhost:{PORT}")
         print(f"📁 루트 디렉토리: {DIRECTORY}")
