@@ -399,6 +399,20 @@
     color: var(--ev-text-muted);
 }
 
+.sidebar-sections .sidebar-part-divider {
+    padding: 0.6rem 1rem 0.3rem;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: var(--ev-accent);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-bottom: 1px solid rgba(233, 69, 96, 0.3);
+    margin-top: 0.5rem;
+}
+
+.sidebar-sections .sidebar-part-divider:first-child {
+    margin-top: 0;
+}
 
 .sidebar-overlay {
     position: fixed;

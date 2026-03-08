@@ -1,5 +1,6 @@
 number: "00"
 title: "Welcome: 세션 소개"
+part: 1
 duration_minutes: 10
 type: "lecture"
 objectives:
