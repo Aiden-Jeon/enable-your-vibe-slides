@@ -301,49 +301,47 @@
         <!-- Slide 9: Managed vs Custom 비교표 -->
         <section>
             <h2>Managed vs Custom 비교</h2>
-            <table>
+            <table style="font-size: 0.65em;">
                 <thead>
                     <tr>
                         <th></th>
                         <th style="color: #4ade80;">Managed MCP</th>
-                        <th style="color: var(--ev-accent);">Custom MCP</th>
+                        <th style="color: var(--ev-accent);">Custom MCP<br><small style="font-weight: normal;">(Self-hosting)</small></th>
+                        <th style="color: #60a5fa;">Custom MCP<br><small style="font-weight: normal;">(Databricks-hosting)</small></th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
                         <td><strong>설치</strong></td>
                         <td><code>claude mcp add</code></td>
-                        <td>직접 개발 + 배포 후<br><code>claude mcp add</code></td>
+                        <td>직접 개발 + 자체 서버 배포</td>
+                        <td>직접 개발 + Databricks Apps 배포</td>
                     </tr>
                     <tr>
                         <td><strong>관리</strong></td>
                         <td>벤더가 업데이트</td>
-                        <td>자체 유지보수</td>
+                        <td>자체 유지보수 + 인프라 관리</td>
+                        <td>자체 유지보수, 인프라는 서버리스</td>
                     </tr>
                     <tr>
                         <td><strong>유연성</strong></td>
                         <td>제공된 기능만 사용</td>
                         <td>무한한 커스터마이징</td>
+                        <td>무한한 커스터마이징</td>
                     </tr>
                     <tr>
-                        <td><strong>보안</strong></td>
-                        <td>벤더의 보안 정책</td>
-                        <td>자체 보안 제어</td>
-                    </tr>
-                    <tr>
-                        <td><strong>적합한 경우</strong></td>
-                        <td>범용 SaaS 연동</td>
-                        <td>내부 시스템, 도메인 로직</td>
+                        <td><strong>권한 관리</strong></td>
+                        <td>벤더별 인증 설정</td>
+                        <td>자체 인증/인가 구현</td>
+                        <td>UC 권한 자동 상속</td>
                     </tr>
                 </tbody>
             </table>
             <aside class="notes">
-                Managed와 Custom을 비교해봅시다.
-                설치 면에서 둘 다 claude mcp add로 연결하지만, Custom은 서버를 직접 개발하고 배포하는 과정이 추가됩니다.
-                관리 면에서 Managed는 벤더가 업데이트해주지만, Custom은 자체 유지보수가 필요합니다.
-                유연성에서는 Custom이 압도적으로 유리합니다. 원하는 기능을 자유롭게 만들 수 있습니다.
-                보안에서도 Custom은 자체 보안 정책을 적용할 수 있어 민감한 데이터 처리에 적합합니다.
-                실전에서는 둘 중 하나만 쓰는 게 아니라, Managed와 Custom을 조합해서 사용합니다.
+                Custom MCP를 어디에 호스팅하느냐에 따라 큰 차이가 생깁니다.
+                Self-hosting은 자체 서버에 배포하므로 인프라 관리와 인증/인가를 직접 구현해야 합니다.
+                반면 Databricks-hosting은 Databricks Apps에 서버리스로 배포되고, UC 권한이 자동 적용되어 별도 보안 로직이 필요 없습니다.
+                유연성은 둘 다 동일하지만, Databricks 데이터를 다루는 경우라면 Databricks-hosting이 거버넌스와 인프라 면에서 훨씬 유리합니다.
             </aside>
         </section>
 
@@ -354,7 +352,7 @@
                 <div style="display: flex; gap: 1em; width: 90%;">
                     <div style="flex: 1; border: 2px solid #4ade80; border-radius: 12px; padding: 1em; text-align: center; background: rgba(74, 222, 128, 0.05);">
                         <h3 style="color: #4ade80; font-size: 0.9em;">데이터 거버넌스</h3>
-                        <p style="font-size: 0.75em; color: var(--ev-text-muted);">Unity Catalog<br>접근 제어 · 리니지</p>
+                        <p style="font-size: 0.75em; color: var(--ev-text-muted);">Unity Catalog<br>자동 권한 상속 · 감사 로그 · 리니지</p>
                     </div>
                     <div style="flex: 1; border: 2px solid #60a5fa; border-radius: 12px; padding: 1em; text-align: center; background: rgba(96, 165, 250, 0.05);">
                         <h3 style="color: #60a5fa; font-size: 0.9em;">AI 모델</h3>
@@ -367,16 +365,19 @@
                 </div>
                 <div style="font-size: 1.5em; color: var(--ev-text-muted);">↓</div>
                 <div style="border: 2px solid var(--ev-accent); border-radius: 12px; padding: 0.8em 2em; background: rgba(233, 69, 96, 0.1); text-align: center;">
-                    <strong style="font-size: 1.1em;">MCP 서버를 만들고 → 거버넌스 아래에서 → 서버리스로 배포</strong>
+                    <strong style="font-size: 1.1em;">MCP 서버를 만들고 → UC 권한이 자동 적용되고 → 서버리스로 배포</strong>
                 </div>
+                <p style="font-size: 0.7em; color: var(--ev-text-muted); margin-top: 0.5em;">
+                    예: UC에서 테이블 접근 권한이 없는 사용자는 MCP를 통해서도 해당 데이터를 조회할 수 없음 — <strong style="color: #4ade80;">별도 보안 로직 불필요</strong>
+                </p>
             </div>
             <aside class="notes">
                 Databricks가 MCP 생태계에서 제공하는 가치는 세 가지가 결합된 것입니다.
-                첫째, Unity Catalog 기반의 데이터 거버넌스로 접근 제어와 리니지를 관리합니다.
+                첫째, Unity Catalog 기반의 데이터 거버넌스입니다. UC 권한이 MCP에 자동 상속되고, 감사 로그와 리니지를 관리합니다.
+                예를 들어, UC에서 테이블 접근 권한이 없는 사용자는 MCP를 통해서도 해당 데이터를 조회할 수 없습니다. 별도의 보안 로직 구현이 필요 없습니다.
                 둘째, Foundation Models와 Model Serving으로 AI 모델을 제공합니다.
                 셋째, Databricks Apps로 서버리스 인프라를 제공합니다.
-                이 세 가지가 결합되면, Custom MCP 서버를 만들어서
-                거버넌스 정책 아래에서 안전하게 서버리스로 배포할 수 있습니다.
+                이 세 가지가 결합되면, MCP 서버를 만들기만 하면 UC 권한이 자동으로 적용되고 서버리스로 배포할 수 있습니다.
                 다른 플랫폼에서는 이 세 가지를 각각 별도로 구축해야 합니다.
             </aside>
         </section>
@@ -436,16 +437,7 @@
                         <li>데코레이터 기반의 직관적 API</li>
                         <li>타입 힌트에서 자동으로 스키마 생성</li>
                         <li>docstring이 도구 설명이 됨</li>
-                        <li><code>uv</code>로 의존성 없이 바로 실행</li>
                     </ul>
-                </div>
-                <div>
-                    <h3>설치</h3>
-                    <pre><code class="language-bash" data-trim># 프로젝트에 추가
-uv add fastmcp
-
-# 또는 프로젝트 전체 의존성 설치
-uv sync</code></pre>
                 </div>
             </div>
             <aside class="notes">
@@ -453,7 +445,6 @@ uv sync</code></pre>
                 FastAPI에서 영감을 받아, 데코레이터 기반의 직관적인 API를 제공합니다.
                 Python 타입 힌트에서 자동으로 JSON Schema를 생성하고,
                 함수의 docstring이 도구의 설명으로 자동 변환됩니다.
-                uv를 사용하면 가상환경 설정 없이 바로 실행할 수 있어 매우 편리합니다.
             </aside>
         </section>
 
@@ -642,7 +633,7 @@ claude</code></pre>
                 <div>
                     <h3>다음 섹션 예고</h3>
                     <div class="emphasis-box">
-                        <p><strong>Section 04</strong>:<br>MCP</p>
+                        <p><strong>Section 04</strong>: Genie MCP</p>
                         <p style="font-size: 0.8em; color: var(--ev-text-muted);">
                             Databricks Genie API를 MCP로 래핑하여<br>
                             Claude Code에서 자연어로 데이터를 질의할 수 있는 환경을 구축합니다.
