@@ -31,11 +31,19 @@
     }
   }
 
+  function ensureProtocol(url) {
+    if (url && !/^https?:\/\//.test(url)) {
+      return "https://" + url;
+    }
+    return url;
+  }
+
   fetch("/api/config")
     .then(function (res) { return res.json(); })
     .then(function (data) {
       if (data.workspace_url) {
-        applyValues(data.workspace_url, extractProfile(data.workspace_url));
+        var url = ensureProtocol(data.workspace_url);
+        applyValues(url, extractProfile(url));
       } else {
         applyValues(FALLBACK_URL, FALLBACK_PROFILE);
       }
