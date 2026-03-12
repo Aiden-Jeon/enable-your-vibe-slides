@@ -210,12 +210,6 @@ cd enable-your-vibe-exercise</code></pre>
 uv sync</code></pre>
                 <pre><code class="language-bash" data-trim># 3. 설치 확인
 uv run python -c "import fastmcp; print('Ready!')"</code></pre>
-                <div class="emphasis-box" style="margin-top: 1em;">
-                    <p style="font-size: 0.8em; margin: 0;">
-                        <code>uv sync</code> 한 번으로 모든 실습 패키지가 설치됩니다 &mdash;
-                        섹션별 <code>pip install</code>은 필요 없습니다!
-                    </p>
-                </div>
                 <aside class="notes">
                     실제로 만들기 위해 우선 환경 설정을 해야 됩니다. 코드를 남겨놨으니 참석하신 분들은 프로젝트 클론하시고 패키지 설치해 주시면 됩니다.
                     여기서 uv sync라는 명령어를 사용하는데, uv가 무엇인지는 다음 슬라이드에서 설명드리겠습니다.
@@ -282,11 +276,6 @@ uvx fastmcp run server.py</code></pre>
     }
   }
 }</code></pre>
-                </div>
-                <div class="emphasis-box" style="margin-top: 0.8em;">
-                    <p style="font-size: 0.8em; margin: 0;">
-                        이후 섹션에서 MCP 서버를 실행할 때 <code>uvx</code>를 계속 사용합니다
-                    </p>
                 </div>
                 <aside class="notes">
                     특히 중요한 것이 uvx입니다. uvx는 Python 도구를 설치 없이 바로 실행할 수 있게 해줍니다. Node.js의 npx와 유사한 개념입니다.
