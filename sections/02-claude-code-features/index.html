@@ -227,35 +227,6 @@ cat error.log | claude -p "이 에러의 원인을 분석해줘"</code></pre>
             </aside>
         </section>
 
-        <!-- Slide 9: 핵심 기능 - 코드 생성 & 리팩토링 -->
-        <section>
-            <h2>코드 생성 & 리팩토링</h2>
-            <div class="columns">
-                <div>
-                    <p><strong>코드 생성</strong></p>
-                    <pre><code class="language-text">> "FastAPI로 사용자 CRUD API 만들어줘"
-
-> "pandas로 CSV 파일 읽어서
-   월별 매출 차트 그려주는 함수 만들어줘"</code></pre>
-                </div>
-                <div>
-                    <p><strong>리팩토링</strong></p>
-                    <pre><code class="language-text">> "이 함수를 async로 변환해줘"
-
-> "중복 코드를 공통 유틸리티로
-   추출해줘"
-
-> "타입 힌트 추가해줘"</code></pre>
-                </div>
-            </div>
-            <div class="emphasis-box" style="margin-top: 1em;">
-                Claude Code는 프로젝트의 기존 코드 스타일과 패턴을 파악하여 일관된 코드를 생성합니다.
-            </div>
-            <aside class="notes">
-                Claude Code한테 줄 수 있는 거는 이런 식으로 코드를 생성하는 거나 리팩토링 하는 부분들을 볼 수가 있습니다.
-            </aside>
-        </section>
-
         <!-- Slide 10: 핵심 기능 - 파일 읽기/쓰기/편집 -->
         <section>
             <h2>파일 읽기 / 쓰기 / 편집</h2>
@@ -351,8 +322,7 @@ cat error.log | claude -p "이 에러의 원인을 분석해줘"</code></pre>
   "이 에러의 원인을 분석해줘"
 
 # 이미지 파일 직접 참조
-> "mockup.png를 보고 동일한
-   레이아웃으로 만들어줘"</code></pre>
+> "mockup.png를 보고 동일한 레이아웃으로 만들어줘"</code></pre>
                 </div>
             </div>
             <div class="emphasis-box" style="margin-top: 1em;">
@@ -366,6 +336,88 @@ cat error.log | claude -p "이 에러의 원인을 분석해줘"</code></pre>
                 웹에서 앱을 만들고 있는데 앱에서 오류가 난다든지,
                 아니면 내가 이런 느낌으로 개발을 하고 싶은데라고 하는 경우에는
                 그 화면 자체를 스크린샷을 떠서 요청을 하게 되면 플래닝을 세워서 수행을 할 수가 있습니다.
+            </aside>
+        </section>
+
+        <!-- Shift+Tab (1) - Auto Accept -->
+        <section>
+            <h2>Shift+Tab: Auto Accept</h2>
+            <p style="color: var(--ev-text-muted); font-size: 0.9em;"><code>Shift+Tab</code> 한 번 → 권한 요청 없이 <strong>자동 승인</strong></p>
+            <div class="columns" style="align-items: flex-start; gap: 1.5em;">
+                <div style="flex: 1;">
+                    <h3 style="font-size: 0.95em;">기본 모드</h3>
+                    <div style="border: 1px solid rgba(233,69,96,0.3); border-radius: 8px; padding: 0.8em; font-size: 0.8em;">
+                        <p style="margin: 0 0 0.3em;"><span style="color: var(--ev-accent);">You:</span> "테스트 추가해줘"</p>
+                        <p style="margin: 0; color: var(--ev-text-muted);">→ 파일 수정 전 <strong>매번 승인 요청</strong></p>
+                        <p style="margin: 0.3em 0 0; font-size: 0.9em; color: #f1c40f;">⚠ "Allow edit to src/test.py?"</p>
+                    </div>
+                </div>
+                <div style="flex: 1;">
+                    <h3 style="font-size: 0.95em; color: #e94560;">Auto Accept (<code>Shift+Tab</code> ×1)</h3>
+                    <div style="border: 1px solid rgba(233,69,96,0.4); border-radius: 8px; padding: 0.8em; font-size: 0.8em;">
+                        <p style="margin: 0 0 0.3em;"><span style="color: var(--ev-accent);">You:</span> "테스트 추가해줘"</p>
+                        <p style="margin: 0; color: var(--ev-text-muted);">→ 파일 수정, 명령 실행을 <strong>자동 승인</strong></p>
+                        <p style="margin: 0.3em 0 0; font-size: 0.9em; color: #2ecc71;">✓ 중간 확인 없이 쭉 진행</p>
+                    </div>
+                </div>
+            </div>
+            <h3 style="margin-top: 1em; font-size: 0.95em;">언제 사용하나요?</h3>
+            <ul style="font-size: 0.85em;">
+                <li>매번 승인 누르기 귀찮을 때 → <strong>흐름을 끊지 않고</strong> 작업</li>
+                <li>신뢰할 수 있는 작업(테스트 실행, 포매팅 등)을 <strong>한 번에</strong> 돌릴 때</li>
+                <li>여러 파일을 연속으로 수정해야 할 때</li>
+            </ul>
+            <div class="emphasis-box" style="margin-top: 0.8em;">
+                프롬프트 입력 전 <code>Shift+Tab</code> 한 번 → <strong>Auto Accept 모드</strong>. 승인 없이 빠르게 진행!
+            </div>
+            <aside class="notes">
+                Shift+Tab에 대해서 알아보겠습니다.
+                기본적으로 Claude Code는 파일을 수정하거나 명령을 실행할 때마다 사용자에게 승인을 요청합니다.
+                안전하긴 한데, 매번 승인 버튼을 누르는 게 번거로울 수 있죠.
+                이때 Shift+Tab을 한 번 누르면 Auto Accept 모드로 전환됩니다.
+                이 모드에서는 파일 수정이나 명령 실행을 중간 확인 없이 자동으로 승인해서 쭉 진행합니다.
+                특히 테스트 실행이나 포매팅처럼 신뢰할 수 있는 작업을 할 때 유용합니다.
+            </aside>
+        </section>
+
+        <!-- Shift+Tab (2) - Plan Mode -->
+        <section>
+            <h2>Shift+Tab ×2: Plan Mode</h2>
+            <p style="color: var(--ev-text-muted); font-size: 0.9em;"><code>Shift+Tab</code> 두 번 → 실행 전에 <strong>계획부터</strong> 확인</p>
+            <div class="columns" style="align-items: flex-start; gap: 1.5em;">
+                <div style="flex: 1;">
+                    <h3 style="font-size: 0.95em;">일반 모드</h3>
+                    <div style="border: 1px solid rgba(233,69,96,0.3); border-radius: 8px; padding: 0.8em; font-size: 0.8em;">
+                        <p style="margin: 0 0 0.3em;"><span style="color: var(--ev-accent);">You:</span> "리팩토링 해줘"</p>
+                        <p style="margin: 0; color: var(--ev-text-muted);">→ Claude가 바로 파일 생성/수정 <strong>실행</strong></p>
+                    </div>
+                </div>
+                <div style="flex: 1;">
+                    <h3 style="font-size: 0.95em; color: #4ecca3;">Plan Mode (<code>Shift+Tab</code> ×2)</h3>
+                    <div style="border: 1px solid rgba(78,204,163,0.4); border-radius: 8px; padding: 0.8em; font-size: 0.8em;">
+                        <p style="margin: 0 0 0.3em;"><span style="color: #4ecca3;">You:</span> "리팩토링 해줘"</p>
+                        <p style="margin: 0; color: var(--ev-text-muted);">→ Claude가 <strong>계획만</strong> 제시 (실행 X)</p>
+                        <p style="margin: 0.3em 0 0; font-size: 0.9em;">→ 확인 후 다시 <code>Shift+Tab</code>으로 실행 모드 전환</p>
+                    </div>
+                </div>
+            </div>
+            <h3 style="margin-top: 1em; font-size: 0.95em;">언제 사용하나요?</h3>
+            <ul style="font-size: 0.85em;">
+                <li>복잡한 작업의 <strong>접근 방식을 먼저 확인</strong>하고 싶을 때</li>
+                <li>여러 파일을 수정하기 전에 <strong>변경 범위를 파악</strong>하고 싶을 때</li>
+                <li>Claude가 잘못된 방향으로 가지 않도록 <strong>사전 검증</strong>할 때</li>
+            </ul>
+            <div class="emphasis-box" style="margin-top: 0.8em;">
+                <code>Shift+Tab</code> 두 번 → <strong>Plan Mode</strong>. 큰 작업은 계획 먼저, 실행은 나중에!
+            </div>
+            <aside class="notes">
+                Shift+Tab을 두 번 누르면 Plan Mode로 전환됩니다.
+                Plan Mode에서는 실행하지 않고 계획만 보여줍니다.
+                예를 들어 "리팩토링 해줘"라고 하면, 일반 모드에서는 바로 코드를 수정하지만
+                Plan Mode에서는 "이런 파일을 수정하고, 이런 방식으로 리팩토링하겠습니다"라고 계획을 먼저 알려줍니다.
+                계획이 마음에 들면 다시 Shift+Tab을 눌러서 실행 모드로 전환하면 됩니다.
+                특히 복잡한 작업이나 여러 파일을 건드려야 할 때 유용합니다.
+                잘못된 방향으로 가는 걸 미리 잡을 수 있으니까요.
             </aside>
         </section>
 
