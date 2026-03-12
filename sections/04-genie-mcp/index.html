@@ -191,63 +191,7 @@ Client                               Genie API
         </section>
 
         <!-- ============================================================ -->
-        <!-- Exercise 00: 사전 환경 체크리스트 -->
-        <!-- ============================================================ -->
-
-        <section>
-            <h2>Exercise 00: 사전 환경 체크리스트</h2>
-            <p style="font-size: 0.7em; color: var(--ev-text-muted);">실습 시작 전 환경 설정을 검증합니다</p>
-            <pre style="font-size: 0.55em;"><code class="language-bash" data-noescape data-trim>databricks auth login --host <span data-workspace-url>https://&lt;workspace-url&gt;.cloud.databricks.com</span> -p <span data-workspace-profile>&lt;workspace-profile&gt;</span></code></pre>
-            <pre><code class="language-bash" data-trim>uv run python 04-genie-mcp/exercise_00_checklist.py
-            </code></pre>
-            <table style="font-size: 0.75em; margin-top: 0.8em;">
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>검증 항목</th>
-                        <th>방법</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>1</td>
-                        <td>인증 정보 확인</td>
-                        <td><code>.env</code> → <code>databricks CLI</code> → 기본값에서 자동 해석</td>
-                    </tr>
-                    <tr>
-                        <td>2</td>
-                        <td>호스트 연결</td>
-                        <td><code>GET /api/2.0/clusters/spark-versions</code></td>
-                    </tr>
-                    <tr>
-                        <td>3</td>
-                        <td>SQL Warehouse</td>
-                        <td><code>SELECT 1</code> 실행 확인</td>
-                    </tr>
-                    <tr>
-                        <td>4</td>
-                        <td>데이터 스키마</td>
-                        <td><code>shared.fashion_recommendations</code> 테이블 확인</td>
-                    </tr>
-                </tbody>
-            </table>
-            <div class="emphasis-box" style="margin-top: 0.8em;">
-                모든 ✅ 확인 후 Exercise 01a로 진행하세요
-            </div>
-            <aside class="notes">
-                실습을 시작하기 전에 환경이 올바르게 설정되었는지 확인합니다.
-                exercise_00_checklist.py를 실행하면 4단계를 순차적으로 검증합니다.
-                첫째, 인증 정보를 확인합니다. .env 파일이 있으면 그것을 사용하고, 없으면 databricks CLI 설정에서 자동으로 가져옵니다.
-                WAREHOUSE_ID도 API로 자동 조회되므로, databricks CLI만 설정하면 별도 설정 없이 바로 실행 가능합니다.
-                둘째, Databricks 호스트에 연결할 수 있는지 경량 API 호출로 확인합니다.
-                셋째, SQL Warehouse가 작동하는지 SELECT 1로 확인합니다. 콜드스타트 시 시간이 걸릴 수 있습니다.
-                넷째, shared.fashion_recommendations 스키마에 transactions, customers 테이블이 있는지 확인합니다.
-                이전 단계가 실패하면 이후 단계는 자동으로 건너뜁니다. 모두 통과하면 Exercise 01a로 진행합니다.
-            </aside>
-        </section>
-
-        <!-- ============================================================ -->
-        <!-- Exercise 01a: Genie Space 생성 (Slides 7-11) -->
+        <!-- Space 생성 API 강의 슬라이드 -->
         <!-- ============================================================ -->
 
         <!-- Slide 7: serialized_space JSON 구조 -->
@@ -389,7 +333,7 @@ sql_snippets = {
                 instructions는 Genie에게 주는 지시사항입니다 — 컬럼 네이밍, 날짜 처리, 채널 매핑, 고객 세그먼트 가이드를 포함합니다.
                 sample_questions는 5개의 예제 질문, example_sqls는 3개의 질문-SQL 쌍입니다.
                 sql_snippets는 필터 5개, 표현식 3개, 측정값 4개를 포함합니다.
-                슬라이드에서는 요약 표시하지만, 전체 코드는 exercise_01a_create_space.py에 있습니다.
+                슬라이드에서는 요약 표시하지만, 전체 코드는 genie_helpers.py에 있습니다.
             </aside>
         </section>
 
@@ -486,168 +430,163 @@ def create_genie_space(
             </aside>
         </section>
 
-        <!-- Slide 11: Exercise 01a 실습 가이드 -->
-        <section>
-            <h2 style="font-size: 1.8em;">Exercise 01a: Space 생성 코드 실행</h2>
-            <p style="font-size: 0.85em; color: var(--ev-text-muted);">exercise_01a_create_space.py &mdash; 완성 코드</p>
-            <div style="text-align: left; margin: 0.8em auto; max-width: 95%;">
-                <h3 style="font-size: 1.1em;">실습 단계</h3>
-                <ol style="font-size: 0.9em; line-height: 1.6;">
-                    <li>코드를 읽고 주요 함수를 이해합니다: <br><code>build_serialized_space()</code>, <code>create_genie_space()</code></li>
-                    <li>코드를 실행합니다:
-                        <pre style="margin: 0.4em 0;"><code class="language-bash" data-trim>
-uv run python 04-genie-mcp/exercise_01a_create_space.py
-                        </code></pre>
-                    </li>
-                    <li>출력된 <code>Space ID</code>를 확인합니다</li>
-                </ol>
-            </div>
-            <div class="emphasis-box" style="margin-top: 0.8em; font-size: 1.05em;">
-                출력된 <code>Space ID</code>를 exercise_01b에서 사용합니다
-            </div>
-            <aside class="notes">
-                Exercise 01a는 완성 코드입니다. Claude Code 없이 바로 실행하여 Genie API가 정상 동작하는지 확인합니다.
-                코드를 읽으면서 두 가지 핵심 함수를 이해합니다:
-                첫째, build_serialized_space — 테이블/지시사항/예제를 protobuf v2 JSON으로 변환합니다.
-                둘째, create_genie_space — POST /genie/spaces API를 호출합니다.
-                실행 후 출력된 Space ID를 exercise_01b에서 사용합니다.
-                API가 정상 동작하는 것을 확인한 후 Exercise 01b로 진행합니다.
-            </aside>
-        </section>
-
         <!-- ============================================================ -->
-        <!-- Exercise 01b: Genie Space 질의 (Slides 12-14) -->
+        <!-- 질의 3단계 흐름 (강의 슬라이드) -->
         <!-- ============================================================ -->
 
-        <!-- Slide 14: Exercise 01b 질의 3단계 흐름 -->
         <section>
-            <h2>Exercise 01b: 질의 3단계 흐름</h2>
-            <p style="font-size: 0.7em; color: var(--ev-text-muted);">exercise_01b_query_space.py &mdash; 완성 코드</p>
+            <h2>질의 3단계 흐름</h2>
+            <p style="font-size: 0.7em; color: var(--ev-text-muted);">genie_helpers.py에 완성 코드로 제공</p>
             <div style="text-align: left; margin: 0.8em auto; max-width: 90%;">
                 <div class="diagram">
 <pre style="background: transparent; border: none; box-shadow: none; text-align: center; font-size: 0.75em;">
-create_conversation()     send_message()       poll_result()
-  대화 생성           →     질문 전송        →    결과 폴링
-  conversation_id           message_id           COMPLETED
+start_conversation()     send_and_poll()       format_result()
+  대화 시작 + 질문   →     메시지 전송 + 폴링  →    결과 파싱
+  conversation_id           message_id           텍스트/SQL
 </pre>
                 </div>
                 <ul style="font-size: 0.65em; margin-top: 0.5em;">
-                    <li><code>create_conversation</code> &mdash; <code>POST /spaces/{id}/conversations</code></li>
-                    <li><code>send_message</code> &mdash; <code>POST /conversations/{id}/messages</code></li>
-                    <li><code>poll_result</code> &mdash; <code>GET /messages/{id}</code> (점진적 백오프)</li>
+                    <li><code>start_conversation</code> &mdash; <code>POST /spaces/{id}/start-conversation</code></li>
+                    <li><code>send_and_poll</code> &mdash; 메시지 전송 + 점진적 백오프 폴링</li>
+                    <li><code>poll_result</code> &mdash; <code>GET /messages/{id}</code> (1초 → 최대 5초)</li>
                     <li><code>format_result</code> &mdash; 응답에서 텍스트/SQL 추출</li>
                 </ul>
             </div>
             <aside class="notes">
-                질의 흐름은 3단계입니다: 대화 생성, 질문 전송, 결과 폴링.
-                코드에서 4개 함수의 역할을 이해합니다:
-                create_conversation, send_message, poll_result, format_result.
+                질의 흐름은 3단계입니다: 대화 시작, 메시지 전송+폴링, 결과 파싱.
+                이 함수들은 genie_helpers.py에 완성 코드로 제공됩니다.
+                start_conversation은 새 대화를 시작하고 첫 질문을 보냅니다.
+                send_and_poll은 기존 대화에 메시지를 보내고 결과를 폴링합니다.
                 poll_result에서는 점진적 백오프 패턴을 사용합니다 — 1초에서 시작하여 1.5배씩 늘려 최대 5초까지 증가합니다.
             </aside>
         </section>
 
-        <!-- Slide 15: Exercise 01b 실습 가이드 -->
-        <section>
-            <h2>Exercise 01b: Space 질의 코드 실행</h2>
-            <p style="font-size: 0.8em; color: var(--ev-text-muted);">exercise_01b_query_space.py &mdash; 실습</p>
-            <div style="text-align: left; margin: 1em auto; max-width: 85%;">
-                <h3 style="font-size: 1em;">실습 단계</h3>
-                <ol style="font-size: 0.85em;">
-                    <li>코드를 읽고 질의 3단계 흐름을 이해합니다</li>
-                    <li>exercise_01a에서 얻은 Space ID로 실행합니다:
-                        <pre style="margin: 0.5em 0; font-size: 0.8em;"><code class="language-bash" data-trim>
-uv run python 04-genie-mcp/exercise_01b_query_space.py &lt;SPACE_ID&gt;
-                        </code></pre>
-                    </li>
-                    <li>질의 결과를 확인합니다</li>
-                </ol>
-            </div>
-            <div class="emphasis-box" style="margin-top: 0.8em;">
-                API 동작 확인 완료 &rarr; Exercise 02에서 MCP 서버로 래핑합니다
-            </div>
-            <aside class="notes">
-                Exercise 01b도 완성 코드입니다. 바로 실행하여 Genie 질의 API가 정상 동작하는지 확인합니다.
-                exercise_01a에서 출력된 Space ID를 커맨드라인 인자로 전달하여 실행합니다.
-                01a와 01b에서 API 동작을 확인했으니, 이제 Exercise 02에서 이 로직을 MCP 서버로 래핑합니다.
-            </aside>
-        </section>
-
         <!-- ============================================================ -->
-        <!-- Exercise 02: MCP 서버 (Slides 15-17) -->
+        <!-- Exercise: MCP 서버 -->
         <!-- ============================================================ -->
 
-        <!-- Slide 17: Exercise 02 MCP Tool 명세 -->
+        <!-- Exercise 00: MCP Tool 명세 -->
         <section>
-            <h2>Exercise 02: MCP Tool 명세</h2>
-            <p style="font-size: 0.7em; color: var(--ev-text-muted);">exercise_01a/01b를 기반으로 MCP 서버 구현</p>
+            <h2>Exercise: MCP Tool 명세</h2>
+            <p style="font-size: 0.8em; color: var(--ev-text-muted);"><code>genie_helpers.py</code>의 헬퍼 함수를 활용하여 MCP tool 3개만 구현</p>
             <div style="text-align: left; margin: 0.8em auto; max-width: 90%;">
-                <table style="font-size: 0.65em; margin-top: 0.5em;">
+                <table style="font-size: 0.75em; margin-top: 0.5em;">
                     <thead>
                         <tr>
                             <th>Tool</th>
                             <th>주요 파라미터</th>
-                            <th>내부 로직</th>
+                            <th>활용할 헬퍼 함수</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
                             <td><code>create_genie_space</code></td>
                             <td>title, tables, instructions, ...</td>
-                            <td><code>_build_serialized_space</code> + <code>POST /genie/spaces</code></td>
+                            <td><code>build_serialized_space()</code> + <code>create_genie_space()</code></td>
                         </tr>
                         <tr>
                             <td><code>ask_genie</code></td>
                             <td>space_id, question</td>
-                            <td>대화 생성 + <code>_send_and_poll</code></td>
+                            <td><code>start_conversation()</code> + <code>poll_result()</code> + <code>format_result()</code></td>
                         </tr>
                         <tr>
                             <td><code>continue_conversation</code></td>
                             <td>space_id, conversation_id, question</td>
-                            <td><code>_send_and_poll</code> (기존 대화 이어가기)</td>
+                            <td><code>send_and_poll()</code> + <code>format_result()</code></td>
                         </tr>
                     </tbody>
                 </table>
-                <p style="font-size: 0.65em; color: var(--ev-text-muted); margin-top: 0.5em;">
-                    헬퍼: <code>_build_serialized_space()</code>, <code>_send_and_poll()</code>, <code>_format_response()</code>
-                </p>
-            </div>
-            <div class="emphasis-box" style="margin-top: 0.8em;">
-                Exercise 01a/01b의 완성 코드가 레퍼런스 &mdash; 동일 로직을 <code>@mcp.tool()</code>로 래핑
             </div>
             <aside class="notes">
-                Exercise 02에서 구현할 MCP 서버의 Tool 명세입니다.
-                3개의 MCP tool(create_genie_space, ask_genie, continue_conversation)과
-                3개의 헬퍼 함수(_build_serialized_space, _send_and_poll, _format_response)로 구성됩니다.
-                Exercise 01a/01b에서 이미 동작을 확인한 API 로직을 그대로 사용하되,
-                @mcp.tool() 데코레이터로 래핑하는 것이 핵심입니다.
+                Exercise의 MCP 서버 Tool 명세입니다.
+                genie_helpers.py에 인증, Space 생성, 질의에 필요한 모든 헬퍼 함수가 완성 코드로 제공됩니다.
+                여러분은 이 헬퍼 함수들을 import해서 3개의 MCP tool을 래핑하기만 하면 됩니다.
+                create_genie_space는 build_serialized_space와 create_genie_space 헬퍼를 조합합니다.
+                ask_genie는 start_conversation으로 새 대화를 시작하고 poll_result로 결과를 가져옵니다.
+                continue_conversation은 send_and_poll로 기존 대화에 후속 질문을 보냅니다.
             </aside>
         </section>
 
-        <!-- Slide 18: Exercise 02 실습 단계 -->
+        <!-- 사전 환경 체크리스트 -->
         <section>
-            <h2>Exercise 02: 실습 가이드</h2>
-            <p style="font-size: 0.7em; color: var(--ev-text-muted);">Claude Code로 MCP 서버 코딩 실습</p>
+            <h2>사전 환경 체크리스트</h2>
+            <p style="font-size: 0.8em; color: var(--ev-text-muted);">실습 시작 전 환경 설정을 검증합니다</p>
+            <pre style="font-size: 0.55em;"><code class="language-bash" data-noescape data-trim>databricks auth login --host <span data-workspace-url>https://&lt;workspace-url&gt;.cloud.databricks.com</span> -p <span data-workspace-profile>&lt;workspace-profile&gt;</span></code></pre>
+            <pre><code class="language-bash" data-trim>uv run python 04-genie-mcp/exercise_checklist.py
+            </code></pre>
+            <table style="font-size: 0.75em; margin-top: 0.8em;">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>검증 항목</th>
+                        <th>방법</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>인증 정보 확인</td>
+                        <td><code>.env</code> → <code>databricks CLI</code> → 기본값에서 자동 해석</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>호스트 연결</td>
+                        <td><code>GET /api/2.0/clusters/spark-versions</code></td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>SQL Warehouse</td>
+                        <td><code>SELECT 1</code> 실행 확인</td>
+                    </tr>
+                    <tr>
+                        <td>4</td>
+                        <td>데이터 스키마</td>
+                        <td><code>shared.fashion_recommendations</code> 테이블 확인</td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="emphasis-box" style="margin-top: 0.8em;">
+                모든 ✅ 확인 후 실습 가이드로 진행하세요
+            </div>
+            <aside class="notes">
+                실습을 시작하기 전에 환경이 올바르게 설정되었는지 확인합니다.
+                exercise_checklist.py를 실행하면 4단계를 순차적으로 검증합니다.
+                첫째, 인증 정보를 확인합니다. .env 파일이 있으면 그것을 사용하고, 없으면 databricks CLI 설정에서 자동으로 가져옵니다.
+                WAREHOUSE_ID도 API로 자동 조회되므로, databricks CLI만 설정하면 별도 설정 없이 바로 실행 가능합니다.
+                둘째, Databricks 호스트에 연결할 수 있는지 경량 API 호출로 확인합니다.
+                셋째, SQL Warehouse가 작동하는지 SELECT 1로 확인합니다. 콜드스타트 시 시간이 걸릴 수 있습니다.
+                넷째, shared.fashion_recommendations 스키마에 transactions, customers 테이블이 있는지 확인합니다.
+                이전 단계가 실패하면 이후 단계는 자동으로 건너뜁니다. 모두 통과하면 실습 가이드로 진행합니다.
+            </aside>
+        </section>
+
+        <!-- Exercise 01: 실습 가이드 -->
+        <section>
+            <h2>실습 가이드</h2>
+            <p style="font-size: 0.8em; color: var(--ev-text-muted);">Claude Code로 MCP tool 3개 구현</p>
             <div style="text-align: left; margin: 0.8em auto; max-width: 90%;">
-                <ol style="font-size: 0.7em;">
-                    <li>스켈레톤 파일의 TODO 확인: <code>exercise_02_genie_mcp_server.py</code></li>
+                <ol style="font-size: 0.8em;">
+                    <li><code>genie_helpers.py</code>의 헬퍼 함수를 확인합니다</li>
+                    <li>스켈레톤 파일의 TODO 확인: <code>exercise_genie_mcp_server.py</code></li>
                     <li>Claude Code에게 구현 요청:
-                        <pre style="margin: 0.5em 0; font-size: 0.8em;"><code class="language-text" data-trim>
-@04-genie-mcp/ exercise_01a, 01b를 참고해서 exercise_02의 MCP 서버를 완성해줘
+                        <pre style="margin: 0.5em 0; font-size: 0.85em;"><code class="language-text" data-trim>
+@04-genie-mcp/ genie_helpers.py를 활용해서 exercise_genie_mcp_server.py의 MCP tool 3개를 완성해줘
                         </code></pre>
                     </li>
                     <li>실행 및 테스트:
-                        <pre style="margin: 0.5em 0; font-size: 0.8em;"><code class="language-bash" data-trim>
-uv run python 04-genie-mcp/exercise_02_genie_mcp_server.py
+                        <pre style="margin: 0.5em 0; font-size: 0.85em;"><code class="language-bash" data-trim>
+uv run python 04-genie-mcp/exercise_genie_mcp_server.py
                         </code></pre>
                     </li>
                 </ol>
             </div>
             <aside class="notes">
-                Exercise 02는 이번 섹션의 핵심 코딩 실습입니다.
-                스켈레톤 파일에 3개 MCP tool과 3개 헬퍼 함수의 TODO가 있고,
-                각 TODO에는 01a/01b의 어떤 함수를 참고하면 되는지 명시되어 있습니다.
-                Claude Code에게 "exercise_01a, 01b를 참고해서 exercise_02의 MCP 서버를 완성해줘"라고 요청합니다.
-                실행하면 MCP 서버가 시작되어 Claude Code에서 연결할 수 있습니다.
+                이번 섹션의 핵심 코딩 실습입니다.
+                먼저 genie_helpers.py를 열어 어떤 헬퍼 함수가 제공되는지 확인합니다.
+                build_serialized_space, create_genie_space, start_conversation, poll_result, send_and_poll, format_result 등
+                모든 API 호출 로직이 완성 코드로 제공됩니다.
+                여러분은 이 헬퍼들을 조합하여 MCP tool 3개만 구현하면 됩니다.
+                Claude Code에게 "genie_helpers.py를 활용해서 exercise_genie_mcp_server.py의 MCP tool 3개를 완성해줘"라고 요청합니다.
             </aside>
         </section>
 
@@ -671,7 +610,7 @@ cat > .mcp.json << 'EOF'
       "args": [
           "run",
           "python",
-          "04-genie-mcp/exercise_02_genie_mcp_server.py"
+          "04-genie-mcp/exercise_genie_mcp_server.py"
       ]
     }
   }
@@ -690,19 +629,15 @@ claude</code></pre>
                     </p>
                 </div>
             </div>
-            <div class="emphasis-box" style="margin-top: 0.8em;">
-                <strong>실습 워크플로우:</strong> Exercise 00 체크리스트 → 01a 실행 (Space 생성) → 01b 실행 (질의 확인) → 02 Claude Code로 MCP 서버 구현 → Claude Code에 MCP 연결
-            </div>
             <aside class="notes">
                 Claude Code에서 사용하려면 프로젝트 루트의 .mcp.json에 MCP 서버를 등록합니다.
                 설정을 저장한 뒤 Claude Code를 재시작해야 새 서버가 로드됩니다.
                 /mcp 명령어를 실행하면 등록된 MCP 서버 목록과 연결 상태를 확인할 수 있습니다.
                 genie가 목록에 보이면 정상적으로 연결된 것입니다.
                 실습 워크플로우는 다음과 같습니다:
-                먼저 Exercise 00으로 환경을 검증합니다.
-                Exercise 01a를 실행하여 Space를 생성하고, 01b를 실행하여 질의 API를 확인합니다.
-                API 동작이 확인되면 Exercise 02에서 Claude Code로 MCP 서버를 구현합니다.
-                마지막으로 Exercise 02의 MCP 서버를 Claude Code에 연결하여 자연어로 전체 워크플로우를 수행합니다.
+                먼저 사전 체크리스트로 환경을 검증합니다.
+                그 다음 genie_helpers.py의 헬퍼 함수를 활용하여 MCP tool 3개를 구현합니다.
+                마지막으로 MCP 서버를 Claude Code에 연결하여 자연어로 전체 워크플로우를 수행합니다.
             </aside>
         </section>
 
@@ -710,7 +645,7 @@ claude</code></pre>
         <section>
             <h2>대화 예시</h2>
             <div class="emphasis-box" style="font-size: 0.85em;">
-                <p><strong>사용자:</strong> "Fashion Recommendations 데이터로 Genie Space를 만들어줘"</p>
+                <p><strong>사용자:</strong> "shared.fashion_recommendations로 Genie Space를 만들어줘"</p>
                 <p><strong>Claude:</strong> <code>create_genie_space</code> tool로 Space를 생성합니다.</p>
                 <p style="margin-top: 0.5em;"><strong>사용자:</strong> "매출 Top 10 상품을 알려줘"</p>
                 <p><strong>Claude:</strong> <code>ask_genie</code> tool로 질의합니다.</p>

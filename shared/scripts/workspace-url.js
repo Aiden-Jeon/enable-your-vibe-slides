@@ -7,6 +7,16 @@
   var FALLBACK_URL = "https://<workspace-url>.cloud.databricks.com";
   var FALLBACK_PROFILE = "<workspace-profile>";
 
+  function replaceInTextNodes(root, search, replacement) {
+    var walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null, false);
+    var node;
+    while ((node = walker.nextNode())) {
+      if (node.nodeValue.indexOf(search) !== -1) {
+        node.nodeValue = node.nodeValue.split(search).join(replacement);
+      }
+    }
+  }
+
   function applyValues(url, profile) {
     document.querySelectorAll("[data-workspace-url]").forEach(function (el) {
       el.textContent = url;
@@ -19,6 +29,12 @@
     document.querySelectorAll("[data-workspace-href]").forEach(function (el) {
       var path = el.getAttribute("data-workspace-href");
       el.href = url + path;
+    });
+    // Fallback: highlight.js destroys data-attribute spans inside <code> blocks,
+    // so also do text-node replacement in all <pre> elements.
+    document.querySelectorAll("pre").forEach(function (pre) {
+      replaceInTextNodes(pre, FALLBACK_URL, url);
+      replaceInTextNodes(pre, FALLBACK_PROFILE, profile);
     });
   }
 
